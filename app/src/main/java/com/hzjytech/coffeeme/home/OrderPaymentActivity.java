@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,37 +28,40 @@ import com.google.gson.reflect.TypeToken;
 import com.hzjytech.coffeeme.BaseActivity;
 import com.hzjytech.coffeeme.Dialogs.CustomDialogWithTwoDiffButton;
 import com.hzjytech.coffeeme.Dialogs.ITwoButtonClick;
+import com.hzjytech.coffeeme.Dialogs.SelectDialog;
 import com.hzjytech.coffeeme.MainActivity;
 import com.hzjytech.coffeeme.R;
+import com.hzjytech.coffeeme.collect.NewMyCoffeesActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.AppDosage;
-import com.hzjytech.coffeeme.entities.DisplayItems;
+import com.hzjytech.coffeeme.entities.AppItem;
+import com.hzjytech.coffeeme.entities.Coupon;
 import com.hzjytech.coffeeme.entities.Good;
 import com.hzjytech.coffeeme.entities.Ingredient;
-import com.hzjytech.coffeeme.entities.NewGood;
-import com.hzjytech.coffeeme.entities.NewOrder;
 import com.hzjytech.coffeeme.entities.Order;
 import com.hzjytech.coffeeme.entities.User;
 import com.hzjytech.coffeeme.entities.preWxPayInfo;
 import com.hzjytech.coffeeme.me.NewRechargeActivity;
+import com.hzjytech.coffeeme.me.PointRateActivity;
 import com.hzjytech.coffeeme.order.OrderItemDetailActivity;
 import com.hzjytech.coffeeme.pays.alipay.PayResult;
 import com.hzjytech.coffeeme.pays.alipay.SignUtils;
 import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.NetUtil;
+import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.StringUtil;
 import com.hzjytech.coffeeme.utils.TimeUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
 import com.hzjytech.coffeeme.widgets.TitleBar;
-import com.hzjytech.coffeeme.widgets.orderview.OrderGroup;
 import com.hzjytech.coffeeme.widgets.row.RowView;
 import com.hzjytech.coffeeme.widgets.row.RowViewDesc;
 import com.hzjytech.coffeeme.wxapi.WXPayEntryActivity;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
@@ -102,10 +107,6 @@ public class OrderPaymentActivity extends BaseActivity {
 
     @ViewInject(R.id.rcyViewPaymentDetail)
     private RecyclerView rcyViewPaymentDetail;
-    @ViewInject(R.id.ll_order_point)
-    private LinearLayout mLlOrderPoint;
-    @ViewInject(R.id.line_order_point)
-    private View mLineView;
 /*
     @ViewInject(R.id.imPaymentback)
     private ImageView imPaymentback;
@@ -159,14 +160,14 @@ public class OrderPaymentActivity extends BaseActivity {
      */
     private int payMethod = 0;
     private ArrayList<AppDosage> appDosages = new ArrayList<AppDosage>();
-    private List<NewGood> goods;
-    private Map<NewGood, Integer> selectGood = new HashMap<>();
+    private List<Good> goods;
+    private Map<Good, Integer> selectGood = new HashMap<>();
     //coupon id
     private int couponId = -1;
     private String identifier;
     private int id;
 
-    private NewOrder mOrder;
+    private Order mOrder;
 
     //   0   'buy_now'为立即购买类型，  1  'cart_buy’ 为购物车结算,    2  'order_again’,为再来一单类型    3   待支付订单
     private int buytype = -1;
@@ -200,9 +201,9 @@ public class OrderPaymentActivity extends BaseActivity {
     private void payOrder() {
         showLoading();
         RequestParams entity = new RequestParams(Configurations.URL_ORDER_PAY);
-        entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         entity.addParameter(Configurations.IP, NetUtil.getIPAddress(true));
-        entity.addParameter(Configurations.IDENTIFIER, identifier);
+        entity.addParameter(Configurations.ORDERID, identifier);
 
         String device_id= JPushInterface.getRegistrationID(OrderPaymentActivity.this);
         String timeStamp= TimeUtil.getCurrentTimeString();
@@ -210,9 +211,9 @@ public class OrderPaymentActivity extends BaseActivity {
         entity.addParameter(Configurations.DEVICE_ID,device_id );
 
         Map<String, String> map=new TreeMap<String, String>();
-        map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         map.put(Configurations.IP, NetUtil.getIPAddress(true));
-        map.put(Configurations.IDENTIFIER, identifier);
+        map.put(Configurations.ORDERID, identifier);
 
         switch (payMethod) {
             //jijiapay
@@ -237,7 +238,7 @@ public class OrderPaymentActivity extends BaseActivity {
         x.http().request(HttpMethod.PUT, entity, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                LogUtil.e("result",result);
+                Log.e("result",result);
                 try {
                     JSONObject object = new JSONObject(result);
                     if (object.getInt(Configurations.STATUSCODE) == 200) {
@@ -264,7 +265,8 @@ public class OrderPaymentActivity extends BaseActivity {
                                 MainActivity.Instance().goOrder = true;
                                 ModulationActivity.Instance().finish();
                                 NewCartActivity.Instance().finish();
-
+                                CompletelyAdjustActivity.Instance().finish();
+                                NewMyCoffeesActivity.Instance().finish();
                                 OrderItemDetailActivity.Instance().finish();
                                 customDialogWithTwoDiffButton.dismiss();
                                 isPayFailure=true;
@@ -463,7 +465,7 @@ public class OrderPaymentActivity extends BaseActivity {
                         Map<String, String> map = new HashMap<>();
                         map.put(UmengConfig.PARAM_PAYMETHOD, UmengConfig.PARAM_ALIPAY);
                         MobclickAgent.onEventValue(OrderPaymentActivity.this, UmengConfig.EVENT_PAYORDER_ALIPAY, map, (int) realPay);
-                        goSuccessOrder((int) mOrder.getGet_point());
+                        goSuccessOrder(mOrder.getGet_point());
                         isPaying=false;
                     } else {
                         // 判断resultStatus 为非"9000"则代表可能支付失败
@@ -485,7 +487,7 @@ public class OrderPaymentActivity extends BaseActivity {
                                     MainActivity.Instance().goOrder = true;
                                     ModulationActivity.Instance().finish();
                                     NewCartActivity.Instance().finish();
-
+                                    NewMyCoffeesActivity.Instance().finish();
                                     OrderItemDetailActivity.Instance().finish();
                                     isPayFailure=true;
                                     customDialogWithTwoDiffButton.dismiss();
@@ -509,7 +511,7 @@ public class OrderPaymentActivity extends BaseActivity {
                 }
 
                 case WECHAT_PAY_SUCCESS:
-                    goSuccessOrder((int) mOrder.getGet_point());
+                    goSuccessOrder(mOrder.getGet_point());
                     isPaying=false;
 
                     break;
@@ -527,7 +529,8 @@ public class OrderPaymentActivity extends BaseActivity {
                             MainActivity.Instance().goOrder = true;
                             ModulationActivity.Instance().finish();
                             NewCartActivity.Instance().finish();
-
+                            CompletelyAdjustActivity.Instance().finish();
+                            NewMyCoffeesActivity.Instance().finish();
                             OrderItemDetailActivity.Instance().finish();
                            // finish();
                             isPayFailure=true;
@@ -539,7 +542,7 @@ public class OrderPaymentActivity extends BaseActivity {
 
                     break;
                 case WECHAT_PAY_CANCEL:
-                    customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err, "用户中途取消");
+                    customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err, 0, false);
                     customDialogWithTwoDiffButton.setOnTwoButtonClick(new ITwoButtonClick() {
                         @Override
                         public void onLeftButtonClick() {
@@ -551,7 +554,7 @@ public class OrderPaymentActivity extends BaseActivity {
                             MainActivity.Instance().goOrder = true;
                             ModulationActivity.Instance().finish();
                             NewCartActivity.Instance().finish();
-
+                            NewMyCoffeesActivity.Instance().finish();
                             OrderItemDetailActivity.Instance().finish();
                             //finish();
                             isPayFailure=true;
@@ -575,7 +578,8 @@ public class OrderPaymentActivity extends BaseActivity {
         MainActivity.Instance().goOrder = true;
         ModulationActivity.Instance().finish();
         NewCartActivity.Instance().finish();
-
+        CompletelyAdjustActivity.Instance().finish();
+        NewMyCoffeesActivity.Instance().finish();
         OrderItemDetailActivity.Instance().finish();
         finish();
     }
@@ -734,7 +738,7 @@ public class OrderPaymentActivity extends BaseActivity {
 
                 User user = JSON.parseObject(jsonObject.getJSONObject("results").getString("user"), User.class);
                 UserUtils.getUserInfo().setBalance(user.getBalance());
-                goSuccessOrder((int) mOrder.getGet_point());
+                goSuccessOrder(mOrder.getGet_point());
                 isPaying=false;
 
             } else {
@@ -876,7 +880,7 @@ public class OrderPaymentActivity extends BaseActivity {
         return  coffeeMePocketBalance;
     }
 
-    private DisplayItems mDisplayItems;
+    private AppItem appItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -895,8 +899,7 @@ public class OrderPaymentActivity extends BaseActivity {
 
         llPaymentPay.setVisibility(View.GONE);
         llPaymentPayInit.setVisibility(View.VISIBLE);
-        mLlOrderPoint.setVisibility(View.GONE);
-        mLineView.setVisibility(View.GONE);
+
         initView();
 
 
@@ -912,20 +915,16 @@ public class OrderPaymentActivity extends BaseActivity {
 
             if (buytype == 3) {
 
-                mOrder = (NewOrder) getIntent().getSerializableExtra("order");
+                mOrder = (Order) getIntent().getSerializableExtra("order");
                 goods = mOrder.getGoods();
-                adapter.setData(goods);
-                count = mOrder.getGoods()
-                        .size();
+                count = mOrder.getGoods().size();
                 realPay = Float.parseFloat("" + mOrder.getSum());
                 pay = realPay;
 
             }
             RowViewDesc mRowViewDesc = new RowViewDesc("优惠券：", mOrder.getCoupon_info(), 0);
             if (buytype == 3 && null != mOrder) {
-                rvPaymentamountAmount.setData(new RowViewDesc("总价",
-                        "￥" + fnum.format(mOrder.getOriginal_sum()),
-                        0));
+                rvPaymentamountAmount.setData(new RowViewDesc("总价", "￥" + fnum.format(mOrder.getOriginal_sum()), 0));
             }
             rvPaymentamountCoupon.setData(mRowViewDesc);
 
@@ -940,10 +939,8 @@ public class OrderPaymentActivity extends BaseActivity {
                 llPaymentPay.setVisibility(View.VISIBLE);
             }
 
-            tvPaymentamountRatepoint.setText(getString(R.string.single_string,
-                    mOrder.getPoint_count() + ""));
-            tvPaymentamountRatepointMoney.setText(getString(R.string.single_string,
-                    mOrder.getPoint_value() + ""));
+            tvPaymentamountRatepoint.setText(getString(R.string.single_string, mOrder.getPoint_count()));
+            tvPaymentamountRatepointMoney.setText(getString(R.string.single_string, mOrder.getPoint_value()));
 
         } else {
             finish();
@@ -954,20 +951,25 @@ public class OrderPaymentActivity extends BaseActivity {
     class PaymentDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
-        private List<NewGood> mData;
-
-        public void setData(List<NewGood> data) {
-            mData = data;
-            notifyDataSetChanged();
-        }
-
         class MViewHolder1 extends RecyclerView.ViewHolder {
-            private  OrderGroup mOrderGroup;
 
+            private final TextView tvPaymentitemName;
+            private final TextView tvPaymentitemDosage1;
+            private final TextView tvPaymentitemDosage2;
+            private final TextView tvPaymentitemDosage3;
+            private final TextView tvPaymentitemDosage4;
+            private final TextView tvPaymentitemDosage5;
+            private final TextView tvPaymentitemPrice;
 
             public MViewHolder1(View itemView) {
                 super(itemView);
-                mOrderGroup = (OrderGroup) itemView.findViewById(R.id.ogItemPay);
+                tvPaymentitemName = (TextView) itemView.findViewById(R.id.tvPaymentitemName);
+                tvPaymentitemDosage1 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage1);
+                tvPaymentitemDosage2 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage2);
+                tvPaymentitemDosage3 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage3);
+                tvPaymentitemDosage4 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage4);
+                tvPaymentitemDosage5 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage5);
+                tvPaymentitemPrice = (TextView) itemView.findViewById(R.id.tvPaymentitemPrice);
             }
         }
 
@@ -986,15 +988,71 @@ public class OrderPaymentActivity extends BaseActivity {
 
 
             if (buytype == 3) {
-               mViewHolder1.mOrderGroup.setItemClickable(false);
-               mViewHolder1.mOrderGroup.setData(mData);
+
+                mViewHolder1.tvPaymentitemName.setText(goods.get(position).getName());
+
+                List<Ingredient> ingredients = new ArrayList<>();
+                ingredients.clear();
+                ingredients = JSON.parseArray((goods.get(position)).getIngredients(), Ingredient.class);
+
+                boolean doubleBean = false;
+                Iterator<Ingredient> iterator = ingredients.iterator();
+                while (iterator.hasNext()) {
+                    String name = iterator.next().getName();
+                    if ("杯子".equals(name)) {
+                        iterator.remove();
+                    }
+                    if ("水".equals(name)) {
+                        iterator.remove();
+                    }
+
+                    if ("咖啡豆".equals(name)) {
+                        if (!doubleBean) {
+                            doubleBean = true;
+                        } else {
+                            iterator.remove();
+                        }
+                    }
+
+                }
+
+                switch (ingredients.size()) {
+                    case 5:
+                        if (null == ingredients.get(4).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage5.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage5.setText(ingredients.get(4).getDisplay_name() + "\n" + ingredients.get(4).getDisplay_value());
+                    case 4:
+                        if (null == ingredients.get(3).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage4.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage4.setText(ingredients.get(3).getDisplay_name() + "\n" + ingredients.get(3).getDisplay_value());
+                    case 3:
+                        if (null == ingredients.get(2).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage3.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage3.setText(ingredients.get(2).getDisplay_name() + "\n" + ingredients.get(2).getDisplay_value());
+                    case 2:
+                        if (null == ingredients.get(1).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage2.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage2.setText(ingredients.get(1).getDisplay_name() + "\n" + ingredients.get(1).getDisplay_value());
+                    case 1:
+                        if (null == ingredients.get(0).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage1.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage1.setText(ingredients.get(0).getDisplay_name() + "\n" + ingredients.get(0).getDisplay_value());
+                        break;
+                }
+
+                mViewHolder1.tvPaymentitemPrice.setText("价格: ¥" + String.valueOf(fnum.format(goods.get(position).getCurrent_price())) );
             }
 
         }
 
         @Override
         public int getItemCount() {
-            return mData==null?0:1;
+            return count;
         }
     }
 

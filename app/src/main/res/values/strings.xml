@@ -48,7 +48,7 @@
 
     <string name="title_mybalance">我的余额</string>
     <string name="title_balance">账户余额</string>
-    <string name="title_rec">收支明细</string>
+    <string name="title_rec">最近30天收支明细</string>
     <string name="title_recharge">充值</string>
     <string name="title_money">金额(元)：</string>
     <string name="title_moneyhint">请输入金额(不得超过200元)</string>
@@ -140,11 +140,10 @@
     <string name="string_exchangesuccess">兑换成功</string>
     <string name="string_currentpoints">当前积分:</string>
     <string name="title_pointexchange">积分兑换</string>
-    <string name="point_shop">积分商城</string>
     <string name="string_paysuccess">支付成功</string>
     <string name="userrate">会员等级:</string>
     <string name="aboutpoint"><u>关于积分?</u></string>
-    <string name="str_availablepoints">可用积分</string>
+    <string name="str_availablepoints">可用积分:</string>
     <string name="string_pointrate">积分等级</string>
     <string name="string_orderid">订单编号：</string>
     <string name="string_pointrecord">积分记录</string>
@@ -172,27 +171,6 @@
     <string name="string_clipsuccess">配方卡已生成</string>
     <string name="copy_recipe">复制这条信息，打开#coffeeme#，查看我的专属配方</string>
     <string name="str_hint_newpassword_null">密码不能为空</string>
-    <string name="add_cart_success">添加购物车成功</string>
-    <string name="no_sugar">不甜</string>
-    <string name="three_points_sweet">3分甜</string>
-    <string name="five_points_sweet">5分甜</string>
-    <string name="seven_points_sweet">7分甜</string>
-    <string name="coupon_info_exchange_first">1. 找到支持Coffee Me取货的极伽咖啡机（可在APP首页附近咖啡机查找），点 击咖啡机“取货”按钮，使用APP当前页面“扫一扫取货”功能去扫描咖啡机页面 的取货二维码取货;</string>
-    <string name="coupon_info_discount_first">1.在本APP上下单购买您喜欢的饮品，并在支付页选择要使用的优惠券就能享受相应的优惠;</string>
-    <string name="coupon_info_second">2. 优惠券过期将作废，请尽早使用;</string>
-    <string name="coupon_info_three">3. 如有疑问请联系客服热线 400-8537-100</string>
-    <string name="check_more">查看更多</string>
-    <string name="member_benefits">会员福利</string>
-    <string name="leave_goode_untake">部分已取（剩余%d杯）</string>
-    <string name="new_item">新品</string>
-    <string name="check_package">查看套餐</string>
-    <string name="go_pay">去支付</string>
-    <string name="package_tip_1">1.购买成功后，套餐中所包含咖啡会以咖啡兑换券的形式发放至Coffee Me APP \"我的兑换券\"中,进入兑换券详情页面可以设置饮品甜度；</string>
-    <string name="package_tip_2">2.找到支持Coffee Me取货的极伽咖啡机（可在APP  首页附近咖啡机查找），点击咖啡机“取货”按钮，  使用兑换券详情页面“扫一扫取货”功能去扫描咖啡机页面的取货二维码取货；</string>
-    <string name="package_tip_3">3.购买套餐不支持使用优惠券；</string>
-    <string name="package_tip_4">4.购买套餐不支持退货；</string>
-    <string name="package_tip_5">5.如有疑问请联系客服热线 400-8537-100；</string>
-    <string name="package_content">套餐内容</string>
 
 
 </resources>

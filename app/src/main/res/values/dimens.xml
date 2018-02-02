@@ -44,7 +44,42 @@
     <dimen name="waterHeight">210dp</dimen>
     <dimen name="receipe_item_margin">5dp</dimen>
     <!-- Adjust Dimens -->
-
+    <dimen name="startY">@dimen/y320</dimen>
+    <dimen name="coffeeStartX">@dimen/x82</dimen>
+    <dimen name="firstCornerY">@dimen/y502</dimen>
+    <dimen name="secondCornerX">@dimen/x139</dimen>
+    <dimen name="secondCornerY">@dimen/y559</dimen>
+    <dimen name="endX">@dimen/x280</dimen>
+    <dimen name="waterStartY">@dimen/y838</dimen>
+    <dimen name="waterStartX">@dimen/x100</dimen>
+    <dimen name="waterFirstCornerY">@dimen/y662</dimen>
+    <dimen name="waterSecondCornerX">@dimen/x136</dimen>
+    <dimen name="waterSecondCornerY">@dimen/y624</dimen>
+    <dimen name="endWaterX">@dimen/x280</dimen>
+    <dimen name="sugarStartX">@dimen/x243</dimen>
+    <dimen name="sugarStartY">@dimen/y320</dimen>
+    <dimen name="sugarEndY">@dimen/y455</dimen>
+    <dimen name="sugarEndX">@dimen/x289</dimen>
+    <dimen name="sugarFirstCornerY">@dimen/y400</dimen>
+    <dimen name="sugarControlX">@dimen/x240</dimen>
+    <dimen name="sugarControlY">@dimen/y434</dimen>
+    <dimen name="milkStartY">@dimen/y320</dimen>
+    <dimen name="milkStartX">@dimen/x412</dimen>
+    <dimen name="milkFirstCornerY">@dimen/y374</dimen>
+    <dimen name="milkControlX">@dimen/x413</dimen>
+    <dimen name="milkControlY">@dimen/y424</dimen>
+    <dimen name="milkEndY">@dimen/y444</dimen>
+    <dimen name="milkEndX">@dimen/x340</dimen>
+    <dimen name="chocolateStartY">@dimen/y320</dimen>
+    <dimen name="chocolateStartX">@dimen/x574</dimen>
+    <dimen name="chocolateFirstCornerY">@dimen/y439</dimen>
+    <dimen name="chocolateSecondCornerY">@dimen/y503</dimen>
+    <dimen name="chocolateSecondCornerX">@dimen/x523</dimen>
+    <dimen name="chocolateEndX">@dimen/x372</dimen>
+    <dimen name="chocolateThirdCornerY">@dimen/y504</dimen>
+    <dimen name="chocolateThirdCornerX">@dimen/x410</dimen>
+    <dimen name="chocolateEndY">@dimen/y485</dimen>
+    <dimen name="material_top">@dimen/y100</dimen>
 
 
 </resources>

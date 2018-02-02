@@ -9,21 +9,10 @@
     tools:context="com.hzjytech.coffeeme.me.PointExchangeActivity">
 
     <include layout="@layout/titlebar" />
-    <ProgressBar
-        android:id="@+id/pb"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-
-        android:layout_width="match_parent"
-        android:layout_height="2dp" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <WebView
         android:id="@+id/wvPointExchange"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></WebView>
-    </RelativeLayout>
 
 </LinearLayout>
 

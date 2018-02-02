@@ -53,7 +53,6 @@ import com.hzjytech.coffeeme.entities.Machine;
 import com.hzjytech.coffeeme.listeners.MyOrientationListener;
 import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.BitmapUtil;
-import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyApplication;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.widgets.TitleBar;
@@ -64,7 +63,6 @@ import org.xutils.view.annotation.ViewInject;
 
 import java.io.File;
 import java.security.KeyStore;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,7 +140,7 @@ public class FindVendingMachineActivity extends BaseActivity {
                     public void onOrientationChanged(float x)
                     {
                         mDirection = (int) x;
-                        LogUtil.e("x",mDirection+"");
+                        Log.e("x",mDirection+"");
 
                         // 构造定位数据
                         MyLocationData locData = new MyLocationData.Builder()
@@ -525,7 +523,7 @@ public class FindVendingMachineActivity extends BaseActivity {
 
         private static final int NEARBY = 0;
         private static final int MACHINES = 1;
-        DecimalFormat df = new DecimalFormat("0.0");
+
         private Context context;
         private List<Machine> machines;
         private int size;
@@ -690,10 +688,9 @@ public class FindVendingMachineActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
             switch (holder.getItemViewType()) {
                 case NEARBY:
-                    ((NearbyViewHolder) holder).nearby_distance.setText(df.format(machines.get(position).getLinear_distance()) + "");
+                    ((NearbyViewHolder) holder).nearby_distance.setText(machines.get(position).getLinear_distance() + "");
                     ((NearbyViewHolder) holder).nearby_name.setText(machines.get(position).getName());
                     ((NearbyViewHolder) holder).nearby_address.setText(machines.get(position).getAddress());
                     if (position == currentSelectItem) {
@@ -703,7 +700,7 @@ public class FindVendingMachineActivity extends BaseActivity {
                     }
                     break;
                 case MACHINES:
-                    ((MachinesViewHolder) holder).machine_distance.setText(df.format(machines.get(position).getLinear_distance()) + "");
+                    ((MachinesViewHolder) holder).machine_distance.setText(machines.get(position).getLinear_distance() + "");
                     ((MachinesViewHolder) holder).machine_name.setText(machines.get(position).getName());
                     ((MachinesViewHolder) holder).machine_address.setText(machines.get(position).getAddress());
                     if (position == currentSelectItem) {

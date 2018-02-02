@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hzjytech.coffeeme.me.ChangepsdActivity">
+   <ImageView
+       android:visibility="invisible"
+       android:id="@+id/iv_adjust_back"
+       android:src="@drawable/icon_adjust_back"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="20dp"
+       android:layout_alignLeft="@+id/fl_body"
+       android:layout_alignStart="@+id/fl_body" />
+    <ImageView
+        android:id="@+id/bt_music"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/music_open"
+        android:layout_marginTop="20dp"
+        android:layout_alignRight="@+id/fl_body"
+        />
+   <ImageView
+       android:id="@+id/iv_adjust_title"
+       android:layout_centerHorizontal="true"
+       android:src="@drawable/adjust_title"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content" />
+ <FrameLayout
+     android:id="@+id/fl_body"
+     android:layout_centerHorizontal="true"
+     android:layout_below="@id/iv_adjust_title"
+     android:layout_width="@dimen/x660"
+     android:layout_height="@dimen/y1028">
+
+     <LinearLayout
+         android:layout_width="@dimen/x660"
+         android:layout_height="@dimen/y309">
+         <ImageView
+             android:id="@+id/iv_material_coffee"
+             android:layout_marginTop="@dimen/y100"
+             android:layout_marginLeft="@dimen/x33"
+             android:background="@drawable/material_coffee"
+             android:layout_width="@dimen/x110"
+             android:layout_height="@dimen/y154" />
+          <ImageView
+              android:id="@+id/iv_material_sugar"
+              android:layout_marginTop="@dimen/y100"
+              android:layout_marginLeft="@dimen/x57"
+              android:src="@drawable/material_sugar"
+              android:layout_width="@dimen/x110"
+              android:layout_height="@dimen/y154" />
+         <ImageView
+             android:id="@+id/iv_material_milk"
+             android:layout_marginTop="@dimen/y100"
+             android:layout_marginLeft="@dimen/x57"
+             android:src="@drawable/material_milk"
+             android:layout_width="@dimen/x110"
+             android:layout_height="@dimen/y154" />
+         <ImageView
+             android:id="@+id/iv_material_chocolate"
+             android:layout_marginTop="@dimen/y100"
+             android:layout_marginLeft="@dimen/x51"
+             android:src="@drawable/material_chocolate"
+             android:layout_width="@dimen/x110"
+             android:layout_height="@dimen/y154" />
+     </LinearLayout>
+     <com.hzjytech.coffeeme.widgets.CustomView.PathView
+         android:id="@+id/ball_pathview"
+         tools:targetApi="lollipop"
+         android:layout_width="@dimen/x660"
+         android:layout_height="@dimen/y1020" />
+     <ImageView
+         android:background="@drawable/adjust_body_top"
+         android:layout_width="@dimen/x660"
+         android:layout_height="@dimen/y1028" />
+
+     <ImageView
+         android:visibility="invisible"
+         android:id="@+id/button_coffee"
+         android:clickable="true"
+         android:src="@drawable/selector_adjust_material_coffee"
+         android:layout_marginTop="@dimen/y360"
+         android:layout_marginLeft="@dimen/x36"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" />
+     <ImageView
+         android:visibility="invisible"
+         android:id="@+id/button_sugar"
+         android:clickable="true"
+         android:src="@drawable/selector_adjust_material_sugar"
+         android:layout_marginTop="@dimen/y340"
+         android:layout_marginLeft="@dimen/x206"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" />
+     <ImageView
+         android:visibility="invisible"
+         android:id="@+id/button_milk"
+         android:clickable="true"
+         android:src="@drawable/selector_adjust_material_milk"
+         android:layout_marginTop="@dimen/y340"
+         android:layout_marginLeft="@dimen/x372"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" />
+     <ImageView
+         android:visibility="invisible"
+         android:id="@+id/button_chocolate"
+         android:clickable="true"
+         android:src="@drawable/selector_adjust_material_chocolate"
+         android:layout_marginTop="@dimen/y340"
+         android:layout_marginLeft="@dimen/x536"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" />
+     <TextView
+         android:id="@+id/tv_volume"
+         android:gravity="center"
+         android:text="240"
+         android:textColor="@color/standard_black"
+         android:textSize="14sp"
+         android:layout_marginLeft="@dimen/x575"
+         android:layout_marginTop="@dimen/y596"
+         android:layout_width="30dp"
+         android:layout_height="wrap_content" />
+     <TextView
+         android:id="@+id/tv_price"
+         android:gravity="center"
+         android:textColor="@color/standard_black"
+         android:layout_marginTop="@dimen/y775"
+         android:layout_marginLeft="@dimen/x565"
+         android:text="9.65"
+         android:textSize="14sp"
+         android:layout_width="40dp"
+         android:layout_height="wrap_content" />
+     <com.hzjytech.coffeeme.widgets.CompletelyCustomView
+         android:id="@+id/waterView"
+         android:layout_marginTop="@dimen/y781"
+         android:layout_marginLeft="@dimen/x320"
+         android:layout_width="@dimen/x17"
+         android:layout_height="@dimen/y119" />
+     <com.hzjytech.coffeeme.widgets.CoffeeCupView
+         android:id="@+id/cup"
+         android:layout_marginTop="@dimen/y830"
+         android:layout_marginLeft="@dimen/x275"
+         android:layout_width="@dimen/x106"
+         android:layout_height="@dimen/y75"/>
+     <ImageView
+         android:background="@drawable/completely_cup"
+         android:layout_marginTop="@dimen/y827"
+         android:layout_marginLeft="@dimen/x257"
+         android:layout_width="@dimen/y145"
+         android:layout_height="@dimen/x105"/>
+     <ImageView
+         android:background="@drawable/cup_light"
+         android:layout_marginTop="@dimen/y732"
+         android:layout_marginLeft="@dimen/x220"
+         android:layout_width="@dimen/x220"
+         android:layout_height="@dimen/y240" />
+     <ImageView
+         android:visibility="invisible"
+         android:id="@+id/gear"
+         android:layout_marginLeft="@dimen/x254"
+         android:layout_marginTop="@dimen/y482"
+         android:src="@drawable/gear1"
+         android:scaleType="fitXY"
+         android:layout_width="@dimen/x156"
+         android:layout_height="@dimen/y156"  />
+
+ </FrameLayout>
+   <LinearLayout
+       android:visibility="invisible"
+       android:id="@+id/ll_adjust_bottom_button"
+       android:gravity="center_vertical"
+       android:layout_below="@id/fl_body"
+       android:orientation="horizontal"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+      <ImageView
+          android:id="@+id/tv_clear"
+          android:src="@drawable/selector_adjust_clear"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content" />
+      <ImageView
+          android:id="@+id/tv_fine"
+          android:src="@drawable/selector_adjust_tofine"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content" />
+      <ImageView
+          android:id="@+id/tv_generate"
+          android:src="@drawable/selector_adjust_ok"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content" />
+   </LinearLayout>
+    <TextView
+        android:id="@+id/tv_notify"
+        android:visibility="invisible"
+        android:clickable="true"
+        android:background="@drawable/bg_completely_notify"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_width="330dp"
+        android:textColor="@color/standard_black"
+        android:textSize="14dp"
+        android:text="咖啡已达上限"
+        android:layout_height="54dp" />
+</RelativeLayout>

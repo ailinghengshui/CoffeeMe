@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +34,7 @@ import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.Coupon;
-import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.CameraUtil;
-import com.hzjytech.coffeeme.utils.DateTimeUtil;
 import com.hzjytech.coffeeme.utils.DateUtil;
 import com.hzjytech.coffeeme.utils.DensityUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
@@ -50,7 +47,6 @@ import com.hzjytech.coffeeme.widgets.TitleBar;
 import com.hzjytech.scan.activity.CaptureActivity;
 import com.umeng.analytics.MobclickAgent;
 
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
@@ -76,8 +72,6 @@ public class MyCouponActivity extends BaseActivity {
 
     public static final String SHOW_BOTTOM_BTN = "bottom_btn";
     private static final int MY_PERMISSIONS_REQUEST_CALL_CAMERA = 334;
-    private static final String COUPON="coupon";
-    private static final String REDEEM="redeem";
 
     @ViewInject(R.id.titleBar)
     private TitleBar tbMycouponTitle;
@@ -91,24 +85,16 @@ public class MyCouponActivity extends BaseActivity {
     @ViewInject(R.id.rcyViewMycouponList)
     private RecyclerView rcyViewMycouponList;
 
-    @ViewInject(R.id.rlScanForCoupon)
-    private RelativeLayout mRlScanForCoupon;
     private MyCouponLstAdapter adapter;
     private List<Coupon> coupons = new ArrayList<>();
-    private String type=COUPON;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        proceedExtras();
+
         initTitle();
     }
-
-    private void proceedExtras() {
-        type = getIntent().getStringExtra("type");
-    }
-
     public static MyCouponActivity mInstance;
     @Event(R.id.btnMycouponExchange)
     private void onMycouponExchange(View view) {
@@ -145,55 +131,8 @@ public class MyCouponActivity extends BaseActivity {
         }else{
             partemptyview.setVisibility(View.GONE);
             rcyViewMycouponList.setVisibility(View.VISIBLE);
-            if(type.equals(COUPON)){
-                loadCoupons();
-            }else{
-                loadExgCoupons();
-            }
-
+            loadCoupons();
         }
-    }
-
-    private void loadExgCoupons() {
-        showLoading();
-        RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
-        String device_id= JPushInterface.getRegistrationID(MyCouponActivity.this);
-        String timeStamp= TimeUtil.getCurrentTimeString();
-        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-        entity.addParameter(Configurations.DEVICE_ID,device_id );
-       entity.addParameter(Configurations.TYPE,REDEEM);
-        Map<String, String> map=new TreeMap<String, String>();
-        map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
-        map.put(Configurations.TYPE,REDEEM);
-        //map.put(Configurations.AVAILABLE, String.valueOf(true));
-        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
-
-        x.http().get(entity, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                LogUtil.e("result",result);
-                hideLoading();
-                parseResult(result);
-
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                hideLoading();
-                showNetError();
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-                hideLoading();
-            }
-        });
     }
 
     @Override
@@ -207,21 +146,23 @@ public class MyCouponActivity extends BaseActivity {
     private void loadCoupons() {
         showLoading();
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
-        entity.addParameter(Configurations.TYPE,COUPON);
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        //entity.addParameter(Configurations.AVAILABLE, true);
+
         String device_id= JPushInterface.getRegistrationID(MyCouponActivity.this);
         String timeStamp= TimeUtil.getCurrentTimeString();
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
         entity.addParameter(Configurations.DEVICE_ID,device_id );
+
         Map<String, String> map=new TreeMap<String, String>();
-        map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
-        map.put(Configurations.TYPE,COUPON);
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        //map.put(Configurations.AVAILABLE, String.valueOf(true));
         entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
 
         x.http().get(entity, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                LogUtil.e("result",result);
+               LogUtil.e("result",result);
                 hideLoading();
                 parseResult(result);
 
@@ -240,7 +181,7 @@ public class MyCouponActivity extends BaseActivity {
 
             @Override
             public void onFinished() {
-             hideLoading();
+
             }
         });
 
@@ -250,19 +191,14 @@ public class MyCouponActivity extends BaseActivity {
 
         adapter = new MyCouponLstAdapter();
         rcyViewMycouponList.setAdapter(adapter);
-        rcyViewMycouponList.setLayoutManager(new LinearLayoutManager(MyCouponActivity.this,LinearLayoutManager.VERTICAL,false));
+        rcyViewMycouponList.setLayoutManager(new LinearLayoutManager(MyCouponActivity.this));
+//        RecyclerView.ItemDecoration itemDecoration = new VerticalSpaceItemDecoration((int) getResources().getDimension(R.dimen.mycouponitemdecoration));
+//        rcyViewMycouponList.addItemDecoration(itemDecoration);
 
     }
 
     private void initTitle() {
-        if(type.equals(COUPON)){
-            tbMycouponTitle.setTitle("我的优惠券");
-            mRlScanForCoupon.setVisibility(View.VISIBLE);
-        }else {
-            tbMycouponTitle.setTitle("我的兑换券");
-            mRlScanForCoupon.setVisibility(View.GONE);
-        }
-
+        tbMycouponTitle.setTitle("我的优惠券");
         tbMycouponTitle.setTitleColor(Color.WHITE);
         tbMycouponTitle.setLeftImageResource(R.drawable.icon_left);
         tbMycouponTitle.setLeftClickListener(new View.OnClickListener() {
@@ -275,9 +211,6 @@ public class MyCouponActivity extends BaseActivity {
 
     @Event(R.id.ivMycouponScan)
     private void onMyCouponScanClick(View v) {
-        if(AppUtil.isFastClick()){
-            return;
-        }
         if (!CameraUtil.isCameraCanUse()) {
             //如果没有授权，则请求授权
             HintDialog hintDialog = HintDialog.newInstance("提示", "无法获取摄像头数据，请检查是否已经打开摄像头权限。", "确定");
@@ -319,19 +252,9 @@ public class MyCouponActivity extends BaseActivity {
                         checkResOld(result);
                         try {
                             if (result.getInt(Configurations.STATUSCODE) == 200) {
+
                                 MobclickAgent.onEvent(MyCouponActivity.this, UmengConfig.EVENT_ADD_COUPON);
                                 Coupon coupon = JSON.parseObject(result.getJSONObject("results").getString("coupon"), Coupon.class);
-
-                                try {
-                                    coupon.setCreated_at(DateTimeUtil.ISOToString(coupon
-                                                .getCreated_at()));
-                                    coupon.setEnd_Date(DateTimeUtil.ISOToString(coupon
-                                            .getEnd_date()));
-                                    coupon.setStart_date(DateTimeUtil.ISOToString(coupon.getStart_date()));
-                                    coupon.setUpdated_at(DateTimeUtil.ISOToString(coupon.getUpdated_at()));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
                                 coupons.add(0, coupon);
                                 adapter.notifyDataSetChanged();
                                 etMycouponPick.setText("");
@@ -429,7 +352,6 @@ public class MyCouponActivity extends BaseActivity {
                 tvMycouponitemEnddate = (TextView) itemView.findViewById(R.id.tvMycouponitemEnddate);
                 tvUseCount = (TextView) itemView.findViewById(R.id.tv_use_count);
                 ivUseAble = (ImageView) itemView.findViewById(R.id.iv_useable_mark);
-
             }
 
         }
@@ -442,15 +364,56 @@ public class MyCouponActivity extends BaseActivity {
         }
 
 
+        private String createAvalDate(String startDate, String endDate) {
+            StringBuilder sb = new StringBuilder("有效期: ");
+            try {
+                int startDay = DateUtil.getDay(DateUtil.ISO8601toCalendar(startDate));
 
+                int startMon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(startDate));
+                int startYear = DateUtil.getYear(DateUtil.ISO8601toCalendar(startDate));
+                int day = DateUtil.getDay(DateUtil.ISO8601toCalendar(endDate));
+                int mon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(endDate));
+                int year = DateUtil.getYear(DateUtil.ISO8601toCalendar(endDate));
+                sb.append(startYear).append(".");
+                sb.append(startMon).append(".");
+                sb.append(startDay).append("-");
+                sb.append(year).append(".");
+                sb.append(mon).append(".");
+                sb.append(day);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return sb.toString();
+        }
+
+        private String createAvalDate(String startDate) {
+            StringBuilder sb = new StringBuilder("有效期: ");
+            try {
+                int startDay = DateUtil.getDay(DateUtil.ISO8601toCalendar(startDate));
+
+                int startMon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(startDate));
+                int startYear = DateUtil.getYear(DateUtil.ISO8601toCalendar(startDate));
+
+
+                sb.append(startYear).append(".");
+                sb.append(startMon).append(".");
+                sb.append(startDay).append("-");
+                sb.append(getString(R.string.str_end_date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return sb.toString();
+        }
 
         @Override
-        public void onBindViewHolder(MyCouponLstAdapter.MyCouponLstHolder holder, final int pos) {
+        public void onBindViewHolder(MyCouponLstAdapter.MyCouponLstHolder holder, int pos) {
             //设置有效期
             if (!TextUtils.isEmpty(coupons.get(pos).getEnd_date())) {
-                holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
+                holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
             } else {
-                holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date()));
+                holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date()));
             }
             //设置可使用次数
             int used_num = coupons.get(pos).getUsed_num();
@@ -464,34 +427,32 @@ public class MyCouponActivity extends BaseActivity {
             //根据是否过期和是否开始设置控件信息，包括文字颜色、图片颜色,icon是否可见
             String start_date = coupons.get(pos).getStart_date();
             String end_date = coupons.get(pos).getEnd_date();
-            if(start_date!=null&&!start_date.equals("")&&DateTimeUtil.after(start_date, System.currentTimeMillis())){
-                //未开始
-                holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_unuseable);
-                holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.ivUseAble.setVisibility(View.VISIBLE);
-                holder.ivUseAble.setImageResource(R.drawable.icon_unstart);
-                holder.tvUseCount.setText(useCount);
-                holder.itemView.setClickable(false);
-            }else if(end_date!=null&&!end_date.equals("")&&DateTimeUtil.before(end_date,System.currentTimeMillis())){
-                //已过期
-                holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_unuseable);
-                holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.standard_grey));
-                holder.ivUseAble.setVisibility(View.VISIBLE);
-                holder.ivUseAble.setImageResource(R.drawable.icon_outtime);
-                holder.tvUseCount.setText(useCount);
-                holder.itemView.setClickable(false);
-            }else{
-                //正常情况
-                holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_img_unselected);
-                holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_black));
-                holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.light_red));
-                holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.light_red));
-                holder.ivUseAble.setVisibility(View.GONE);
-                if(coupons.get(pos).getCoupon_type()!=4){
+            try {
+                if(start_date!=null&&DateUtil.ISO8601toCalendar(start_date).after(Calendar.getInstance())){
+                    //未开始
+                    holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_unuseable);
+                    holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.ivUseAble.setVisibility(View.VISIBLE);
+                    holder.ivUseAble.setImageResource(R.drawable.icon_unstart);
+                    holder.tvUseCount.setText(useCount);
+                }else if(end_date!=null&&DateUtil.ISO8601toCalendar(end_date).before(Calendar.getInstance())){
+                    //已过期
+                    holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_unuseable);
+                    holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.standard_grey));
+                    holder.ivUseAble.setVisibility(View.VISIBLE);
+                    holder.ivUseAble.setImageResource(R.drawable.icon_outtime);
+                    holder.tvUseCount.setText(useCount);
+                }else{
+                    //正常情况
+                    holder.tvMycouponitemCheck.setBackgroundResource(R.drawable.icon_img_unselected);
+                    holder.tvMycouponitemTitle.setTextColor(getResources().getColor(R.color.standard_black));
+                    holder.tvMycouponitemCoupon.setTextColor(getResources().getColor(R.color.light_red));
+                    holder.tvMycouponitemUnit.setTextColor(getResources().getColor(R.color.light_red));
+                    holder.ivUseAble.setVisibility(View.GONE);
                     if(useCount.contains("可使用次数")){
                         int startIndex = useCount.indexOf("次数")+3;
                         int endIndex=useCount.length()-1;
@@ -501,61 +462,47 @@ public class MyCouponActivity extends BaseActivity {
                     }else{
                         holder.tvUseCount.setText(useCount);
                     }
+
                 }
-                holder.itemView.setClickable(true);
-                //点击事件
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MyCouponActivity.this, CouponInfoActivity.class);
-                        intent.putExtra("coupon", coupons.get(pos));
-                        MyCouponActivity.this.startActivity(intent);
-                    }
-                });
-
-            }
-            //根据不同优惠券设置文字信息
-            switch (coupons.get(pos).getCoupon_type()) {
-                //打折优惠劵
-                case 1:
-                    DecimalFormat decimalFormat = new DecimalFormat("##0.0");
-                    holder.tvMycouponitemCoupon.setText(decimalFormat.format(Float.valueOf(coupons.get(pos).getValue()) * 0.1f));
-                    holder.tvMycouponitemUnit.setText("折");
-                    holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
-                    holder.tvMycouponitemCondition.setText("打折优惠券");
+                //根据不同优惠券设置文字信息
+                switch (coupons.get(pos).getCoupon_type()) {
+                    //打折优惠劵
+                    case 1:
+                        DecimalFormat decimalFormat = new DecimalFormat("##0.0");
+                        holder.tvMycouponitemCoupon.setText(decimalFormat.format(Float.valueOf(coupons.get(pos).getValue()) * 0.1f));
+                        holder.tvMycouponitemUnit.setText("折");
+                        holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
+                        holder.tvMycouponitemCondition.setText("打折优惠券");
 
 
-                    break;
-                //满减优惠券
-                case 2:
-                    if (!TextUtils.isEmpty(coupons.get(pos).getValue())) {
-                        if (coupons.get(pos).getValue().contains("-")) {
-                            String[] strings = coupons.get(pos).getValue().split("-");
-                            holder.tvMycouponitemCoupon.setText(strings[1]);
-                            holder.tvMycouponitemUnit.setText("￥");
-                            holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
-                            holder.tvMycouponitemCondition.setText("满" + strings[0] + "使用");
-                        } else {
-                            holder.tvMycouponitemCondition.setText(getResources().getString(R.string.err_coupon));
+
+                        break;
+                    //满减优惠券
+                    case 2:
+                        if (!TextUtils.isEmpty(coupons.get(pos).getValue())) {
+                            if (coupons.get(pos).getValue().contains("-")) {
+                                String[] strings = coupons.get(pos).getValue().split("-");
+                                holder.tvMycouponitemCoupon.setText(strings[1]);
+                                holder.tvMycouponitemUnit.setText("￥");
+                                holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
+                                holder.tvMycouponitemCondition.setText("满" + strings[0] + "使用");
+                            } else {
+                                holder.tvMycouponitemCondition.setText(getResources().getString(R.string.err_coupon));
+
+                            }
 
                         }
-
-                    }
-                    break;
-                //立减优惠券
-                case 3:
-                    holder.tvMycouponitemCoupon.setText(coupons.get(pos).getValue());
-                    holder.tvMycouponitemUnit.setText("￥");
-                    holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
-                    holder.tvMycouponitemCondition.setText("立减优惠券");
-                    break;
-                case 4:
-                    holder.tvMycouponitemCoupon.setText("1");
-                    holder.tvMycouponitemUnit.setText("杯");
-                    holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
-                    holder.tvMycouponitemCondition.setText("兑换码："+coupons.get(pos).getIdentifier());
-                    holder.tvUseCount.setText("可使用次数：1次");
-
+                        break;
+                    //立减优惠券
+                    case 3:
+                        holder.tvMycouponitemCoupon.setText(coupons.get(pos).getValue());
+                        holder.tvMycouponitemUnit.setText("￥");
+                        holder.tvMycouponitemTitle.setText(coupons.get(pos).getTitle());
+                        holder.tvMycouponitemCondition.setText("立减优惠券");
+                        break;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
 
         }

@@ -4,17 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.hzjytech.coffeeme.configurations.Configurations;
-import com.hzjytech.coffeeme.entities.DisplayItems;
-import com.hzjytech.coffeeme.entities.DrinkItem;
-import com.hzjytech.coffeeme.entities.User;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Hades on 2016/3/16.
@@ -322,38 +312,5 @@ public class SharedPrefUtil {
             return true;
         }
         return mPreferences.getBoolean("isFirstEnterReceipeFromShare",true);
-    }
-    public static void saveItemInfo(String type,Object data) {
-        if(mEditor==null){
-            return;
-        }
-        if(null == data){
-            mEditor.putString(type, "");
-        }else{
-            mEditor.putString(type, GsonUtils.objToJson(data));
-        }
-        mEditor.commit();
-    }
-
-
-
-    public static <T> ArrayList<T> getItemInfo(String name, Class<T> clazz) {
-        if(mPreferences==null){
-            return null;
-        }
-        Type type = new TypeToken<ArrayList<JsonObject>>()
-        {}.getType();
-        Gson gson = new Gson();
-        String ss = (String) mPreferences.getString(name, null);
-        if(ss==null){
-            return null;
-        }
-        ArrayList<JsonObject> jsonObjects = gson.fromJson(ss, type);
-        ArrayList<T> arrayList = new ArrayList<>();
-        for (JsonObject jsonObject : jsonObjects)
-        {
-            arrayList.add(new Gson().fromJson(jsonObject, clazz));
-        }
-        return arrayList;
     }
 }

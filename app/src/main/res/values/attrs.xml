@@ -118,11 +118,6 @@
         </attr>
         <attr name="points_container_background" format="reference|color" />
     </declare-styleable>
-    <declare-styleable name="MyAddSubView">
-        <attr name="action_backgroud" format="reference|color" />
-        <attr name="action_text_color" format="reference|color" />
-        <attr name="number_text_color" format="reference|color"/>
-    </declare-styleable>
 
     <declare-styleable name="SwitchButton">
         <attr name="kswThumbDrawable" format="reference"/>

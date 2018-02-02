@@ -5,20 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,41 +30,33 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hzjytech.banner.SmartFragmentStatePagerAdapter;
 import com.hzjytech.coffeeme.Dialogs.HintDialog;
 import com.hzjytech.coffeeme.Dialogs.ITwoButtonClick;
 import com.hzjytech.coffeeme.Dialogs.NewBenefitDialog;
+import com.hzjytech.coffeeme.Dialogs.NewCustomBenefitDialog;
 import com.hzjytech.coffeeme.Dialogs.NewOutTimeCouponDialog;
 import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.baidumap.BaiduLocationService;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
+import com.hzjytech.coffeeme.entities.AppItem;
 import com.hzjytech.coffeeme.entities.Banner;
-import com.hzjytech.coffeeme.entities.Banners;
+import com.hzjytech.coffeeme.entities.CompletyleAdjust;
 import com.hzjytech.coffeeme.entities.Coupon;
-import com.hzjytech.coffeeme.entities.DisplayItems;
+import com.hzjytech.coffeeme.entities.Good;
+import com.hzjytech.coffeeme.entities.LocationNearby;
 import com.hzjytech.coffeeme.entities.Machine;
-import com.hzjytech.coffeeme.entities.NewGoods;
-import com.hzjytech.coffeeme.entities.NewOrders;
+import com.hzjytech.coffeeme.entities.MoreCoffeeHint;
+import com.hzjytech.coffeeme.entities.Order;
 import com.hzjytech.coffeeme.fragments.BaseFragment;
-import com.hzjytech.coffeeme.http.JijiaHttpResultZip;
-import com.hzjytech.coffeeme.http.JijiaHttpSubscriber;
-import com.hzjytech.coffeeme.http.JijiaRZField;
-import com.hzjytech.coffeeme.http.SubscriberOnCompletedListener;
-import com.hzjytech.coffeeme.http.SubscriberOnErrorListener;
-import com.hzjytech.coffeeme.http.SubscriberOnNextListener;
-import com.hzjytech.coffeeme.http.api.AppItemApi;
-import com.hzjytech.coffeeme.http.api.GoodApi;
-import com.hzjytech.coffeeme.http.api.OrderApi;
 import com.hzjytech.coffeeme.me.MyCouponActivity;
 import com.hzjytech.coffeeme.order.AbleTakeActivity;
 import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.CameraUtil;
-import com.hzjytech.coffeeme.utils.CommonUtil;
-import com.hzjytech.coffeeme.utils.DateTimeUtil;
-import com.hzjytech.coffeeme.utils.DensityUtil;
+import com.hzjytech.coffeeme.utils.DateUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyApplication;
+import com.hzjytech.coffeeme.utils.MyMath;
 import com.hzjytech.coffeeme.utils.ScreenUtil;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
@@ -72,88 +67,97 @@ import com.hzjytech.coffeeme.widgets.BadgeView;
 import com.hzjytech.coffeeme.widgets.FlyBanner;
 import com.hzjytech.coffeeme.widgets.TransparentToolBar;
 import com.hzjytech.scan.activity.CaptureActivity;
+import com.hzjytech.scan.decoding.Intents;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.umeng.analytics.MobclickAgent;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
+import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.jpush.android.api.JPushInterface;
 import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
-import ru.noties.scrollable.CanScrollVerticallyDelegate;
-import ru.noties.scrollable.OnFlingOverListener;
-import ru.noties.scrollable.OnScrollChangedListener;
-import ru.noties.scrollable.ScrollableLayout;
-import rx.Observable;
-import rx.functions.Func2;
-import rx.functions.Func4;
 
 /**
- * Created by hehongcan on 2017/10/17.
+ * A simple {@link Fragment} subclass.
  */
+@ContentView(R.layout.fragment_home)
 public class HomeFragment extends BaseFragment {
 
-
     private static final int REQUEST_CODE_FETCH = 2045;
-    private static final String HOT = "hot";
-    private static final String ICE = "ice";
-    private static final String PACKAGE = "package";
-    @BindView(R.id.homeBanner)
-    FlyBanner mHomeBanner;
-    @BindView(R.id.tvLocationnearbyName)
-    TextView mTvLocationnearbyName;
-    @BindView(R.id.tvLocationnearbyDist)
-    TextView mTvLocationnearbyDist;
-    @BindView(R.id.tvLocationnearbyDistUnit)
-    TextView mTvLocationnearbyDistUnit;
-    @BindView(R.id.tblayoutHomefrgTab)
-    TabLayout mTblayoutHomefrgTab;
-    @BindView(R.id.vPgHomefrgShow)
-    ViewPager mVPgHomefrgShow;
-    @BindView(R.id.scrollable_layout)
-    ScrollableLayout mScrollableLayout;
-    @BindView(R.id.store_house_ptr_frame)
-    PtrClassicFrameLayout mPtrFrame;
-    @BindView(R.id.ibScan)
-    ImageView mIbScan;
-    @BindView(R.id.tvHomefrgTitle)
-    TextView mTvHomefrgTitle;
-    @BindView(R.id.ivHomefrgCart)
-    ImageView mIvHomefrgCart;
-    @BindView(R.id.rl_title_coffee)
-    RelativeLayout mRlTitleCoffee;
-    @BindView(R.id.tbHomefrgTitle)
-    TransparentToolBar tbHomefrgTitle;
-    @BindView(R.id.ll_home_location)
-    LinearLayout mLlHomeLocation;
-    @BindView(R.id.rl_home_drink_tab)
-    RelativeLayout mRlHomeDrinkTab;
+    @ViewInject(R.id.ivHomefrgCart)
+    private ImageView ivHomefrgCart;
+
+//    @ViewInject(R.id.vPgHomeBanner)
+//    private InfiniteViewPager vPgHomeBanner;
+//
+//    @ViewInject(R.id.cirindHomeBanner)
+//    private CirclePageIndicator cirindHomeBanner;
+
+    @ViewInject(R.id.rcyViewHomeAppitems)
+    private RecyclerView rcyViewHomeAppItems;
+    @ViewInject(R.id.tbHomefrgTitle)
+    private TransparentToolBar tbHomefrgTitle;
+    @ViewInject(R.id.tvHomefrgTitle)
+    private TextView tvHomeFrgTitle;
+    @ViewInject(R.id.rl_title_coffee)
+    private RelativeLayout rl_titile_coffee;
+    @ViewInject(R.id.store_house_ptr_frame)
+    private PtrClassicFrameLayout mPtrFrame;
+    @ViewInject(R.id.ibScan)
+    private ImageView ibScan;
+    @ViewInject(R.id.tv_guide)
+    private TextView tv_guide;
+    @ViewInject(R.id.rl_guide)
+    private RelativeLayout rl_guide;
+    private View fl_shade;
+
     private static final String TAG = HomeFragment.class.getSimpleName();
 
     private List<Banner> banners = new ArrayList<Banner>();
     private List<String> initUrlString = new ArrayList<String>();
 
+    private List<Object> appItems = new ArrayList<Object>();
+    private AppItemsAdapter appItemsAdapter;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+           // appItemsAdapter.notifyDataSetChanged();
+            mPtrFrame.refreshComplete();
+                    /*    LinearLayout ll = (LinearLayout) rcyViewHomeAppItems.getChildAt(0);
+                        FlyBanner homeBanner = (FlyBanner) ll.findViewById(R.id.homeBanner);
+                        homeBanner.requestFocus();
+                        homeBanner.startAutoPlay();*/
+
+        }
+    };
+    //    private MockPagerAdapter pagerAdapter;
     private BadgeView cartBadgeView;
     private BadgeView scanBadgeView;
+    //声明mLocationOption对象
+//    private AMapLocationClientOption mLocationOption = null;
+//    private AMapLocationClient mlocationClient = null;
     private double Latitude;
     private double Longitude;
+    FlyBanner homeBanner;
 
     private List<Machine> machines = new ArrayList<Machine>();
     private BaiduLocationService baiduLocationService;
@@ -167,162 +171,125 @@ public class HomeFragment extends BaseFragment {
     private BroadcastReceiver ableTakeReceiver;
     private boolean isFirst = true;
     private List<String> urlList;
+    private View headview;
     private int mPage;
+    private Typeface font;
     private MyApplication application;
     private String device_id;
-    private boolean homeFragmentVisible = true;
-    private DecimalFormat df = new DecimalFormat("0.0");
-    private DrinkFragmentAdapter mAdapter;
-    private int mStatusHeight;
-    private int mToolBarHeight;
-    private DrinkItemFragment mHotfra;
-    private DrinkItemFragment mIcefra;
-    private String mDevice_id;
-    private int mAppId;
-    private JijiaHttpSubscriber mSubscriber;
-    private JijiaHttpSubscriber mSubscriber1;
-    private JijiaHttpSubscriber mSubscriber2;
-    private PackageItemFragment mPackfra;
-    private BadgeView hotBadge;
-    private BadgeView iceBadge;
-    private BadgeView packageBadge;
-
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // TODO: inflate a fragment view
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
+    private boolean homeFragmentVisible=true;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initView();
         //检查优惠券是否快过期，并弹出弹窗,如果弹出过弹窗，则无需检验
         application = (MyApplication) getActivity().getApplication();
-        if (application.getHasShowDialog()) {
-            // application.setHasShowDialog(false);
-        } else {
+        if(application.getHasShowDialog()){
+           // application.setHasShowDialog(false);
+        }else{
             checkCouponsIsOutOfTime();
         }
 
+        //测试手机分辨率
+        DisplayMetrics metrics=new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels=metrics.widthPixels;
+        int heightPixels=metrics.heightPixels;
+        LogUtil.e("metric",widthPixels+"====="+heightPixels);
 
     }
-
     private void checkCouponsIsOutOfTime() {
-        loadCoupons();
+       loadCoupons();
     }
 
 
     private void loadCoupons() {
-
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        if (UserUtils.getUserInfo() == null || UserUtils.getUserInfo()
-                .getAuth_token() == null) {
+        if(UserUtils.getUserInfo()==null|| UserUtils.getUserInfo().getAuth_token()==null){
             return;
         }
-        String auth_token = UserUtils.getUserInfo()
-                .getAuth_token();
-        entity.addParameter(Configurations.TOKEN,
-                UserUtils.getUserInfo()
-                        .getAuth_token());
+        String auth_token = UserUtils.getUserInfo().getAuth_token();
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         //entity.addParameter(Configurations.AVAILABLE, true);
-        String device_id = JPushInterface.getRegistrationID(getActivity());
-        String timeStamp = TimeUtil.getCurrentTimeString();
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        String timeStamp= TimeUtil.getCurrentTimeString();
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-        entity.addParameter(Configurations.DEVICE_ID, device_id);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
 
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put(Configurations.TOKEN,
-                UserUtils.getUserInfo()
-                        .getAuth_token());
+        Map<String, String> map=new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         //map.put(Configurations.AVAILABLE, String.valueOf(true));
-        entity.addParameter(Configurations.SIGN,
-                SignUtils.createSignString(device_id, timeStamp, map));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
 
-        x.http()
-                .get(entity, new Callback.CommonCallback<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        LogUtil.e("result", result);
-                        parseCouponResult(result);
+        x.http().get(entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                LogUtil.e("result",result);
+                parseCouponResult(result);
 
-                    }
+            }
 
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        hideLoading();
-                        showNetError();
-                    }
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                hideLoading();
+                showNetError();
+            }
 
-                    @Override
-                    public void onCancelled(CancelledException cex) {
+            @Override
+            public void onCancelled(CancelledException cex) {
 
-                    }
+            }
 
-                    @Override
-                    public void onFinished() {
+            @Override
+            public void onFinished() {
 
-                    }
-                });
+            }
+        });
 
     }
-
     private void parseCouponResult(String result) {
         try {
             JSONObject object = new JSONObject(result);
             checkResOld(object);
             if (object.getInt(Configurations.STATUSCODE) == 200) {
-                List<Coupon> coupons = new Gson().fromJson(object.getJSONObject("results")
-                        .getString("coupons"), new TypeToken<ArrayList<Coupon>>() {}.getType());
+                List<Coupon> coupons  = new Gson().fromJson(object.getJSONObject("results").getString("coupons"), new TypeToken<ArrayList<Coupon>>() {
+                }.getType());
                 long nowday = SharedPrefUtil.getLong("nowday");
                 for (int i = 0; i < coupons.size(); i++) {
-                    if (coupons.get(i)
-                            .getEnd_date() == null || coupons.get(i)
-                            .getEnd_date()
-                            .equals("")) {
+                    if(coupons.get(i).getEnd_date()==null){
                         continue;
                     }
-                    LogUtil.d("coupon" + i,
-                            coupons.get(i)
-                                    .getEnd_date() + "");
-                    DateTime endDate = DateTime.parse(coupons.get(i)
-                                    .getEnd_date(),
-                            DateTimeFormat.forPattern(DateTimeUtil.DATE_FORMAT_LONG));
-                    long diff = endDate.getMillis() - Calendar.getInstance()
-                            .getTimeInMillis();
-                    long difDays = (diff / (3600 * 24 * 1000)) + 1;
-                    long olddif = endDate.getMillis() - nowday;
-                    long olddays = (olddif / (3600 * 24 * 1000)) + 1;
-                    LogUtil.e("days", difDays + "+++++" + olddays);
-                    if (difDays > 0 && difDays <= 3 && olddays > 3) {
+                    LogUtil.d("coupon" + i, coupons.get(i).getEnd_date()+"");
+                    Calendar calendar = DateUtil.ISO8601toCalendar(coupons.get(i).getEnd_date());
+                    long diff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+                    long difDays = (diff / (3600 * 24 * 1000))+1;
+                    long olddif = calendar.getTimeInMillis() - nowday;
+                    long olddays = (olddif / (3600 * 24 * 1000))+1;
+                    LogUtil.e("days",difDays+"+++++"+olddays);
+                    if(difDays>0&&difDays<=3&&olddays>3){
                         //根据时间判断，如果已经弹出过则弹出时间3天内的不再弹出
                         showOutOfTimeCoupouDialog();
-                        SharedPrefUtil.putLong("nowday",
-                                Calendar.getInstance()
-                                        .getTimeInMillis());
+                        SharedPrefUtil.putLong("nowday",Calendar.getInstance().getTimeInMillis());
                         break;
                     }
                 }
-                long newestCoupenTime = 0;
-                Coupon newestCoupon = null;
+               long newestCoupenTime=0;
+                Coupon newestCoupon=null;
                 for (Coupon coupon : coupons) {
-                    DateTime endDate = DateTime.parse(coupon.getStart_date(),
-                            DateTimeFormat.forPattern(DateTimeUtil.DATE_FORMAT_LONG));
-                    long timeInMillis = endDate.getMillis();
-                    if (newestCoupenTime < timeInMillis) {
-                        newestCoupenTime = timeInMillis;
-                        newestCoupon = coupon;
+                    Calendar calendar = DateUtil.ISO8601toCalendar(coupon.getStart_date());
+                    long timeInMillis = calendar.getTimeInMillis();
+                    if(newestCoupenTime<timeInMillis){
+                       newestCoupenTime=timeInMillis;
+                        newestCoupon=coupon;
                     }
                 }
                 long recentCouponTime = SharedPrefUtil.getLong("recentCouponTime");
-                if (newestCoupenTime > recentCouponTime) {
-                    SharedPrefUtil.putLong("recentCouponTime", newestCoupenTime);
+                if(newestCoupenTime>recentCouponTime){
+                    SharedPrefUtil.putLong("recentCouponTime",newestCoupenTime);
                     String title = newestCoupon.getTitle();
                     final NewBenefitDialog newBenefitDialog = NewBenefitDialog.newInstance(title);
-                    final Coupon finalNewestCoupon = newestCoupon;
                     newBenefitDialog.setOnTwoButtonClick(new ITwoButtonClick() {
                         @Override
                         public void onLeftButtonClick() {
@@ -333,20 +300,14 @@ public class HomeFragment extends BaseFragment {
                         @Override
                         public void onRightButtonClick() {
                             Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-                            if (finalNewestCoupon.getCoupon_type() == 4) {
-                                intent.putExtra("type", "redeem");
-                            } else {
-                                intent.putExtra("type", "coupon");
-                            }
-
                             startActivity(intent);
                             newBenefitDialog.dismiss();
                             application.setHasShowDialog(false);
                         }
                     });
                     application.setHasShowDialog(true);
-                    newBenefitDialog.show(getFragmentManager(), "outTimeDialog");
-                } else {
+                    newBenefitDialog.show(getFragmentManager(),"outTimeDialog");
+                }else{
                 }
 
             } else {
@@ -354,609 +315,178 @@ public class HomeFragment extends BaseFragment {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
-
-    //弹出优惠券过期提示弹窗
+//弹出优惠券过期提示弹窗
     private void showOutOfTimeCoupouDialog() {
-        final NewOutTimeCouponDialog newOutTimeCouponDialog = NewOutTimeCouponDialog.newInstance();
-        newOutTimeCouponDialog.setOnTwoButtonClick(new ITwoButtonClick() {
-            @Override
-            public void onLeftButtonClick() {
-                newOutTimeCouponDialog.dismiss();
-                application.setHasShowDialog(false);
-            }
+            final NewOutTimeCouponDialog newOutTimeCouponDialog = NewOutTimeCouponDialog.newInstance();
+            newOutTimeCouponDialog.setOnTwoButtonClick(new ITwoButtonClick() {
+                @Override
+                public void onLeftButtonClick() {
+                    newOutTimeCouponDialog.dismiss();
+                    application.setHasShowDialog(false);
+                }
 
-            @Override
-            public void onRightButtonClick() {
-                Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-                startActivity(intent);
-                newOutTimeCouponDialog.dismiss();
-                application.setHasShowDialog(false);
-            }
-        });
-        application.setHasShowDialog(true);
-        newOutTimeCouponDialog.show(getFragmentManager(), "outTimeDialog");
+                @Override
+                public void onRightButtonClick() {
+                    Intent intent = new Intent(getActivity(), MyCouponActivity.class);
+                    startActivity(intent);
+                    newOutTimeCouponDialog.dismiss();
+                    application.setHasShowDialog(false);
+                }
+            });
+            application.setHasShowDialog(true);
+            newOutTimeCouponDialog.show(getFragmentManager(),"outTimeDialog");
     }
 
     //扫一扫
-    @OnClick(R.id.ibScan)
-    public void startScan(View v) {
+    @Event(R.id.ibScan)
+    private void startScan(View v){
         Intent intent = new Intent(getContext(), CaptureActivity.class);
-        intent.putExtra("isFromHome", true);
-        //检查权限
+        intent.putExtra("isFromHome",true);
+//检查权限
         if (!CameraUtil.isCameraCanUse()) {
             //如果没有授权，则请求授权
             HintDialog hintDialog = HintDialog.newInstance("提示", "无法获取摄像头数据，请检查是否已经打开摄像头权限。", "确定");
-            hintDialog.show(getFragmentManager(), "cameraHint");
+            hintDialog.show(getFragmentManager(),"cameraHint");
             //ToastUtil.showShort(getActivity(),"无法获取摄像头权限，请确认是否开启。");
-            //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission
-            // .CAMERA}, MY_PERMISSIONS_REQUEST_CALL_CAMERA);
+            //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CALL_CAMERA);
         } else {
             //有授权，直接开启摄像头
-            startActivityForResult(intent, REQUEST_CODE_FETCH);
+            startActivityForResult(intent,REQUEST_CODE_FETCH);
         }
 
     }
-
     private void initView() {
-        mAppId = AppUtil.getVersionCode(getActivity());
-        mDevice_id = JPushInterface.getRegistrationID(getActivity());
+        if(SharedPrefUtil.getIsFirstEnter()){
+            rl_guide.setVisibility(View.GONE);
+        }else{
+            rl_guide.setVisibility(View.GONE);
+        }
+        tv_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rl_guide.setVisibility(View.GONE);
+                SharedPrefUtil.saveIsFirstEnter(false);
+            }
+        });
         //设置transparentToolBar高度
-        mStatusHeight = ScreenUtil.getStatusHeight(getContext());
+        int statusHeight = ScreenUtil.getStatusHeight(getContext());
         int titlebar = (int) getResources().getDimension(R.dimen.title_bar_height);
-        mToolBarHeight = mStatusHeight + titlebar;
+        int toolBarHeight= statusHeight+titlebar;
         ViewGroup.LayoutParams layoutParams = tbHomefrgTitle.getLayoutParams();
-        layoutParams.height = mToolBarHeight;
+        layoutParams.height=toolBarHeight;
         tbHomefrgTitle.setLayoutParams(layoutParams);
         //设置relativeLayout位置
-        RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) mRlTitleCoffee
-                .getLayoutParams();
-        layoutParams1.height = titlebar;
-        layoutParams1.setMargins(0, mStatusHeight, 0, 0);
-        mRlTitleCoffee.setLayoutParams(layoutParams1);
-        cartBadgeView = new BadgeView(getContext(), mIvHomefrgCart);
-        scanBadgeView = new BadgeView(getContext(), mIbScan);
+        RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) rl_titile_coffee.getLayoutParams();
+        layoutParams1.height=titlebar;
+        layoutParams1.setMargins(0,statusHeight,0,0);
+       /* RelativeLayout.LayoutParams rlParams=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rlParams.setMargins(0,statusHeight,0,0);*/
+        rl_titile_coffee.setLayoutParams(layoutParams1);
+        cartBadgeView = new BadgeView(getContext(), ivHomefrgCart);
+        scanBadgeView=new BadgeView(getContext(),ibScan);
         //设置透明标题栏参数
         tbHomefrgTitle.setBgColor(getResources().getColor(R.color.coffee));
-        tbHomefrgTitle.setOffset((float) mToolBarHeight);
-        mTvHomefrgTitle.setAlpha(0);
+        tbHomefrgTitle.setOffset((float) (toolBarHeight));
+        tvHomeFrgTitle.setAlpha(0);
         //设置下拉刷新参数
         //下拉刷新支持时间
         mPtrFrame.setLastUpdateTimeRelateObject(this);
-        //下拉刷新一些设置
+//下拉刷新一些设置
         mPtrFrame.setResistance(1.7f);
         mPtrFrame.setRatioOfHeaderHeightToRefresh(1.2f);
         mPtrFrame.setDurationToClose(200);
         mPtrFrame.setDurationToCloseHeader(1000);
-        // default is false
+// default is false
         mPtrFrame.setPullToRefresh(false);
-        // default is true
+// default is true
         mPtrFrame.setKeepHeaderWhenRefresh(true);
-        //解决滑动冲突
+//解决滑动冲突
         mPtrFrame.disableWhenHorizontalMove(true);
-        //下拉刷新
+//下拉刷新
         mPtrFrame.setPtrHandler(new PtrDefaultHandler() {
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                initData();
-                startBaiduMap();
+                loadBanners();
+                //handler发送消息，通知完成刷新
 
             }
         });
-        mIvHomefrgCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!SharedPrefUtil.getLoginType()
-                        .equals(SharedPrefUtil.LOGINING)) {
-
-                    goLogin();
-                    return;
-                }
-                startActivity(new Intent(getActivity(), NewCartActivity.class));
-
-            }
-        });
-        showLoading();
-        initData();
-        startBaiduMap();
-        initViewPager();
-        initScrollView();
+        loadBanners();
+        setUpRecyclerView();
+//        startAmap();
     }
-
-    private void initData() {
+    //// 获取可取订单数量
+    private void getAbleTakeOrders() {
+        if (!SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
+            scanBadgeView.hide();
+            return;
+        }
+        RequestParams entity = new RequestParams(Configurations.URL_ORDERS);
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        String device_id = JPushInterface.getRegistrationID(getActivity());
         String timeStamp = TimeUtil.getCurrentTimeString();
-        Map<String, String> map = new TreeMap<>();
-        map.put(Configurations.APP_ID, String.valueOf(AppUtil.getVersionCode(getActivity())));
-        //bannner
-        Observable<Banners> bannersObservable = AppItemApi.getBanners(getActivity(), mAppId);
-        //items
-        Observable<DisplayItems> itemsObservable = AppItemApi.getAppItems(getActivity());
-
-        if (!SharedPrefUtil.getLoginType()
-                .equals(SharedPrefUtil.LOGINING)) {
-            cartBadgeView.hide();
-            scanBadgeView.hide();
-            Observable<ResultZip2> zipObservable = Observable.zip(bannersObservable,
-                    itemsObservable,
-                    new Func2<Banners, DisplayItems, ResultZip2>() {
-
-                        @Override
-                        public ResultZip2 call(Banners banners, DisplayItems displayItems) {
-                            return new ResultZip2(banners, displayItems);
-                        }
-                    });
-            mSubscriber = JijiaHttpSubscriber.buildSubscriber(getActivity())
-                    .setOnNextListener(new SubscriberOnNextListener<ResultZip2>() {
-                        @Override
-                        public void onNext(ResultZip2 zip) {
-                            if (zip != null) {
-                                DisplayItems appItems = zip.appItems;
-                                setAppItems(appItems);
-                                Banners banners = zip.banners;
-                                setBanners(banners);
-                            }
-
-                        }
-                    })
-                    .setOnErrorListener(new SubscriberOnErrorListener() {
-                        @Override
-                        public void onError(Throwable e) {
-                            mPtrFrame.refreshComplete();
-                            hideLoading();
-                        }
-                    })
-                    .setOnCompletedListener(new SubscriberOnCompletedListener() {
-                        @Override
-                        public void onCompleted() {
-                            mPtrFrame.refreshComplete();
-                            hideLoading();
-                        }
-                    })
-                    .build();
-            zipObservable.subscribe(mSubscriber);
-        } else {
-            Observable<NewGoods> cartObservable = GoodApi.getGoodCartList(getActivity(),
-                    UserUtils.getUserInfo()
-                            .getAuth_token(),
-                    1);
-            Observable<NewOrders> orderListObservable = OrderApi.getOrderList(getActivity(),
-                    UserUtils.getUserInfo()
-                            .getAuth_token(),
-                    "able_take",
-                    1);
-            Observable<ResultZip> zipObservable = Observable.zip(bannersObservable,
-                    itemsObservable,
-                    cartObservable,
-                    orderListObservable,
-                    new Func4<Banners, DisplayItems, NewGoods, NewOrders, ResultZip>() {
-                        @Override
-                        public ResultZip call(
-                                Banners banners,
-                                DisplayItems displayItems,
-                                NewGoods goodList,
-                                NewOrders orders) {
-                            return new ResultZip(banners, displayItems, goodList, orders);
-                        }
-                    });
-            //getAbleTakeOrders();
-            mSubscriber1 = JijiaHttpSubscriber.buildSubscriber(getActivity())
-                    .setOnNextListener(new SubscriberOnNextListener<ResultZip>() {
-                        @Override
-                        public void onNext(ResultZip zip) {
-                            if (zip != null) {
-                                DisplayItems appItems = zip.appItems;
-                                setAppItems(appItems);
-                                Banners banners = zip.banners;
-                                setBanners(banners);
-                                if (zip.goodList != null) {
-                                    NewGoods goodList = zip.goodList;
-                                    setCatNumber(goodList.getTotal());
-                                }
-                                if (zip.orders != null) {
-                                    NewOrders orders = zip.orders;
-                                    setScanNumber(orders.getAble_take_count());
-                                }
-                            }
-
-                        }
-                    })
-                    .setOnErrorListener(new SubscriberOnErrorListener() {
-                        @Override
-                        public void onError(Throwable e) {
-                            mPtrFrame.refreshComplete();
-                            hideLoading();
-                        }
-                    })
-                    .setOnCompletedListener(new SubscriberOnCompletedListener() {
-                        @Override
-                        public void onCompleted() {
-                            mPtrFrame.refreshComplete();
-                            hideLoading();
-                        }
-                    })
-                    .build();
-            zipObservable.subscribe(mSubscriber1);
-        }
-
-    }
-
-    private void setScanNumber(int count) {
-        scanBadgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
-        if (count < 1) {
-            scanBadgeView.hide();
-
-        } else if (count < 10) {
-            scanBadgeView.setTextSize(9);
-            scanBadgeView.setText(String.valueOf(count));
-            scanBadgeView.show();
-
-        } else if (count < 100) {
-            scanBadgeView.setTextSize(8);
-            scanBadgeView.setText(String.valueOf(count));
-            scanBadgeView.show();
-        } else {
-            scanBadgeView.setTextSize(8);
-            scanBadgeView.setText(R.string.cart_count_max_value);
-            scanBadgeView.show();
-        }
-
-    }
-
-    private void setCatNumber(int count) {
-        cartBadgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
-        if (count < 1) {
-            cartBadgeView.hide();
-
-        } else if (count < 10) {
-            cartBadgeView.setTextSize(9);
-            cartBadgeView.setText(String.valueOf(count));
-            cartBadgeView.show();
-
-        } else if (count < 100) {
-            cartBadgeView.setTextSize(8);
-            cartBadgeView.setText(String.valueOf(count));
-            cartBadgeView.show();
-        } else {
-            cartBadgeView.setTextSize(8);
-            cartBadgeView.setText(R.string.cart_count_max_value);
-            cartBadgeView.show();
-        }
-
-    }
-
-    private void setBanners(Banners banners) {
-        HomeFragment.this.banners = banners.getBanners();
-        urlList = new ArrayList<String>();
-        urlList.clear();
-        for (Banner banner : HomeFragment.this.banners) {
-            urlList.add(banner.getImage_url());
-        }
-
-        if (isFirst || (initUrlString != null && !initUrlString.equals(urlList))) {
-            initUrlString.clear();
-            initUrlString.addAll(urlList);
-            isFirst = false;
-            mHomeBanner.setImagesUrl(HomeFragment.this.banners);
-            mHomeBanner.setOnItemClickListener(new FlyBanner.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    MobclickAgent.onEvent(getContext(), UmengConfig.EVENT_BANNER_CLICK);
-                    Intent intent = new Intent(getContext(), BannerDetailActivity.class);
-                    intent.putExtra("url_article",
-                            HomeFragment.this.banners.get(position)
-                                    .getArticle_url());
-                    getContext().startActivity(intent);
-                }
-            });
-        }
-    }
-
-    private void setAppItems(DisplayItems appItems) {
-        mHotfra.setData(appItems.getHot_items());
-        mIcefra.setData(appItems.getIce_items());
-        mPackfra.setData(appItems.getPackages());
-        checkHasNewItem(appItems.getHot_items(), appItems.getIce_items(), appItems.getPackages());
-    }
-
-    /**
-     * 检测是否有新的饮品
-     * 还要考虑下架再上架饮品的情况
-     *
-     * @param hot_items
-     * @param ice_items
-     * @param packages
-     */
-    private void checkHasNewItem(
-            List<DisplayItems.AppItem> hot_items,
-            List<DisplayItems.AppItem> ice_items,
-            List<DisplayItems.Packages> packages) {
-        ArrayList<DisplayItems.AppItem> preHotItems = SharedPrefUtil.getItemInfo(HOT,
-                DisplayItems.AppItem.class);
-
-        if (preHotItems == null && hot_items != null) {
-            SharedPrefUtil.saveItemInfo(HOT, hot_items);
-        } else {
-            if (hot_items != null) {
-                for (DisplayItems.AppItem hot_item : hot_items) {
-                    boolean isHasNewHot=false;
-                    for (DisplayItems.AppItem preHotItem : preHotItems) {
-                        if(preHotItem.getId()==hot_item.getId()){
-                            isHasNewHot=true;
-                            break;
-                        }
-                    }
-                    if(!isHasNewHot){
-                        showNewItemBadge(HOT);
-                        break;
-                    }
-                }
-                SharedPrefUtil.saveItemInfo(HOT, hot_items);
-            }
-        }
-        ArrayList<DisplayItems.AppItem> preIceItems = SharedPrefUtil.getItemInfo(ICE,
-                DisplayItems.AppItem.class);
-        if (preIceItems == null && ice_items != null) {
-            SharedPrefUtil.saveItemInfo(ICE, hot_items);
-        } else {
-            if (ice_items != null) {
-                for (DisplayItems.AppItem ice_item : ice_items) {
-                    boolean isHasNewIce=false;
-                    for (DisplayItems.AppItem preIceItem : preIceItems) {
-                        if(preIceItem.getId()==ice_item.getId()){
-                            isHasNewIce=true;
-                            break;
-                        }
-                    }
-                    if(!isHasNewIce){
-                        showNewItemBadge(ICE);
-                        break;
-                    }
-
-                }
-                SharedPrefUtil.saveItemInfo(ICE, ice_items);
-            }
-        }
-        ArrayList<DisplayItems.Packages> prepackageItems = SharedPrefUtil.getItemInfo(PACKAGE,
-                DisplayItems.Packages.class);
-        if (prepackageItems == null && packages != null) {
-            SharedPrefUtil.saveItemInfo(PACKAGE, packages);
-        } else {
-            if (packages != null) {
-                for (DisplayItems.Packages pack : packages) {
-                    boolean isHasNewPackage=false;
-                    for (DisplayItems.Packages prepackageItem : prepackageItems) {
-                        if(prepackageItem.getId()==pack.getId()){
-                            isHasNewPackage=true;
-                            break;
-                        }
-                    }
-                    if (!isHasNewPackage) {
-                        showNewItemBadge(PACKAGE);
-                        break;
-                    }
-                }
-                SharedPrefUtil.saveItemInfo(PACKAGE, packages);
-            }
-        }
-
-    }
-
-    private void showNewItemBadge(String ice) {
-        if (hotBadge == null) {
-            hotBadge = new BadgeView(getContext(), mTblayoutHomefrgTab);
-            hotBadge.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
-            hotBadge.setBadgeMargin(DensityUtil.dp2px(getActivity(), 188),
-                    DensityUtil.dp2px(getActivity(), 5));
-            hotBadge.setText(R.string.new_item);
-            hotBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-        }
-        if (iceBadge == null) {
-            iceBadge = new BadgeView(getContext(), mTblayoutHomefrgTab);
-            iceBadge.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
-            iceBadge.setBadgeMargin(DensityUtil.dp2px(getActivity(), 98),
-                    DensityUtil.dp2px(getActivity(), 5));
-            iceBadge.setText(R.string.new_item);
-            iceBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-        }
-        if (packageBadge == null) {
-            packageBadge = new BadgeView(getContext(), mTblayoutHomefrgTab);
-            packageBadge.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
-            packageBadge.setBadgeMargin(13, DensityUtil.dp2px(getActivity(), 5));
-            packageBadge.setText(R.string.new_item);
-            packageBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-        }
-        switch (ice) {
-            case HOT:
-                hotBadge.show();
-                break;
-            case ICE:
-                iceBadge.show();
-                break;
-            case PACKAGE:
-                packageBadge.show();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void hideNewItemBadge(int position) {
-        switch (position) {
-            case 0:
-                if (hotBadge != null) {
-                    hotBadge.hide();
-                }
-                break;
-            case 1:
-                if (iceBadge != null) {
-                    iceBadge.hide();
-                }
-                break;
-            case 2:
-                if (packageBadge != null) {
-                    packageBadge.hide();
-                }
-                break;
-        }
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID, device_id);
+        entity.addParameter("status", "able_take");
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        mPage = 1;
+        map.put("status", "able_take");
+        entity.addParameter(Configurations.PAGE, mPage);
+        map.put(Configurations.PAGE, String.valueOf(mPage));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
 
 
-    }
-
-    private class ResultZip extends JijiaHttpResultZip {
-        @JijiaRZField
-        Banners banners;
-        @JijiaRZField
-        DisplayItems appItems;
-        @JijiaRZField
-        NewGoods goodList;
-        @JijiaRZField
-        NewOrders orders;
-
-
-        public ResultZip(
-                Banners banners, DisplayItems appItems, NewGoods goodList, NewOrders orders) {
-            this.banners = banners;
-            this.appItems = appItems;
-            this.goodList = goodList;
-            this.orders = orders;
-        }
-    }
-
-    private class ResultZip2 extends JijiaHttpResultZip {
-        @JijiaRZField
-        Banners banners;
-        @JijiaRZField
-        DisplayItems appItems;
-
-        public ResultZip2(
-                Banners banners, DisplayItems appItems) {
-            this.banners = banners;
-            this.appItems = appItems;
-        }
-    }
-
-    private class ResultZip3 extends JijiaHttpResultZip {
-        @JijiaRZField
-        NewGoods goodList;
-        @JijiaRZField
-        NewOrders orders;
-
-
-        public ResultZip3(
-                NewGoods goodList, NewOrders orders) {
-            this.goodList = goodList;
-            this.orders = orders;
-        }
-    }
-
-    private void initScrollView() {
-        mScrollableLayout.setDraggableView(mRlHomeDrinkTab);
-        //banners+地址的高度
-        int headHight = DensityUtil.dp2px(getActivity(), 270);
-        //理论可滑动最大高度
-        final int maxScrollY = headHight - mToolBarHeight;
-        mScrollableLayout.setMaxScrollY(maxScrollY);
-        mScrollableLayout.setCanScrollVerticallyDelegate(new CanScrollVerticallyDelegate() {
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
             @Override
-            public boolean canScrollVertically(int direction) {
-                if(mVPgHomefrgShow.getCurrentItem()==2){
-                    PackageItemFragment item = (PackageItemFragment) mAdapter.getItem(mVPgHomefrgShow
-                            .getCurrentItem());
-                    return item != null && item.canScrollVertically(direction);
-                }else{
-                    DrinkItemFragment item = (DrinkItemFragment) mAdapter.getItem(mVPgHomefrgShow
-                            .getCurrentItem());
-                    return item != null && item.canScrollVertically(direction);
+            public void onSuccess(JSONObject result) {
+                LogUtil.e("ableTakeResult",result.toString());
+                try {
+                    if (result.getInt(Configurations.STATUSCODE) == 200) {
+                        int count = result.getJSONObject("results").getInt("able_take_count");
+                        scanBadgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
+                        if (count < 1) {
+                            scanBadgeView.hide();
+
+                        } else if (count  < 10) {
+                            scanBadgeView.setTextSize(9);
+                            scanBadgeView.setText(String.valueOf(count ));
+                            scanBadgeView.show();
+
+                        } else if (count  < 100) {
+                            scanBadgeView.setTextSize(8);
+                            scanBadgeView.setText(String.valueOf(count ));
+                            scanBadgeView.show();
+                        } else {
+                            scanBadgeView.setTextSize(8);
+                            scanBadgeView.setText(R.string.cart_count_max_value);
+                            scanBadgeView.show();
+                        }
+
+                    }
+//                    result.getJSONObject("results").getString("goods");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-            }
-        });
-        mScrollableLayout.setOnFlingOverListener(new OnFlingOverListener() {
-            @Override
-            public void onFlingOver(int y, long duration) {
-                if(mVPgHomefrgShow.getCurrentItem()==2){
-                    PackageItemFragment fragment = (PackageItemFragment) mAdapter.getItem(mVPgHomefrgShow
-                            .getCurrentItem());
-                    if (fragment != null) {
-                        fragment.onFlingOver(y, duration);
-                    }
-                }else{
-                    DrinkItemFragment fragment = (DrinkItemFragment) mAdapter.getItem(mVPgHomefrgShow
-                            .getCurrentItem());
-                    if (fragment != null) {
-                        fragment.onFlingOver(y, duration);
-                    }
-                }
-
-            }
-        });
-        mScrollableLayout.addOnScrollChangedListener(new OnScrollChangedListener() {
-
-
-            @Override
-            public void onScrollChanged(int y, int oldY, int maxY) {
-
-                //滚动后上端距离，为minHeight时状态栏显示，透明度为1，dy为0时，透明度为0
-
-                int top = mTblayoutHomefrgTab.getTop();
-                tbHomefrgTitle.setChangeTop((float) (y * 1.0));
-
-                //设置回调，改变字体透明度
-                tbHomefrgTitle.setOnScrollStateListener(new TransparentToolBar
-                        .OnScrollStateListener() {
-                    @Override
-                    public void updateFraction(float fraction) {
-                        mTvHomefrgTitle.setAlpha(fraction);
-                    }
-                });
-            }
-        });
-    }
-
-    private void initViewPager() {
-        mHotfra = new DrinkItemFragment();
-        mIcefra = new DrinkItemFragment();
-        mPackfra = new PackageItemFragment();
-
-
-        List<Fragment> list_fragment = new ArrayList<>();
-        list_fragment.add(mHotfra);
-        list_fragment.add(mIcefra);
-        list_fragment.add(mPackfra);
-
-        List<String> list_title = new ArrayList<>();
-        list_title.add("热饮");
-        list_title.add("冷饮");
-        list_title.add("套餐");
-        mTblayoutHomefrgTab.setTabMode(TabLayout.MODE_FIXED);
-
-        mTblayoutHomefrgTab.addTab(mTblayoutHomefrgTab.newTab()
-                .setText(list_title.get(0)));
-        mTblayoutHomefrgTab.addTab(mTblayoutHomefrgTab.newTab()
-                .setText(list_title.get(1)));
-        mTblayoutHomefrgTab.addTab(mTblayoutHomefrgTab.newTab()
-                .setText(list_title.get(2)));
-
-        mAdapter = new DrinkFragmentAdapter(getChildFragmentManager(), list_fragment, list_title);
-        mVPgHomefrgShow.setAdapter(mAdapter);
-        mVPgHomefrgShow.setOffscreenPageLimit(2);
-        mTblayoutHomefrgTab.setupWithViewPager(mVPgHomefrgShow);
-        mVPgHomefrgShow.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(
-                    int position, float positionOffset, int positionOffsetPixels) {
 
             }
 
             @Override
-            public void onPageSelected(int position) {
-                hideNewItemBadge(position);
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
 
             }
         });
@@ -964,11 +494,9 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void initBaiduLocationConfig() {
-        baiduLocationService = ((MyApplication) (getActivity().getApplication()))
-                .baiduLocationService;
+        baiduLocationService = ((MyApplication) (getActivity().getApplication())).baiduLocationService;
         baiduLocationService.registerListener(bdLocationListener);
-        baiduLocationService.setLocationOption(baiduLocationService
-                .getDefaultLocationClientOption());
+        baiduLocationService.setLocationOption(baiduLocationService.getDefaultLocationClientOption());
     }
 
     private void startBaiduMap() {
@@ -976,162 +504,268 @@ public class HomeFragment extends BaseFragment {
         baiduLocationService.start();
     }
 
+//    private void startAmap() {
+//
+//        mLocationOption = new AMapLocationClientOption();
+//        mlocationClient = new AMapLocationClient(getActivity());
+//        //设置定位监听
+//        mlocationClient.setLocationListener(mAMapLocationListener);
+//        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+//        mlocationClient.setLocationOption(mLocationOption);
+//        mlocationClient.startLocation();
+//    }
 
-    private void getNearby(double longitude, double latitude) {
-        if (getActivity() == null) {
-            return;
-        }
+
+//    private AMapLocationListener mAMapLocationListener = new AMapLocationListener() {
+//
+//        @Override
+//        public void onLocationChanged(AMapLocation location) {
+//            if (location != null) {
+//                if (location.getErrorCode() == 0) {
+//
+//                    Latitude = location.getLatitude();//获取纬度
+//                    Longitude = location.getLongitude();//获取经度
+//                    mlocationClient.stopLocation();
+//
+//                    getNearby();
+//                } else {
+//                    //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+//                    LogUtil.e("", "---location Error, ErrCode:"
+//                            + location.getErrorCode() + ", errInfo:"
+//                            + location.getErrorInfo());
+//                }
+//            }
+//        }
+//    };
+
+
+    private void getNearby( double longitude,  double latitude) {
+      /*  LogUtil.e("getNearBy","getNearBy");
+        com.loopj.android.http.RequestParams params = new com.loopj.android.http.RequestParams();
+        params.put(Configurations.LATITUDE, latitude);
+        params.put(Configurations.LONGITUDE, longitude);
+        params.put(Configurations.SCOPE, 1);
+        String timeStamp = TimeUtil.getCurrentTimeString();
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        params.put(Configurations.APP_ID, AppUtil.getVersionCode(getActivity()));
+        params.put(Configurations.TIMESTAMP,timeStamp);
+        params.put(Configurations.DEVICE_ID,device_id);
+        Map<String, String> map = new TreeMap<>();
+        map.put(Configurations.LATITUDE,String.valueOf(latitude));
+        map.put(Configurations.LONGITUDE, String.valueOf(longitude));
+        map.put(Configurations.SCOPE,String.valueOf(1));
+        map.put(Configurations.APP_ID, String.valueOf(AppUtil.getVersionCode(getActivity())));
+        params.put(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Configurations.URL_VENDING_MACHINES, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                             LogUtil.e("result",response.toString()+"地址");
+                            if (response.getInt(Configurations.STATUSCODE) == 200) {
+                                if (response.getJSONObject("results") == null) {
+                                    addLocationItem(new LocationNearby(LOCATION_EMPTY, DISTANCE_EMPTY));
+                                    appItemsAdapter.notifyDataSetChanged();
+                                } else {
+                                    machines = JSON.parseArray(response.getJSONObject("results").getString("vending_machines"), Machine.class);
+                                    if (machines.size() != 0) {
+
+                                        new Handler().post(new Runnable() {
+                                                               @Override
+                                                               public void run() {
+
+                                                                   addLocationItem(new LocationNearby(machines.get(0).getAddress(), Float.parseFloat("" + machines.get(0).getLinear_distance())));
+                                                                   appItemsAdapter.notifyDataSetChanged();
+//
+
+                                                               }
+                                                           }
+
+
+                                        );
+
+                                    } else {
+
+                                        new Handler().post(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                                addLocationItem(new LocationNearby(LOCATION_EMPTY, DISTANCE_EMPTY));
+                                                appItemsAdapter.notifyDataSetChanged();
+//
+
+                                            }
+                                        });
+
+                                    }
+                                }
+                            }
+                        } catch (JSONException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        LogUtil.e("result",responseString.toString());
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                        LogUtil.e("result","finish");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        super.onCancel();
+                        LogUtil.e("result","cancel");
+                    }
+                }
+
+        );
+*/
+
+        LogUtil.d("Home NearBy","NearBy");
         RequestParams entity = new RequestParams(Configurations.URL_VENDING_MACHINES);
         entity.addParameter(Configurations.LATITUDE, latitude);
+        LogUtil.d("Home NearBy","NearBy2");
         entity.addParameter(Configurations.LONGITUDE, longitude);
+        LogUtil.d("Home NearBy","NearBy3");
         entity.addParameter(Configurations.SCOPE, 1);
+        LogUtil.d("Home NearBy","NearBy4");
+        //String device_id= JPushInterface.getRegistrationID(getActivity());
+        //LogUtil.d("device_id",JPushInterface.getRegistrationID(getActivity())+"");
+        LogUtil.d("Home NearBy","NearBy5");
         long timeStamp = TimeUtil.getCurrentTime();
-        device_id = JPushInterface.getRegistrationID(getActivity());
+        LogUtil.d("Home NearBy","NearBy6");
         entity.addParameter(Configurations.TIMESTAMP, String.valueOf(timeStamp));
+        LogUtil.d("Home NearBy","NearBy7");
         entity.addParameter(Configurations.DEVICE_ID, device_id);
+        LogUtil.d("Home NearBy","NearBy8");
+
         Map<String, String> map = new TreeMap<>();
         map.put(Configurations.LATITUDE, String.valueOf(latitude));
         map.put(Configurations.LONGITUDE, String.valueOf(longitude));
         map.put(Configurations.SCOPE, String.valueOf(1));
-        entity.addParameter(Configurations.SIGN,
-                SignUtils.createSignString(device_id, timeStamp, map));
-
-        for (String key : map.keySet()) {
-            Log.d("Home map", "key:=" + key + "values:=" + map.get(key));
-        }
-
-        x.http()
-                .get(entity, new Callback.CommonCallback<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject response) {
-                        resolveLocationResult(response);
-                        //回调嵌套
-
-                    }
-
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        showNetError();
-                    }
-
-                    @Override
-                    public void onCancelled(CancelledException cex) {
-                        Log.d("Home Loc", cex.toString());
-
-                    }
-
-                    @Override
-                    public void onFinished() {
-                        Log.d("Home Loc", "Finished");
-                    }
-                });
-    }
-
-    private void refreshData() {
-        if (!SharedPrefUtil.getLoginType()
-                .equals(SharedPrefUtil.LOGINING)) {
-            cartBadgeView.hide();
-            scanBadgeView.hide();
-            return;
-
-        }
-        Observable<NewGoods> cartObservable = GoodApi.getGoodCartList(getActivity(),
-                UserUtils.getUserInfo()
-                        .getAuth_token(),
-                1);
-
-        Observable<NewOrders> orderListObservable = OrderApi.getOrderList(getActivity(),
-                UserUtils.getUserInfo()
-                        .getAuth_token(),
-                "able_take",
-                1);
-        Observable<ResultZip3> zipObservable = Observable.zip(cartObservable,
-                orderListObservable,
-                new Func2<NewGoods, NewOrders, ResultZip3>() {
-                    @Override
-                    public ResultZip3 call(
-                            NewGoods goodList, NewOrders orders) {
-                        return new ResultZip3(goodList, orders);
-                    }
-                });
-        mSubscriber2 = JijiaHttpSubscriber.buildSubscriber(getActivity())
-                .setOnNextListener(new SubscriberOnNextListener<ResultZip3>() {
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
 
 
-                    @Override
-                    public void onNext(ResultZip3 zip) {
+       for(String key:map.keySet()){
+           Log.d("Home map","key:="+key+"values:="+map.get(key));
+       }
 
-                        if (zip.goodList != null) {
-                            NewGoods goodList = zip.goodList;
-                            setCatNumber(goodList.getTotal());
-                        }
-                        if (zip.orders != null) {
-                            NewOrders orders = zip.orders;
-                            setScanNumber(orders.getAble_take_count());
-                        }
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+             try {
+        LogUtil.e("result",response.toString()+"地址");
+        if (response.getInt(Configurations.STATUSCODE) == 200) {
+            if (response.getJSONObject("results") == null) {
+                addLocationItem(new LocationNearby(LOCATION_EMPTY, DISTANCE_EMPTY));
+                appItemsAdapter.notifyDataSetChanged();
+            } else {
+                machines = JSON.parseArray(response.getJSONObject("results").getString("vending_machines"), Machine.class);
+                if (machines.size() != 0) {
+
+                    new Handler().post(new Runnable() {
+                                           @Override
+                                           public void run() {
+
+                                               addLocationItem(new LocationNearby(machines.get(0).getAddress(), Float.parseFloat("" + machines.get(0).getLinear_distance())));
+                                               appItemsAdapter.notifyDataSetChanged();
+
+                                           }
+                                       }
 
 
-                    }
-                })
-                .build();
-        zipObservable.subscribe(mSubscriber2);
+                    );
 
-    }
-
-    /**
-     * 处理返回地址信息
-     *
-     * @param response
-     */
-
-    private void resolveLocationResult(JSONObject response) {
-        try {
-            LogUtil.e("result", response.toString() + "地址");
-            if (response.getInt(Configurations.STATUSCODE) == 200) {
-                if (response.getJSONObject("results") == null) {
-                    mLlHomeLocation.setClickable(false);
-                    mTvLocationnearbyName.setText(LOCATION_EMPTY);
-                    mTvLocationnearbyDist.setVisibility(View.INVISIBLE);
-                    mTvLocationnearbyDistUnit.setVisibility(View.INVISIBLE);
                 } else {
-                    mLlHomeLocation.setClickable(true);
-                    machines = JSON.parseArray(response.getJSONObject("results")
-                            .getString("vending_machines"), Machine.class);
-                    if (machines.size() != 0) {
-                        mTvLocationnearbyName.setText(machines.get(0)
-                                .getAddress());
-                        mTvLocationnearbyDist.setText(df.format(Float.parseFloat("" + machines
-                                .get(0)
-                                .getLinear_distance())));
-                        mLlHomeLocation.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                MobclickAgent.onEvent(getContext(),
-                                        UmengConfig.EVENT_LOCATION_CLICK);
-                                Intent intent = new Intent(getActivity(),
-                                        FindVendingMachineActivity.class);
-                                intent.putExtra("machines", (Serializable) machines);
-                                intent.putExtra("Latitude", Latitude);
-                                intent.putExtra("Longitude", Longitude);
-                                startActivity(intent);
-                            }
-                        });
 
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    } else {
-                        mLlHomeLocation.setClickable(false);
-                        mTvLocationnearbyName.setText(LOCATION_EMPTY);
-                        mTvLocationnearbyDist.setVisibility(View.INVISIBLE);
-                        mTvLocationnearbyDistUnit.setVisibility(View.INVISIBLE);
-                    }
+                            addLocationItem(new LocationNearby(LOCATION_EMPTY, DISTANCE_EMPTY));
+                            appItemsAdapter.notifyDataSetChanged();
+//
+
+                        }
+                    });
+
                 }
             }
-        } catch (JSONException e) {
-
-            e.printStackTrace();
         }
+    } catch (JSONException e) {
+
+        e.printStackTrace();
+    }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+                Log.d("Home Loc",cex.toString());
+
+            }
+
+            @Override
+            public void onFinished() {
+                Log.d("Home Loc","Finished");
+            }
+        });
     }
 
+
+    private void setUpRecyclerView() {
+
+        appItemsAdapter = new AppItemsAdapter();
+        //设置头部
+        appItemsAdapter.setHeaderView(headview);
+
+        rcyViewHomeAppItems.setAdapter(appItemsAdapter);
+        rcyViewHomeAppItems.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rcyViewHomeAppItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView,dx,dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int position = layoutManager.findFirstVisibleItemPosition();
+                View firstVisiableChildView = layoutManager.findViewByPosition(position);
+                int itemHeight = firstVisiableChildView.getHeight();
+                int distance = (position) * itemHeight - firstVisiableChildView.getTop();
+
+                //标题栏高度
+                int minHeight =  tbHomefrgTitle.getHeight();
+                //获得顶部高度
+
+                float pix = (float) (( minHeight-distance )*1.0 / minHeight);
+                //滚动后上端距离，为minHeight时状态栏显示，透明度为1，dy为0时，透明度为0
+                tbHomefrgTitle.setChangeTop((float) (distance*1.0));
+                //设置回调，改变字体透明度
+                tbHomefrgTitle.setOnScrollStateListener(new TransparentToolBar.OnScrollStateListener() {
+                    @Override
+                    public void updateFraction(float fraction) {
+                        tvHomeFrgTitle.setAlpha(fraction);
+                    }
+                });
+
+            }
+        });
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -1142,7 +776,7 @@ public class HomeFragment extends BaseFragment {
         ableTakeReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                mIbScan.performClick();
+                ibScan.performClick();
             }
         };
         broadcastManager.registerReceiver(ableTakeReceiver, intentFilter);
@@ -1151,18 +785,39 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        if(hidden){
+            homeFragmentVisible =false;
+        }else{
+            if(!homeFragmentVisible){
+                LogUtil.e("homeFragmentVisible", homeFragmentVisible +"");
+                homeFragmentVisible =true;
+                MobclickAgent.onPageStart(UmengConfig.HOMEFRAGMENT);
+                getCartGoodsCount();
+                getAbleTakeOrders();
+                checkHasNewCoupon();
+            }
+
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        refreshData();
+        if(homeFragmentVisible){
+            MobclickAgent.onPageStart(UmengConfig.HOMEFRAGMENT);
+            getCartGoodsCount();
+            getAbleTakeOrders();
+            checkHasNewCoupon();
+            LogUtil.e("meFragmentVisible",true+"");
+        }else{
+
+        }
     }
 
     private void checkHasNewCoupon() {
-        if (application.getHasShowDialog()) {
+        if(application.getHasShowDialog()){
             // application.setHasShowDialog(false);
-        } else {
+        }else{
             loadCoupons();
         }
     }
@@ -1176,7 +831,11 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        CommonUtil.unSubscribeSubs(mSubscriber, mSubscriber1, mSubscriber2);
+//        if (null != mlocationClient) {
+//            mlocationClient.onDestroy();
+//            mlocationClient = null;
+//            mLocationOption = null;
+//        }
         broadcastManager.unregisterReceiver(ableTakeReceiver);
     }
 
@@ -1188,7 +847,27 @@ public class HomeFragment extends BaseFragment {
             if (null == data)
                 return;
             String result = data.getStringExtra(CaptureActivity.SCAN_RESULT_KEY);
+
             if (null != result) {
+               /* if (!result.startsWith("MDEt")) {
+                    TitleButtonsDialog descCenterDialog = TitleButtonsDialog.newInstance("二维码有误", "关闭", "扫一扫");
+                    descCenterDialog.setOnTwoClickListener(new ITwoButtonClick() {
+                        @Override
+                        public void onLeftButtonClick() {
+
+                        }
+
+                        @Override
+                        public void onRightButtonClick() {
+                            ibScan.performClick();
+
+
+                        }
+
+                    });
+                    descCenterDialog.show(getActivity().getSupportFragmentManager(), "asktag");
+                    return;
+                }*/
                 Intent intent = new Intent(getContext(), AbleTakeActivity.class);
                 intent.putExtra("vmid", result);
                 startActivity(intent);
@@ -1212,11 +891,48 @@ public class HomeFragment extends BaseFragment {
                 Longitude = location.getLongitude();
                 Latitude = location.getLatitude();
 
-                LogUtil.e("Home ", "Longitude: " + Longitude + "Latitude: " + Latitude);
-                //                baiduLocationService.stop();
+               LogUtil.e("Home ", "Longitude: " + Longitude + "Latitude: " + Latitude);
+//                baiduLocationService.stop();
                 baiduLocationService.stop();
                 getNearby(Longitude, Latitude);
+//                    isNeedLocated=false;
 
+
+//                StringBuffer sb = new StringBuffer(256);
+//                sb.append(location.getTime());
+//                sb.append("\nlocType : ");// 定位类型
+//                sb.append(location.getLocType());
+//                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
+//                sb.append(location.getLocTypeDescription());
+//                sb.append("\nlatitude : ");// 纬度
+//                sb.append(location.getLatitude());
+//                sb.append("\nlontitude : ");// 经度
+//                sb.append(location.getLongitude());
+//                sb.append("\nradius : ");// 半径
+//                sb.append(location.getRadius());
+//                sb.append("\nCountryCode : ");// 国家码
+//                sb.append(location.getCountryCode());
+//                sb.append("\nCountry : ");// 国家名称
+//                sb.append(location.getCountry());
+//                sb.append("\ncitycode : ");// 城市编码
+//                sb.append(location.getCityCode());
+//                sb.append("\ncity : ");// 城市
+//                sb.append(location.getCity());
+//                sb.append("\nDistrict : ");// 区
+//                sb.append(location.getDistrict());
+//                sb.append("\nStreet : ");// 街道
+//                sb.append(location.getStreet());
+//                sb.append("\naddr : ");// 地址信息
+//                sb.append(location.getAddrStr());
+//                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
+//                sb.append(location.getUserIndoorState());
+//                sb.append("\nDirection(not all devices have value): ");
+//                sb.append(location.getDirection());// 方向
+//                sb.append("\nlocationdescribe: ");
+//                sb.append(location.getLocationDescribe());// 位置语义化信息
+//                sb.append("\nPoi: ");// POI信息
+//
+//                LogUtil.d("BaiduMap", sb.toString());
 
             } else if (location.getLocType() == BDLocation.TypeServerError) {
                 ToastUtil.showShort(getActivity(), "服务端网络定位失败");
@@ -1233,38 +949,525 @@ public class HomeFragment extends BaseFragment {
     };
 
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    private void loadBanners() {
+        RequestParams entity = new RequestParams(Configurations.URL_BANNERS);
+        entity.addParameter(Configurations.APP_ID, AppUtil.getVersionCode(getActivity()));
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        String timeStamp= TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
+        Map<String,String> map=new TreeMap<>();
+        map.put(Configurations.APP_ID, String.valueOf(AppUtil.getVersionCode(getActivity())));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject result) {
+//                LogUtil.d("Home banner", result.toString());
+                try {
+                    //LogUtil.e("result",result.toString()+"轮播图");
+                    if (result.getInt(Configurations.STATUSCODE) == 200) {
+                        banners = JSON.parseArray(result.getJSONObject("results").getString("banners"), Banner.class);
+                        urlList = new ArrayList<String>();
+                        urlList.clear();
+                        for (Banner banner : banners) {
+                            urlList.add(banner.getImage_url());
+                        }
+
+                        if (isFirst || (initUrlString != null && !initUrlString.equals(urlList))) {
+                            headview = View.inflate(getContext(), R.layout.item_recycleview_banner, null);
+                            homeBanner = (FlyBanner) headview.findViewById(R.id.homeBanner);
+                            appItemsAdapter.setHeaderView(headview);
+                            initUrlString.clear();
+                            initUrlString.addAll(urlList);
+                            isFirst = false;
+                            homeBanner.setImagesUrl(banners);
+                            homeBanner.setOnItemClickListener(new FlyBanner.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(int position) {
+                                    MobclickAgent.onEvent(getContext(), UmengConfig.EVENT_BANNER_CLICK);
+                                    Intent intent = new Intent(getContext(), BannerDetailActivity.class);
+                                    intent.putExtra("url_article", banners.get(position).getArticle_url());
+                                    getContext().startActivity(intent);
+                                }
+                            });
+                        }
+
+
+                        getAppItems();
+//                        setBannerAdapter();
+//                        pagerAdapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+            }
+
+            @Override
+            public void onFinished() {
+            }
+        });
+    }
+
+    private void getCartGoodsCount() {
+
+        if (!SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
+            cartBadgeView.hide();
+            return;
+        }
+        RequestParams entity = new RequestParams(Configurations.URL_GOODS);
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        entity.addParameter(Configurations.APP_ID, AppUtil.getVersionCode(getActivity()));
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        String timeStamp= TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
+        Map<String,String> map=new TreeMap<>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        map.put(Configurations.APP_ID, String.valueOf(AppUtil.getVersionCode(getActivity())));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject result) {
+               // //LogUtil.e("Home goods", result.toString());
+
+                try {
+                    LogUtil.e("result",result.toString()+"商品");
+                    checkResOld(result);
+                    if (result.getInt(Configurations.STATUSCODE) == 200) {
+                        int count = result.getJSONObject("results").getInt("goods_count");
+
+                        cartBadgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
+                        if (count < 1) {
+                            cartBadgeView.hide();
+
+                        } else if (count < 10) {
+                            cartBadgeView.setTextSize(9);
+                            cartBadgeView.setText(String.valueOf(count));
+                            cartBadgeView.show();
+
+                        } else if (count< 100) {
+                            cartBadgeView.setTextSize(8);
+                            cartBadgeView.setText(String.valueOf(count));
+                            cartBadgeView.show();
+                        } else {
+                            cartBadgeView.setTextSize(8);
+                            cartBadgeView.setText(R.string.cart_count_max_value);
+                            cartBadgeView.show();
+                        }
+                    }
+//                    result.getJSONObject("results").getString("goods");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
+            }
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
+    }
+
+    private void initCartGoodsCount() {
+
+        getCartGoodsCount();
+
+        ivHomefrgCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
+
+                    goLogin();
+                    return;
+                }
+                startActivity(new Intent(getActivity(), NewCartActivity.class));
+//                startActivity(new Intent(getActivity(), JPushMainActivity.class));
+
+            }
+        });
+
+    }
+
+    private void getAppItems() {
+
+        RequestParams entity = new RequestParams(Configurations.URL_APP_ITEMS);
+
+        entity.addParameter(Configurations.APP_ID, AppUtil.getVersionCode(getActivity()));
+        device_id = JPushInterface.getRegistrationID(getActivity());
+        String timeStamp= TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID, device_id);
+        Map<String,String> map=new TreeMap<>();
+        map.put(Configurations.APP_ID, String.valueOf(AppUtil.getVersionCode(getActivity())));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+        x.http().get(entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                //LogUtil.e("result",result+"商品2");
+              //  //LogUtil.e("Home AppItems", result);
+                appItems.clear();
+                appItems.add(new LocationNearby(LOCATION_LOADING, DISTANCE_LOADING));
+                //appItems = parseResult(result);
+                appItems.addAll(parseResult(result));
+               // appItems.add(parseResult(result).get(0));
+                appItems.add(new CompletyleAdjust());
+                appItems.add(new MoreCoffeeHint());
+
+                appItemsAdapter.notifyDataSetChanged();
+
+                startBaiduMap();
+
+                initCartGoodsCount();
+                getAbleTakeOrders();
+                //通过发送消息，通知完成刷新
+                mHandler.sendEmptyMessageDelayed(0, 500);
+
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 
 
-    class DrinkFragmentAdapter extends SmartFragmentStatePagerAdapter {
-
-        private List<Fragment> list_fragment;
-        private List<String> list_Title;
 
 
-        public DrinkFragmentAdapter(
-                FragmentManager fm, List<Fragment> list_fragment, List<String> list_Title) {
-            super(fm);
-            this.list_fragment = list_fragment;
-            this.list_Title = list_Title;
+    private void addLocationItem(LocationNearby locationNearby) {
+        appItems.set(0, locationNearby);
+    }
+    private List<Object> parseResult(String result) {
+        List<Object> items = new ArrayList<Object>();
+
+        try {
+            JSONObject object = new JSONObject(result);
+            if (object.getInt(Configurations.STATUSCODE) == 200) {
+                String appitems = object.getJSONObject(Configurations.RESULTS).getString("app_items");
+                items = new Gson().fromJson(appitems, new TypeToken<ArrayList<AppItem>>() {
+                }.getType());
+            } else {
+                ToastUtil.showShort(getActivity(), object.getString(Configurations.STATUSMSG));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return items;
+    }
+
+
+    class AppItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        public static final int LOCATION = 1;
+        private static final int APPITEM = 2;
+        private static final int MORECOFFEEHINT = 3;
+        private static final int HEADER = 0;
+        private static final int COMPLETELYADJUST = 4;
+        private View headerView;
+
+        //插入头部Header
+        public void setHeaderView(View headerView) {
+            this.headerView = headerView;
+            notifyDataSetChanged();
+
+        }
+
+        class AppItemsViewHolder1 extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+            private final TextView tvLocationnearbyName;
+            private final TextView tvLocationnearbyDist;
+            private final TextView tvLocationnearbyDistUnit;
+
+            public AppItemsViewHolder1(View itemView) {
+                super(itemView);
+                itemView.setOnClickListener(this);
+                tvLocationnearbyName = (TextView) itemView.findViewById(R.id.tvLocationnearbyName);
+                tvLocationnearbyDist = (TextView) itemView.findViewById(R.id.tvLocationnearbyDist);
+                tvLocationnearbyDistUnit = (TextView) itemView.findViewById(R.id.tvLocationnearbyDistUnit);
+            }
+
+            public void setClickable(boolean clickable) {
+                itemView.setClickable(clickable);
+            }
+
+            public void setVisable(boolean visable) {
+                //如果传入false，则将距离和单位设置为不可见
+                if (!visable) {
+                    tvLocationnearbyDist.setVisibility(View.INVISIBLE);
+                    tvLocationnearbyDistUnit.setVisibility(View.INVISIBLE);
+                } else {
+                    tvLocationnearbyDist.setVisibility(View.VISIBLE);
+                    tvLocationnearbyDistUnit.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onClick(View v) {
+                MobclickAgent.onEvent(getContext(), UmengConfig.EVENT_LOCATION_CLICK);
+                Intent intent = new Intent(getActivity(), FindVendingMachineActivity.class);
+                intent.putExtra("machines", (Serializable) machines);
+                intent.putExtra("Latitude", Latitude);
+                intent.putExtra("Longitude", Longitude);
+
+                startActivity(intent);
+            }
+        }
+
+
+        class AppItemsViewHolder2 extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+            public ImageView iv_item;
+            public TextView tvAppitemName_ch_;
+            public TextView tvAppitemName_eg;
+            public TextView tv_desc;
+            public TextView tv_price_original;
+            public TextView tv_price_current;
+
+            public AppItemsViewHolder2(View itemView) {
+                super(itemView);
+                if (itemView == headerView)
+                    return;
+                iv_item = (ImageView) itemView.findViewById(R.id.iv_item);
+                tvAppitemName_ch_ = (TextView) itemView.findViewById(R.id.tvAppitemName_ch);
+                tvAppitemName_eg = (TextView) itemView.findViewById(R.id.tvAppitemName_eg);
+                tv_desc = (TextView) itemView.findViewById(R.id.tv_desc);
+                tv_price_original = (TextView) itemView.findViewById(R.id.tv_price_original);
+                tv_price_current = (TextView) itemView.findViewById(R.id.tv_price_current);
+
+                itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                int position = headerView == null ? getLayoutPosition() : getLayoutPosition() - 1;
+                MobclickAgent.onEvent(getContext(), UmengConfig.EVENT_MODULATION_CLICK);
+                Intent intent = new Intent(getActivity(), ModulationActivity.class);
+                intent.putExtra(Configurations.APP_ITEM, (AppItem) appItems.get(position));
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in_right_base,
+                        R.anim.slide_out_left_base);
+            }
+        }
+        class AppItemsViewHolder3 extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+            public AppItemsViewHolder3(View itemView) {
+                super(itemView);
+                itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CompletelyAdjustActivity.class);
+                startActivity(intent);
+                // 第一个参数是目标Activity进入时的动画，第二个参数是当前Activity退出时的动画
+                getActivity().overridePendingTransition(R.anim.slide_in_left_quick,
+                        R.anim.slide_out_right_quick);
+            }
+        }
+        class AppItemsViewHolder4 extends RecyclerView.ViewHolder {
+
+            public AppItemsViewHolder4(View itemView) {
+                super(itemView);
+            }
+
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return list_fragment.get(position);
+        public int getItemViewType(int position) {
+            //如果banner还未设置给recyclerview
+            if (null == headerView) {
+                if (appItems.get(position) instanceof LocationNearby) {
+                    return LOCATION;
+                } else if (appItems.get(position) instanceof AppItem) {
+                    return APPITEM;
+                } else if (appItems.get(position) instanceof MoreCoffeeHint) {
+                    return MORECOFFEEHINT;
+                }else if(appItems.get(position)instanceof CompletyleAdjust){
+                    return COMPLETELYADJUST;
+                }
+            }
+            if (position == 0) {
+                return HEADER;
+            }
+            if (appItems.get(position - 1) instanceof LocationNearby) {
+                return LOCATION;
+            } else if (appItems.get(position - 1) instanceof AppItem) {
+                return APPITEM;
+            } else if (appItems.get(position - 1) instanceof MoreCoffeeHint) {
+                return MORECOFFEEHINT;
+            }else if(appItems.get(position-1)instanceof CompletyleAdjust){
+                return COMPLETELYADJUST;
+            }
+            return -1;
         }
 
         @Override
-        public int getCount() {
-            return list_Title.size();
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            RecyclerView.ViewHolder viewHolder = null;
+            if (headerView != null && viewType == HEADER) {
+                viewHolder = new AppItemsViewHolder2(headerView);
+                return viewHolder;
+            }
+            switch (viewType) {
+                case LOCATION:
+                    View view1 = inflater.inflate(R.layout.locationnearby_item, parent, false);
+                    viewHolder = new AppItemsViewHolder1(view1);
+                    break;
+                case APPITEM:
+                    View view2 = inflater.inflate(R.layout.appitem_item, parent, false);
+                    viewHolder = new AppItemsViewHolder2(view2);
+                    break;
+                case MORECOFFEEHINT:
+                    View view3 = inflater.inflate(R.layout.appitem_hint, parent, false);
+                    viewHolder = new AppItemsViewHolder4(view3);
+                    break;
+                case COMPLETELYADJUST:
+                    View view4 = inflater.inflate(R.layout.appitem_completlyadjust, parent, false);
+                    viewHolder = new AppItemsViewHolder3(view4);
+
+            }
+            return viewHolder;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return list_Title.get(position % list_Title.size());
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder.getItemViewType() == HEADER) {
+                return;
+            }
+            int realPos = headerView == null ? position : position - 1;
+            switch (holder.getItemViewType()) {
+                case LOCATION:
+                    AppItemsViewHolder1 holder1 = (AppItemsViewHolder1) holder;
+                    LocationNearby locationNearby = (LocationNearby) appItems.get(realPos);
+                    holder1.setClickable(true);
+                    holder1.setVisable(true);
+                    if (locationNearby.getName().equals(LOCATION_EMPTY) || locationNearby.getName().equals(LOCATION_LOADING)) {
+                        holder1.setClickable(false);
+                        holder1.setVisable(false);
+                    }
+                    holder1.tvLocationnearbyName.setText(locationNearby.getName());
+                    holder1.tvLocationnearbyDist.setText(locationNearby.getDistance().equals(0.0+"")?0+"":locationNearby.getDistance());
+                    break;
+                case APPITEM:
+                    AppItemsViewHolder2 holder2 = (AppItemsViewHolder2) holder;
+                    AppItem appItem = (AppItem) appItems.get(realPos);
+                    holder2.tvAppitemName_ch_.setText(appItem.getName());
+                    holder2.tvAppitemName_eg.setText(appItem.getName_en());
+                    holder2.tv_desc.setText(appItem.getDescription());
+                    holder2.tv_price_original.setText("￥" + String.valueOf(appItem.getPrice()));
+                    holder2.tv_price_original.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                    holder2.tv_price_current.setText("￥" + String.valueOf(appItem.getCurrent_price()));
+                    //holder2.iv_item.setImageResource(getItemDrawable(appItem.getName()));
+                    //// TODO: 2017/1/4
+
+                        holder2.iv_item.setImageResource(0);
+                        holder2.iv_item.setTag(appItem.getApp_image());
+                        holder2.iv_item.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                                .cacheInMemory(true)/*缓存至内存*/
+                                .cacheOnDisk(true)/*缓存值SDcard*/
+                                .bitmapConfig(Bitmap.Config.RGB_565)
+                                .build();
+                        String app_image = appItem.getApp_image();
+                      //  String str = app_image.substring(0, app_image.indexOf("?"));
+                        ImageLoader.getInstance().displayImage(app_image,holder2.iv_item,options);
+//                Picasso.with(getContext())
+//                        .load(mImageUrls.get(toRealPosition(position)))
+//                        .into(imageView);
+
+        /*            holder2.tv_price_current.setTypeface(font);
+                    holder2.tv_price_original.setTypeface(font);
+                    holder2.tv_desc.setTypeface(font);
+                    holder2.tvAppitemName_ch_.setTypeface(font);
+                    holder2.tvAppitemName_eg.setTypeface(font);*/
+                    break;
+
+            }
+
         }
+
+        /**
+         * id :1 卡布奇诺
+         * id :2 摩卡
+         * id :3 意式浓缩
+         * id :4 玛琪雅朵
+         * id :6 美式加糖
+         * id :10 拿铁
+         */
+       /* private int getItemDrawable(String name) {
+
+            switch (name) {
+                case "卡布奇诺":
+                    return R.drawable.cappuccino;
+                case "摩卡":
+                    return R.drawable.mocha;
+                case "意式浓缩":、
+                    return R.drawable.espresso;
+                case "玛琪雅朵":
+                    return R.drawable.macchiato;
+                case "美式咖啡":
+                    return R.drawable.cafeamericano;
+                case "拿铁":
+                    return R.drawable.latte;
+                case "巧克力咖啡":
+                    return R.drawable.chocolatecoffee;
+                case "牛奶":
+                    return R.drawable.milk;
+                case "牛奶巧克力":
+                    return  R.drawable.milkchocolate;
+                case "巧克力":
+                    return R.drawable.hotchocolate;
+                default:
+                    return R.drawable.cappuccino;
+            }
+        }*/
+
+        @Override
+        public int getItemCount() {
+            if (appItems == null) {
+                return 0;
+            } else {
+                if (headerView == null) {
+                    return appItems.size();
+                } else {
+                    return appItems.size() + 1;
+                }
+            }
+        }
+
+
     }
 }

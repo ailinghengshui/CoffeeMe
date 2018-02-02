@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".home.FineActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp">
+    <FrameLayout
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_fine_top"
+        android:id="@+id/fl_fine_top"
+        android:layout_width="@dimen/x660"
+        android:layout_height="@dimen/y580" >
+        <TextView
+            android:id="@+id/tvVolume"
+            android:layout_marginLeft="@dimen/x575"
+            android:layout_marginTop="@dimen/y123"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="256"
+            android:textColor="@color/standard_black"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tvprice"
+            android:layout_marginLeft="@dimen/x565"
+            android:layout_marginTop="@dimen/y322"
+            android:layout_width="40dp"
+            android:textSize="14sp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="10.56"
+            android:textColor="@color/standard_black"/>
+
+        <com.hzjytech.coffeeme.widgets.CoffeeCupView
+            android:id="@+id/iv_coffeecup"
+            android:layout_marginTop="@dimen/y125"
+            android:layout_marginLeft="@dimen/x195"
+            android:layout_width="@dimen/x160"
+            android:layout_height="@dimen/y108" />
+
+
+        <ImageView
+            android:src="@drawable/fine_cup"
+            android:layout_marginTop="@dimen/y120"
+            android:layout_marginLeft="@dimen/x171"
+            android:layout_width="@dimen/x216"
+            android:layout_height="@dimen/y156"  />
+    </FrameLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/fl_fine_top"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/rv_fine"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="70dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        />
+
+            <LinearLayout
+                android:id="@+id/ll_choose_button"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="70dp">
+                <ImageView
+                    android:id="@+id/button_cancel"
+                    android:src="@drawable/selector_fine_button_cancel"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/button_reset"
+                    android:src="@drawable/selector_fine_button_reset"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/button_confirm"
+                    android:src="@drawable/selector_fine_button_confirm"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_choose_button2"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+            <ImageView
+                android:id="@+id/button_cancel2"
+                android:src="@drawable/selector_fine_button_cancel"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/button_reset2"
+                android:src="@drawable/selector_fine_button_reset"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/button_confirm2"
+                android:src="@drawable/selector_fine_button_confirm"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_notify"
+            android:visibility="invisible"
+            android:background="@drawable/bg_completely_notify"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_width="330dp"
+            android:textColor="@color/standard_black"
+            android:textSize="14dp"
+            android:text="咖啡已达上限"
+            android:layout_height="54dp" />
+    </RelativeLayout>
+</LinearLayout>
+    <RelativeLayout
+        android:clickable="true"
+        android:visibility="invisible"
+        android:id="@+id/rl_guide"
+        android:background="@color/trans_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="210dp"
+            android:src="@drawable/guide_fine_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/tv_guide"
+            android:clickable="true"
+            android:layout_marginTop="50dp"
+            android:layout_alignParentRight="true"
+            android:text="我知道了"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:gravity="center"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/bg_guide_text"
+            android:layout_width="80dp"
+            android:layout_height="40dp" />
+
+    </RelativeLayout>
+</FrameLayout>

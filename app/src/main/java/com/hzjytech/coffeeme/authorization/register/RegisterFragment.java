@@ -172,10 +172,12 @@ public class RegisterFragment extends BaseFragment {
                                     public void onImageClickListener() {
                                         RequestParams entity = new RequestParams(Configurations.URL_CAPTCHAS);
                                         entity.addParameter("phone", etRegPhone.getText().toString().trim());
+
                                         String device_id = JPushInterface.getRegistrationID(getContext());
                                         String timeStamp = TimeUtil.getCurrentTimeString();
                                         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
                                         entity.addParameter(Configurations.DEVICE_ID, device_id);
+
                                         Map<String, String> map = new TreeMap<>();
                                         map.put("phone", etRegPhone.getText().toString().trim());
                                         entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));

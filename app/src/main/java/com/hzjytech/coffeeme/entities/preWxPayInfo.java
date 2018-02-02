@@ -1,7 +1,5 @@
 package com.hzjytech.coffeeme.entities;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
 /**
@@ -9,15 +7,15 @@ import java.io.Serializable;
  */
 public class preWxPayInfo  implements Serializable {
     private String appid;
-    @SerializedName(value = "partnerid",alternate = "mch_id")
+
     private String partnerid;
 
     //private String packageValue;
 
     private String timestamp;
-    @SerializedName(value = "prepayid",alternate = "prepay_id")
+
     private String prepayid;
-    @SerializedName(value = "noncestr",alternate = "nonce_str")
+
     private String noncestr;
 
     private String sign;

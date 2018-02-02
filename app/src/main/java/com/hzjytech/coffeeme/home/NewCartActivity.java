@@ -22,21 +22,12 @@ import com.hzjytech.coffeeme.adapterutil.VerticalSpaceItemDecoration;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.Good;
-import com.hzjytech.coffeeme.entities.NewGood;
-import com.hzjytech.coffeeme.entities.NewGoods;
-import com.hzjytech.coffeeme.http.JijiaHttpSubscriber;
-import com.hzjytech.coffeeme.http.SubscriberOnCompletedListener;
-import com.hzjytech.coffeeme.http.SubscriberOnErrorListener;
-import com.hzjytech.coffeeme.http.SubscriberOnNextListener;
-import com.hzjytech.coffeeme.http.api.GoodApi;
-import com.hzjytech.coffeeme.utils.CommonUtil;
 import com.hzjytech.coffeeme.utils.DensityUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
 import com.hzjytech.coffeeme.utils.TimeUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
-import com.hzjytech.coffeeme.widgets.BadgeView;
 import com.hzjytech.coffeeme.widgets.SuperSwipeRefreshLayout;
 import com.hzjytech.coffeeme.widgets.TitleBar;
 import com.hzjytech.coffeeme.widgets.TouchableRecyclerView;
@@ -56,11 +47,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import cn.jpush.android.api.JPushInterface;
-import rx.Observable;
 
 @ContentView(R.layout.activity_cart_new)
 public class NewCartActivity extends BaseActivity {
@@ -101,9 +90,6 @@ public class NewCartActivity extends BaseActivity {
     private ProgressBar pbFooter;
     private ImageView ivFooter;
     private TextView tvFooter;
-    private JijiaHttpSubscriber mSubscriber;
-    private JijiaHttpSubscriber mSubscriber1;
-    private ArrayList<NewGood> mLists;
 
     public static NewCartActivity Instance() {
         if (null == mInstance)
@@ -146,25 +132,12 @@ public class NewCartActivity extends BaseActivity {
         for (int i : adapter.getSelectGood().values()) {
             count += i;
         }
-        Set<NewGood> newGoods = adapter.getSelectGood()
-                .keySet();
-        if(mLists==null){
-            mLists = new ArrayList<>();
-        }else{
-            mLists.clear();
-        }
-
-        for (NewGood newGood : newGoods) {
-            mLists.add(newGood);
-        }
         if (count == 0) {
 
             ToastUtil.showShort(NewCartActivity.this, getString(R.string.Cart_noselinfo));
             return;
         } else if (count > 9) {
             ToastUtil.showShort(NewCartActivity.this, getString(R.string.str_countlimit));
-            return;
-        }else if(!buyEnable(mLists)){
             return;
         }
         Intent intent = new Intent(NewCartActivity.this, NewPaymentActivity.class);
@@ -174,7 +147,7 @@ public class NewCartActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private List<NewGood> goods = new ArrayList<>();
+    private List<Good> goods = new ArrayList<>();
     private NewCartAdapter adapter;
 
     @Override
@@ -303,47 +276,7 @@ public class NewCartActivity extends BaseActivity {
 
     private void loadMoreCarts() {
         page+=1;
-        Observable<NewGoods> cartObservable = GoodApi.getGoodCartList(this,UserUtils.getUserInfo()
-                .getAuth_token(),page);
-        mSubscriber = JijiaHttpSubscriber.buildSubscriber(this)
-                .setOnNextListener(new SubscriberOnNextListener<NewGoods>() {
-                    @Override
-                    public void onNext(NewGoods carts) {
-
-                        goods = carts.getGood();
-                        LogUtil.e("goods",goods.toString());
-                        superSwipeCartRefresh.setLoadMore(false);
-                        List<NewGood> moreGoods = carts.getGood();
-                        LogUtil.e("goods", NewCartActivity.this.goods.toString());
-                        if(moreGoods.size()>0){
-                            adapter.addLoadMoreAll(moreGoods);
-                            rbCartSelectall.setSelected(false);
-                        }else{
-                            page--;
-                            ToastUtil.showShort(NewCartActivity.this, "沒有更多了");
-                        }
-
-
-                    }
-                }).setOnCompletedListener(new SubscriberOnCompletedListener() {
-                    @Override
-                    public void onCompleted() {
-                        hideLoading();
-                        superSwipeCartRefresh.setRefreshing(false);
-                        pbCartHeader.setVisibility(View.GONE);
-                    }
-                })
-                .setOnErrorListener(new SubscriberOnErrorListener() {
-                    @Override
-                    public void onError(Throwable e) {
-                        hideLoading();
-                        superSwipeCartRefresh.setRefreshing(false);
-                        pbCartHeader.setVisibility(View.GONE);
-                    }
-                })
-                .build();
-        cartObservable.subscribe(mSubscriber);
-       /* RequestParams entity = new RequestParams(Configurations.URL_GOODS);
+        RequestParams entity = new RequestParams(Configurations.URL_GOODS);
 
         if(UserUtils.getUserInfo() !=null) {
             entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
@@ -403,7 +336,7 @@ public class NewCartActivity extends BaseActivity {
             public void onFinished() {
 
             }
-        });*/
+        });
     }
 
     private View createHeaderView(){
@@ -437,58 +370,7 @@ public class NewCartActivity extends BaseActivity {
 
     private void getGoods() {
         page =1;
-        //carts
-        Observable<NewGoods> cartObservable = GoodApi.getGoodCartList(this,UserUtils.getUserInfo()
-                .getAuth_token(),page);
-        mSubscriber1 = JijiaHttpSubscriber.buildSubscriber(this)
-                .setOnNextListener(new SubscriberOnNextListener<NewGoods>() {
-                    @Override
-                    public void onNext(NewGoods carts) {
-
-                        goods = carts.getGood();
-                        LogUtil.e("goods",goods.toString());
-                        if(goods.size()>0){
-                            adapter.addRefreshAll(goods);
-                            emptyview.setVisibility(View.GONE);
-
-                            tvCartitemSum.setText("0");
-                            rbCartSelectall.setSelected(false);
-                            adapter.disSelectAll();
-                            btnCart.setText("提交订单" + "(" + 0 + ")");
-                        }else{
-                            adapter.addRefreshAll(goods);
-                            emptyview.setVisibility(View.VISIBLE);
-                            emptyview.setText("您的购物车为空~");
-                        }
-
-
-                    }
-                }).setOnCompletedListener(new SubscriberOnCompletedListener() {
-                    @Override
-                    public void onCompleted() {
-                        hideLoading();
-                        superSwipeCartRefresh.setRefreshing(false);
-                        pbCartHeader.setVisibility(View.GONE);
-                    }
-                }).setOnErrorListener(new SubscriberOnErrorListener() {
-                    @Override
-                    public void onError(Throwable e) {
-                        hideLoading();
-                        superSwipeCartRefresh.setRefreshing(false);
-                        pbCartHeader.setVisibility(View.GONE);
-                    }
-                })
-                .build();
-        cartObservable.subscribe(mSubscriber1);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        CommonUtil.unSubscribeSubs(mSubscriber,mSubscriber1);
-    }
-}
-       /* RequestParams entity = new RequestParams(Configurations.URL_GOODS);
+        RequestParams entity = new RequestParams(Configurations.URL_GOODS);
 
         if(UserUtils.getUserInfo() !=null) {
             entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
@@ -557,5 +439,6 @@ public class NewCartActivity extends BaseActivity {
 
             }
         });
-    }*/
+    }
 
+}

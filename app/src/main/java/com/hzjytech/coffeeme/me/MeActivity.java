@@ -207,7 +207,7 @@ public class MeActivity extends BaseActivity implements SettingFragment.OnSettin
     }
 
     private void initView() {
-        LogUtil.e("wxid",UserUtils.getUserInfo().getWx_open_id()+"");
+        Log.e("wxid",UserUtils.getUserInfo().getWx_open_id()+"");
         tvPsninfoNickname.setText(UserUtils.getUserInfo().getNickname());
         if (!TextUtils.isEmpty(UserUtils.getUserInfo().getPhone())) {
             tvPsninfoPhone.setText(UserUtils.getUserInfo().getPhone());
@@ -307,7 +307,7 @@ public class MeActivity extends BaseActivity implements SettingFragment.OnSettin
                         bindPhone();
                     }
                 });
-                LogUtil.e("id",UserUtils.getUserInfo().getWeibo_open_id()+"");
+                Log.e("id",UserUtils.getUserInfo().getWeibo_open_id()+"");
 
                 if (!TextUtils.isEmpty(UserUtils.getUserInfo().getWeibo_open_id())) {
 

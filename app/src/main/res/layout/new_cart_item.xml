@@ -15,10 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/normal_grey" />
-    <com.hzjytech.coffeeme.widgets.SwipeItemLayout
+    <com.hzjytech.coffeeme.widgets.SwipeItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/swipeItemCartItemRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         android:background="@color/normal_white"
         app:bga_sil_bottomMode="pullOut"
         app:bga_sil_springDistance="20dp"
@@ -35,13 +36,13 @@
             android:textColor="@color/normal_white"
             android:textSize="17dp" />
 
-        <RelativeLayout
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="140dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -60,34 +61,196 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/ll_cart_item"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:id="@+id/rlCartitemContainer1"
                         android:layout_width="match_parent"
                         android:layout_height="90dp"
-                        android:layout_marginLeft="-11dp"
                         android:layout_alignTop="@+id/llCartitemContainer"
                         android:layout_toRightOf="@+id/llCartitemContainer">
 
-                       <include layout="@layout/item_good"/>
+                        <TextView
+                            android:id="@+id/tvCartitemName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginTop="10dp"
+                            android:text="卡布奇诺"
+                            android:textColor="@color/coffee"
+                            android:textSize="14dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/llCartitemContainer1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:visibility="invisible">
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredient1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="咖啡浓度"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredientValue1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="200%"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCartitemContainer2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:visibility="invisible">
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredient2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="咖啡浓度"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredientValue2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="200%"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCartitemContainer3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:visibility="invisible">
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredient3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="咖啡浓度"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredientValue3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="200%"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCartitemContainer4"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:visibility="invisible">
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredient4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="咖啡浓度"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredientValue4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="200%"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/llCartitemContainer5"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:visibility="invisible">
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredient5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="咖啡浓度"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+
+                                <TextView
+                                    android:id="@+id/tvCartitemIngredientValue5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="200%"
+                                    android:textColor="@color/standard_grey"
+                                    android:textSize="11dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvCartitemPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_marginBottom="6dp"
+                            android:text="价格： 10元"
+                            android:textColor="@color/standard_black"
+                            android:textSize="12dp" />
+
                     </RelativeLayout>
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_marginTop="10dp"
                         android:layout_height="@dimen/line_height"
                         android:background="@color/line_color" />
 
                     <RelativeLayout
                         android:id="@+id/rlCartItemContainer2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
+                        android:layout_height="50dp"
                         android:layout_alignBottom="@+id/llCartitemContainer"
                         android:layout_gravity="right|center_vertical"
                         android:layout_toRightOf="@+id/llCartitemContainer">
@@ -97,17 +260,17 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
-                            android:text="选择数量:"
+                            android:text="购买数量:"
                             android:textColor="@color/standard_black"
                             android:textSize="14dp" />
 
-                        <com.hzjytech.coffeeme.widgets.MyAddSubView
+                        <com.hzjytech.coffeeme.widgets.AddSubView
                             android:id="@+id/addSunCartitemCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
-                            android:layout_marginRight="20dp"></com.hzjytech.coffeeme.widgets.MyAddSubView>
+                            android:layout_marginRight="20dp"></com.hzjytech.coffeeme.widgets.AddSubView>
 
                     </RelativeLayout>
                 </LinearLayout>

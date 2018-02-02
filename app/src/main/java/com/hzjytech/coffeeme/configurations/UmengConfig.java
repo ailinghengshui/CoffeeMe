@@ -74,6 +74,4 @@ public class UmengConfig {
     public static final String PARAM_BALANCEPAY = "BalancePay";
 
 
-    public static final String PACKAGEMODULATIONACTIVITY = "PackageModulationActivity";
-    public static final String MYPACKAGECOUPONSACTIVITY = "MyPackageCouponsActivity";
 }

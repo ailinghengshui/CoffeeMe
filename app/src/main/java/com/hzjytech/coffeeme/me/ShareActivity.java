@@ -1,23 +1,14 @@
-
 package com.hzjytech.coffeeme.me;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
-import android.webkit.JavascriptInterface;
-import android.webkit.JsPromptResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hzjytech.coffeeme.BaseActivity;
 import com.hzjytech.coffeeme.Dialogs.BottomSelectDialog;
 import com.hzjytech.coffeeme.Dialogs.HintDialog;
@@ -29,7 +20,6 @@ import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.User;
 import com.hzjytech.coffeeme.listeners.IMethod1Listener;
 import com.hzjytech.coffeeme.utils.BitmapUtil;
-import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
 import com.hzjytech.coffeeme.weibomanager.AccessTokenKeeper;
@@ -69,12 +59,12 @@ import java.util.UUID;
  */
 @ContentView(R.layout.activity_share)
 public class ShareActivity extends BaseActivity implements IWeiboHandler.Response {
+    @ViewInject(R.id.tv_invitation_code)
+    private TextView tv_invitation_code;
+    @ViewInject(R.id.tv_share)
+    private TextView tv_share;
     @ViewInject(R.id.titleBar)
     private TitleBar titleBar;
-    @ViewInject(R.id.pb)
-    private ProgressBar mPb;
-    @ViewInject(R.id.wv_share)
-    private WebView mWv;
     private IWeiboShareAPI mWeiboShareAPI;
     private IWXAPI api;
     private User user;
@@ -108,58 +98,7 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
 
     private void initView() {
         initTitleBar();
-        initWebView();
-    }
-
-    private void initWebView() {
-        mPb.setMax(100);
-        WebSettings webSettings=mWv.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        //适当缩小页面内容
-        // webSettings.setUseWideViewPort(true);
-        //webSettings.setLoadWithOverviewMode(true);
-        //允许js打开窗口
-        //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSettings.setBlockNetworkImage(false);
-        //允许输入获取焦点
-        mWv.requestFocusFromTouch();
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);//关闭缓存
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        mWv.addJavascriptInterface(new ShareJsInteration(),"control");
-        mWv.setWebChromeClient(new WebChromeClient(){
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                LogUtil.e("progress",newProgress+"");
-                if(newProgress<100){
-                    mPb.setVisibility(View.VISIBLE);
-                    mPb.setProgress(newProgress);
-                }else {
-                    mPb.setProgress(newProgress);
-                    mPb.setVisibility(View.GONE);
-                }
-                super.onProgressChanged(view, newProgress);
-            }
-
-            @Override
-            public void onReceivedTitle(WebView view, String title) {
-                super.onReceivedTitle(view, title);
-                titleBar.setTitle(view.getTitle());
-            }
-
-
-            @Override
-            public boolean onJsPrompt(
-                    WebView view,
-                    String url,
-                    String message,
-                    String defaultValue,
-                    JsPromptResult result) {
-                return super.onJsPrompt(view, url, message, defaultValue, result);
-            }
-        });
-
-        mWv.loadUrl(Configurations.URL_INVITINGFRIENDS+"/"+ UserUtils.getUserInfo().getAuth_token());
+        initInvitationCode();
     }
 
     @Override
@@ -177,20 +116,19 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
         }
     }
 
-    public class ShareJsInteration {
-
-        private String mTitle="";
-        private String mContent="";
-        private String mShareUr="";
-
-        @JavascriptInterface
-        public void showShare(String mTitle,String mContent,String mShareUr){
-
-            onMefrgShareClick(mTitle,mContent,mShareUr);
-            //onMefrgShareClick("share","share","share");
-        }
+    public interface MeShareListener {
+        void onMeShareListener(int shared);
     }
 
+    private void initInvitationCode() {
+        user = UserUtils.getUserInfo();
+        if (null == user.getReferral_code()) {
+
+            tv_invitation_code.setText(getString(R.string.str_norefreral_code));
+        } else {
+            tv_invitation_code.setText(user.getReferral_code());
+        }
+    }
 
     private void initTitleBar() {
         titleBar.setTitle(R.string.string_share);
@@ -204,8 +142,8 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
 
         titleBar.setLeftImageResource(R.drawable.icon_left);
     }
-
-    private void onMefrgShareClick(final String title, final String content, final String shareUr) {
+    @Event(R.id.tv_share)
+    private void onMefrgShareClick(View view) {
         int[] images = new int[]{R.drawable.icon_share_weibo,  R.drawable.icon_share_wechat,R.drawable.icon_share_friendcircle};
         String[] titles = new String[]{"新浪微博",  "微信好友","微信朋友圈"};
 
@@ -218,15 +156,15 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
                 switch (param){
                     //新浪微博
                     case 0:
-                        shareViaWeibo(title,content,shareUr);
+                        shareViaWeibo();
                         break;
                     //微信好友
                     case 1:
-                        shareViaWeChat(title,content,shareUr,true);
+                        shareViaWeChat(true);
                         break;
                     //微信朋友圈
                     case 2:
-                        shareViaWeChat(title,content,shareUr,false);
+                        shareViaWeChat(false);
                         break;
                 }
                 bottomSelectDialog.dismiss();
@@ -235,7 +173,7 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
         bottomSelectDialog.show(getSupportFragmentManager(),"share");
 
     }
-    private void shareViaWeibo(String title, String content, String shareUr) {
+    private void shareViaWeibo() {
         showLoading();
         MobclickAgent.onEvent(this, UmengConfig.EVENT_SHAREREFERRALCODE_WEIBO);
         WebpageObject webpageObject = new WebpageObject(); //分享网页是这个
@@ -243,16 +181,16 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
         options.inSampleSize=2;
         Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.logo,options);
         webpageObject.setThumbImage(thumb); //注意，它会按照jpeg做85%的压缩，压缩后的大小不能超过32K
-        webpageObject.title = title;//不能超过512
-        webpageObject.actionUrl = shareUr;// 不能超过512
-        webpageObject.description = content;//不能超过1024
+        webpageObject.title = getString(R.string.share_title);//不能超过512
+        webpageObject.actionUrl = Configurations.URL_SHARE;// 不能超过512
+        webpageObject.description = "注册时输入我的专属邀请码:"+user.getReferral_code()+"\n即可获得优惠券一张，\n随时随地寻找身边的咖啡。";//不能超过1024
         webpageObject.identify = UUID.randomUUID().toString();//这个不知道做啥的
         webpageObject.defaultText = "Webpage 默认文案";//这个也不知道做啥的
 //上面这些，一条都不能少，不然就会出现分享失败，主要是接口调用失败，而不会通过activity返回错误的intent
 
 //下面这个，就是用户在分享网页的时候，自定义的微博内容
         TextObject textObject = new TextObject();
-        textObject.text = title;
+        textObject.text = getString(R.string.share_title);
 
         WeiboMultiMessage msg = new WeiboMultiMessage();
         msg.mediaObject=webpageObject;
@@ -284,7 +222,7 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
 
     }
 
-    private void shareViaWeChat(String title, String content, String shareUr,boolean isWechat) {
+    private void shareViaWeChat(boolean isWechat) {
         showLoading();
 
         if (!api.isWXAppInstalled()) {
@@ -298,10 +236,10 @@ public class ShareActivity extends BaseActivity implements IWeiboHandler.Respons
         msg.mediaObject = textObj;
         msg.description = "我的Coffee Me专属优惠码： " + UserUtils.getUserInfo().getReferral_code();*/
         WXWebpageObject webpage = new WXWebpageObject();
-        webpage.webpageUrl=shareUr;
+        webpage.webpageUrl=Configurations.URL_SHARE;
         WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title=title;
-        msg.description=content;
+        msg.title=getString(R.string.share_title);
+        msg.description="注册时输入我的专属邀请码:"+user.getReferral_code()+"\n即可获得优惠券一张，\n随时随地寻找身边的咖啡。";
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize=2;
         Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.logo,options);

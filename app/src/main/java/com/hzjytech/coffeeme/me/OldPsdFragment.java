@@ -72,7 +72,7 @@ public class OldPsdFragment extends BaseFragment {
             entity.addParameter(Configurations.DEVICE_ID,device_id );
             Map<String, String> map=new TreeMap<String, String>();
             map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
-            map.put(Configurations.PASSWORD, etOldPsdPsd.getText().toString());
+            map.put("password", etOldPsdPsd.getText().toString());
             entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
             x.http().post(entity, new Callback.CommonCallback<JSONObject>() {
                 @Override

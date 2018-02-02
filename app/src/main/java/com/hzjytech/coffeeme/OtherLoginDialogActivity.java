@@ -27,7 +27,7 @@ public class OtherLoginDialogActivity extends AppCompatActivity {
             public void onLeftButtonClick() {
                 JPushInterface.clearNotificationById(OtherLoginDialogActivity.this, (Integer) bundle.get(JPushInterface.EXTRA_NOTIFICATION_ID));
                 Intent mainIntent = new Intent(OtherLoginDialogActivity.this, MainActivity.class);
-                MainActivity.Instance().goHome = true;
+                mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainIntent);
                 finish();
             }

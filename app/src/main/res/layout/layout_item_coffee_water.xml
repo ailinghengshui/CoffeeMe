@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:id="@+id/rl_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/coffee_parent"
+    android:layout_marginTop="8dp">
+    <LinearLayout
+        android:id="@+id/ll_child"
+        android:orientation="horizontal"
+        android:layout_width="76dp"
+        android:gravity="center_horizontal"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/ll_lock_check"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_width="50dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:id="@+id/tv_material_name"
+                android:textSize="12dp"
+                android:text="巧克力粉"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/standard_black"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_below="@id/tv_material_name"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:layout_width="7dp"
+                android:layout_height="17dp">
+                <ImageView
+                    android:id="@+id/bt_link"
+                    android:background="@drawable/button_link"
+                    android:scaleType="fitXY"
+                    android:layout_width="7dp"
+                    android:layout_height="17dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_material_name_water"
+                android:textSize="12dp"
+                android:gravity="center"
+                android:text="水"
+                android:layout_marginTop="66dp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/standard_black"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="56dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvModulationMin"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="12dp"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="12dp"
+                    android:textColor="@color/standard_black" />
+
+                <TextView
+                    android:id="@+id/tvModulationMax"
+                    android:layout_marginLeft="160dp"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:minWidth="25dp"
+                    android:gravity="center"
+                    android:text="10"
+                    android:textSize="12dp"
+                    android:textColor="@color/standard_black" />
+
+                <TextView
+                    android:id="@+id/tvModulationUnit"
+                    android:layout_width="12dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="g"
+                    android:gravity="center"
+                    android:textColor="@color/standard_black"
+                    android:layout_marginRight="20dp"
+                    android:textSize="12dp"
+
+                    />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginTop="36dp"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvModulationMin_water"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="12dp"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="12dp"
+                    android:textColor="@color/standard_black" />
+
+                <TextView
+                    android:id="@+id/tvModulationMax_water"
+                    android:layout_marginLeft="160dp"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:minWidth="25dp"
+                    android:gravity="center"
+                    android:text="240"
+                    android:textSize="12dp"
+                    android:textColor="@color/standard_black" />
+
+                <TextView
+                    android:id="@+id/tvModulationUnit_water"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="ml"
+                    android:gravity="center"
+                    android:textColor="@color/standard_black"
+                    android:layout_marginRight="20dp"
+                    android:textSize="12dp"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="94dp"
+        android:src="@drawable/line_white"
+        android:layout_width="152dp"
+        android:layout_height="35dp" />
+    <com.hzjytech.coffeeme.widgets.BubbleSeekBar
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="90dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="160dp"
+        app:bsb_track_color="@color/white"
+        app:bsb_second_track_color="@color/white"
+        app:bsb_track_size="0dp"
+        app:bsb_thumb_color="@color/white"
+        app:bsb_bubble_color="@color/coffee"
+        android:gravity="center"
+        app:bsb_thumb_radius="17dp"
+        android:id="@+id/real_numSkbarodulation"
+        android:layout_height="35dp"
+        android:thumb="@drawable/bumb_chocolate"/>
+     <ImageView
+         android:layout_marginTop="56dp"
+         android:layout_marginLeft="94dp"
+         android:src="@drawable/line_white"
+         android:layout_width="152dp"
+         android:layout_height="35dp" />
+    <com.hzjytech.coffeeme.widgets.BubbleSeekBar
+        android:layout_marginTop="56dp"
+        android:layout_marginLeft="90dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="160dp"
+        android:progressDrawable="@null"
+        android:gravity="center"
+        app:bsb_track_color="@color/dark_black"
+        app:bsb_second_track_color="@color/dark_black"
+        app:bsb_track_size="0dp"
+        app:bsb_thumb_color="@color/dark_black"
+        app:bsb_bubble_color="@color/coffee"
+        android:id="@+id/real_numSkbarodulation_water"
+        app:bsb_thumb_radius="17dp"
+        android:layout_height="@dimen/seekbar_bgh"
+        android:thumb="@drawable/bumb_water"/>
+</RelativeLayout>

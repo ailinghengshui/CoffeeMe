@@ -1,15 +1,13 @@
 package com.hzjytech.coffeeme.adapters;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -18,8 +16,6 @@ import com.hzjytech.coffeeme.authorization.login.LoginActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.entities.Good;
 import com.hzjytech.coffeeme.entities.Ingredient;
-import com.hzjytech.coffeeme.entities.NewGood;
-import com.hzjytech.coffeeme.home.ModulationActivity;
 import com.hzjytech.coffeeme.home.NewCartActivity;
 import com.hzjytech.coffeeme.utils.NetUtil;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
@@ -28,13 +24,9 @@ import com.hzjytech.coffeeme.utils.TimeUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
 import com.hzjytech.coffeeme.widgets.AddSubView;
-import com.hzjytech.coffeeme.widgets.MyAddSubView;
 import com.hzjytech.coffeeme.widgets.SwipeItemLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,8 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.jpush.android.api.JPushInterface;
 import cz.msebera.android.httpclient.Header;
 
@@ -61,7 +51,7 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
     private OnNewCartAdapterListener mListener;
 
     private boolean mIsSelectAll = false;
-    private boolean isFinish = true;
+    private boolean isFinish=true;
 
     public void setSelectAll(boolean isSelectAll) {
         this.mIsSelectAll = isSelectAll;
@@ -81,25 +71,23 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
     }
 
     private List<SwipeItemLayout> mOpenedSil = new ArrayList<>();
-    private List<NewGood> mGoods = new ArrayList<>();
+    private List<Good> mGoods = new ArrayList<>();
     private NewCartActivity mContext;
-    private Map<NewGood, Integer> selectGood = new HashMap<>();
-    private Map<NewGood, Integer> allGood = new HashMap<>();
+    private Map<Good, Integer> selectGood = new HashMap<>();
+    private Map<Good, Integer> allGood = new HashMap<>();
 
-    public NewCartAdapter(NewCartActivity context, List<NewGood> goods) {
+    public NewCartAdapter(NewCartActivity context, List<Good> goods) {
         setHasStableIds(true);
         this.mContext = context;
         this.mGoods = goods;
     }
-
-    public Handler handler = new Handler();
-
-    public void add(int index, NewGood good) {
+    public Handler handler=new Handler();
+    public void add(int index, Good good) {
         mGoods.add(index, good);
         notifyDataSetChanged();
     }
 
-    public void addRefreshAll(Collection<NewGood> goods) {
+    public void addRefreshAll(Collection<Good> goods) {
         if (goods != null) {
             mGoods.clear();
             mGoods.addAll(goods);
@@ -109,12 +97,12 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
     }
 
     private void initAllGood() {
-        for (NewGood good : mGoods) {
+        for (Good good : mGoods) {
             allGood.put(good, 1);
         }
     }
 
-    public void addLoadMoreAll(Collection<NewGood> goods) {
+    public void addLoadMoreAll(Collection<Good> goods) {
         if (goods != null) {
             mGoods.addAll(goods);
             initAllGood();
@@ -127,12 +115,12 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
         notifyDataSetChanged();
     }
 
-    public void remove(NewGood good) {
+    public void remove(Good good) {
         mGoods.remove(good);
         notifyDataSetChanged();
     }
 
-    public NewGood getItem(int position) {
+    public Good getItem(int position) {
         if (position < 0 || position >= getItemCount()) {
             ToastUtil.showShort(mContext, mContext.getString(R.string.str_outofbound));
             return null;
@@ -140,7 +128,6 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
             return mGoods.get(position);
         }
     }
-
     @Override
     public long getItemId(int position) {
         return getItem(position).hashCode();
@@ -148,8 +135,7 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
 
     @Override
     public CartViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.new_cart_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_cart_item, parent, false);
      /*   view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -167,42 +153,64 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
         } else {
             holder.rbCartitemStatus.setSelected(false);
         }
-        holder.mGoodCount.setVisibility(View.INVISIBLE);
-        holder.tvCartitemName.setText(mGoods.get(position)
-                .getItem().getName());
 
-        DisplayImageOptions options=new DisplayImageOptions.Builder()
-                .cacheInMemory(true)/*缓存至内存*/
-                .cacheOnDisk(true)/*缓存值SDcard*/
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
-        String app_image = mGoods.get(position).getItem().getImage_url();
-        //  String str = app_image.substring(0, app_image.indexOf("?"));
-        ImageLoader.getInstance().displayImage(app_image,holder.mIvGood,options);
-        holder.mTvGoodInfo.setText(mGoods.get(position).getItem().getDescription());
-        int sugar = mGoods.get(position)
-                .getSugar();
-        switch (sugar){
-            case 0:
-                holder.mTvGoodSugar.setText(R.string.no_sugar);
-                break;
-            case 1:
-                holder.mTvGoodSugar.setText(R.string.three_points_sweet);
-                break;
-            case 2:
-                holder.mTvGoodSugar.setText(R.string.five_points_sweet);
-                break;
+        holder.tvCartitemName.setText(mGoods.get(position).getName());
+
+        List<Ingredient> ingredients = new ArrayList<>();
+
+        ingredients.clear();
+        ingredients = JSON.parseArray(mGoods.get(position).getIngredients(), Ingredient.class);
+
+        boolean doubleBean = false;
+        Iterator<Ingredient> iterator = ingredients.iterator();
+        while (iterator.hasNext()) {
+            String name = iterator.next().getName();
+            if ("杯子".equals(name)) {
+                iterator.remove();
+            }
+            if ("水".equals(name)) {
+                iterator.remove();
+            }
+
+            if ("咖啡豆".equals(name)) {
+                if (!doubleBean) {
+                    doubleBean = true;
+                } else {
+                    iterator.remove();
+                }
+            }
+
+        }
+        switch (ingredients.size()) {
+            case 5:
+                holder.llCartitemContainer5.setVisibility(View.VISIBLE);
+                holder.tvCartitemIngredient5.setText(ingredients.get(4).getDisplay_name());
+                holder.tvCartitemIngredientValue5.setText(ingredients.get(4).getDisplay_value());
+            case 4:
+                holder.llCartitemContainer4.setVisibility(View.VISIBLE);
+                holder.tvCartitemIngredient4.setText(ingredients.get(3).getDisplay_name());
+                holder.tvCartitemIngredientValue4.setText(ingredients.get(3).getDisplay_value());
             case 3:
-                holder.mTvGoodSugar.setText(R.string.seven_points_sweet);
+                holder.llCartitemContainer3.setVisibility(View.VISIBLE);
+                holder.tvCartitemIngredient3.setText(ingredients.get(2).getDisplay_name());
+                holder.tvCartitemIngredientValue3.setText(ingredients.get(2).getDisplay_value());
+            case 2:
+                holder.llCartitemContainer2.setVisibility(View.VISIBLE);
+                holder.tvCartitemIngredient2.setText(ingredients.get(1).getDisplay_name());
+                holder.tvCartitemIngredientValue2.setText(ingredients.get(1).getDisplay_value());
+            case 1:
+                holder.llCartitemContainer1.setVisibility(View.VISIBLE);
+                holder.tvCartitemIngredient1.setText(ingredients.get(0).getDisplay_name());
+                holder.tvCartitemIngredientValue1.setText(ingredients.get(0).getDisplay_value());
+                break;
+            default:
                 break;
         }
+
         DecimalFormat fnum = new DecimalFormat("##0.00");
-        holder.tvCartitemPrice.setText("¥ " + String.valueOf(fnum.format(mGoods.get(position)
-                .getItem().getCurrent_price())) );
-        holder.mTvGoodOldPrice.setText("¥ " + String.valueOf(fnum.format(mGoods.get(position)
-                .getItem().getPrice())) );
-        holder.addSunCartitemCount.setText(allGood.containsKey(mGoods.get(position)) ? allGood.get(
-                mGoods.get(position)) : 1);
+        holder.tvCartitemPrice.setText("价格: " + String.valueOf(fnum.format(mGoods.get(position).getCurrent_price())) + "元");
+
+        holder.addSunCartitemCount.setText(allGood.containsKey(mGoods.get(position)) ? allGood.get(mGoods.get(position)) : 1);
         holder.addSunCartitemCount.setListener(new AddSubView.AddSubViewable() {
             @Override
             public void onAddSubViewClick(int count) {
@@ -234,41 +242,33 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
     }
 
     class CartViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tvCartitemDel)
-        TextView tvCartitemDel;
-        @BindView(R.id.rbCartitemStatus)
-        TextView rbCartitemStatus;
-        @BindView(R.id.llCartitemContainer)
-        LinearLayout llCartitemContainer;
-        @BindView(R.id.iv_good)
-        ImageView mIvGood;
-        @BindView(R.id.tv_good_name)
-        TextView tvCartitemName;
-        @BindView(R.id.tv_good_price)
-        TextView tvCartitemPrice;
-        @BindView(R.id.tv_good_info)
-        TextView mTvGoodInfo;
-        @BindView(R.id.tv_good_old_price)
-        TextView mTvGoodOldPrice;
-        @BindView(R.id.tv_good_sugar)
-        TextView mTvGoodSugar;
-        @BindView(R.id.good_count)
-        TextView mGoodCount;
-        @BindView(R.id.rlCartitemContainer1)
-        RelativeLayout llCartitemContainer1;
-        @BindView(R.id.addSunCartitemCount)
-        MyAddSubView addSunCartitemCount;
-        @BindView(R.id.rlCartItemContainer2)
-        RelativeLayout mRlCartItemContainer2;
-        @BindView(R.id.swipeItemCartItemRoot)
-        SwipeItemLayout  swipeItemCartItemRoot;
-        @BindView(R.id.ll_cart_item)
-        LinearLayout mLlCartItem;
+
+        private final SwipeItemLayout swipeItemCartItemRoot;
+        private final TextView rbCartitemStatus;
+        private final TextView tvCartitemName;
+        private final LinearLayout llCartitemContainer;
+        private final LinearLayout llCartitemContainer1;
+        private final TextView tvCartitemIngredient1;
+        private final TextView tvCartitemIngredientValue1;
+        private final LinearLayout llCartitemContainer2;
+        private final TextView tvCartitemIngredient2;
+        private final TextView tvCartitemIngredientValue2;
+        private final LinearLayout llCartitemContainer3;
+        private final TextView tvCartitemIngredient3;
+        private final TextView tvCartitemIngredientValue3;
+        private final LinearLayout llCartitemContainer4;
+        private final TextView tvCartitemIngredient4;
+        private final TextView tvCartitemIngredientValue4;
+        private final LinearLayout llCartitemContainer5;
+        private final TextView tvCartitemIngredient5;
+        private final TextView tvCartitemIngredientValue5;
+        private final TextView tvCartitemPrice;
+        private final AddSubView addSunCartitemCount;
+        private final TextView tvCartitemDel;
 
         public CartViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
-           // R.layout.new_cart_item
+            swipeItemCartItemRoot = (SwipeItemLayout) itemView.findViewById(R.id.swipeItemCartItemRoot);
             swipeItemCartItemRoot.setSwipeAble(true);
             swipeItemCartItemRoot.setDelegate(new SwipeItemLayout.SwipeItemLayoutDelegate() {
                 @Override
@@ -290,42 +290,55 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
                 }
             });
 
+            rbCartitemStatus = (TextView) itemView.findViewById(R.id.rbCartitemStatus);
+            tvCartitemName = (TextView) itemView.findViewById(R.id.tvCartitemName);
+            llCartitemContainer = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer);
+            llCartitemContainer1 = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer1);
+            tvCartitemIngredient1 = (TextView) itemView.findViewById(R.id.tvCartitemIngredient1);
+            tvCartitemIngredientValue1 = (TextView) itemView.findViewById(R.id.tvCartitemIngredientValue1);
+            llCartitemContainer2 = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer2);
+            tvCartitemIngredient2 = (TextView) itemView.findViewById(R.id.tvCartitemIngredient2);
+            tvCartitemIngredientValue2 = (TextView) itemView.findViewById(R.id.tvCartitemIngredientValue2);
+            llCartitemContainer3 = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer3);
+            tvCartitemIngredient3 = (TextView) itemView.findViewById(R.id.tvCartitemIngredient3);
+            tvCartitemIngredientValue3 = (TextView) itemView.findViewById(R.id.tvCartitemIngredientValue3);
+            llCartitemContainer4 = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer4);
+            tvCartitemIngredient4 = (TextView) itemView.findViewById(R.id.tvCartitemIngredient4);
+            tvCartitemIngredientValue4 = (TextView) itemView.findViewById(R.id.tvCartitemIngredientValue4);
+            llCartitemContainer5 = (LinearLayout) itemView.findViewById(R.id.llCartitemContainer5);
+            tvCartitemIngredient5 = (TextView) itemView.findViewById(R.id.tvCartitemIngredient5);
+            tvCartitemIngredientValue5 = (TextView) itemView.findViewById(R.id.tvCartitemIngredientValue5);
+            tvCartitemPrice = (TextView) itemView.findViewById(R.id.tvCartitemPrice);
+            addSunCartitemCount = (AddSubView) itemView.findViewById(R.id.addSunCartitemCount);
+
+            tvCartitemDel = (TextView) itemView.findViewById(R.id.tvCartitemDel);
+
             tvCartitemDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (NetUtil.isNetworkAvailable(mContext)) {
-                        if (isFinish == false) {
+                        if(isFinish==false){
                             return;
                         }
                         mContext.showLoading();
-                        isFinish = false;
-                        String delUrl = Configurations.URL_GOODS + "/" + mGoods.get(
-                                getLayoutPosition())
-                                .getId();
-                        RequestParams params = new RequestParams();
-                        params.put(Configurations.AUTH_TOKEN,
-                                UserUtils.getUserInfo()
-                                        .getAuth_token());
+                        isFinish=false;
+                        String delUrl = Configurations.URL_GOODS + "/" + mGoods.get(getLayoutPosition()).getId();
+                        com.loopj.android.http.RequestParams params = new com.loopj.android.http.RequestParams();
+                        params.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
 
-                        String device_id = JPushInterface.getRegistrationID(mContext);
-                        String timeStamp = TimeUtil.getCurrentTimeString();
+                        String device_id= JPushInterface.getRegistrationID(mContext);
+                        String timeStamp= TimeUtil.getCurrentTimeString();
                         params.put(Configurations.TIMESTAMP, timeStamp);
-                        params.put(Configurations.DEVICE_ID, device_id);
+                        params.put(Configurations.DEVICE_ID,device_id );
 
-                        Map<String, String> map = new TreeMap<String, String>();
-                        map.put(Configurations.AUTH_TOKEN,
-                                UserUtils.getUserInfo()
-                                        .getAuth_token());
-                        params.put(Configurations.SIGN,
-                                SignUtils.createSignString(device_id, timeStamp, map));
+                        Map<String, String> map=new TreeMap<String, String>();
+                        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+                        params.put(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
 
                         AsyncHttpClient client = new AsyncHttpClient();
                         client.delete(delUrl, params, new JsonHttpResponseHandler() {
                             @Override
-                            public void onSuccess(
-                                    int statusCode,
-                                    Header[] headers,
-                                    JSONObject response) {
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
                                 try {
                                     if (response.getInt(Configurations.STATUSCODE) == 200) {
@@ -337,23 +350,20 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
                                         }
                                         remove(mGoods.get(getLayoutPosition()));
 
-                                    } else if (response.getInt(Configurations.STATUSCODE) == 401
-                                            || response.getInt(
-                                            Configurations.STATUSCODE) == 403) {
+                                    } else if (response.getInt(Configurations.STATUSCODE) == 401 || response.getInt(Configurations.STATUSCODE) == 403) {
                                         goLogin();
                                     } else {
                                         notifyDataSetChanged();
                                     }
                                     mContext.hideLoading();
-                                    ToastUtil.showShort(mContext,
-                                            response.getString(Configurations.STATUSMSG));
+                                    ToastUtil.showShort(mContext, response.getString(Configurations.STATUSMSG));
                                     //动画完成需要一定的时间
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            isFinish = true;
+                                            isFinish=true;
                                         }
-                                    }, 1000);
+                                    },1000);
 
 
                                 } catch (JSONException e) {
@@ -376,8 +386,7 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
 
                     } else {
                         rbCartitemStatus.setSelected(true);
-                        selectGood.put(mGoods.get(getLayoutPosition()),
-                                addSunCartitemCount.getText());
+                        selectGood.put(mGoods.get(getLayoutPosition()), addSunCartitemCount.getText());
                     }
 
                     if (null != mListener) {
@@ -389,14 +398,6 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
                 }
 
 
-            });
-            mLlCartItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(mContext, ModulationActivity.class);
-                    intent.putExtra(Configurations.APP_ITEM, mGoods.get(getLayoutPosition()).getItem());
-                    mContext.startActivity(intent);
-                }
             });
         }
 
@@ -454,18 +455,17 @@ public class NewCartAdapter extends RecyclerView.Adapter<NewCartAdapter.CartView
         notifyDataSetChanged();
     }
 
-    public Map<NewGood, Integer> getSelectGood() {
+    public Map<Good, Integer> getSelectGood() {
         return selectGood;
     }
 
     private float sum() {
         float sum = 0f;
         if (selectGood.size() > 0) {
-            Iterator iter = selectGood.entrySet()
-                    .iterator();
+            Iterator iter = selectGood.entrySet().iterator();
             while (iter.hasNext()) {
                 Map.Entry entry = (Map.Entry) iter.next();
-                sum += ((NewGood) entry.getKey()).getItem().getCurrent_price() * (Integer) entry.getValue();
+                sum += ((Good) entry.getKey()).getCurrent_price() * (Integer) entry.getValue();
             }
             sum = (float) (Math.round(sum * 100)) / 100;
         }

@@ -1,6 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/light_white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,52 +8,16 @@
     <in.srain.cube.views.ptr.PtrClassicFrameLayout
         android:id="@+id/store_house_ptr_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/light_white"
         >
-        <ru.noties.scrollable.ScrollableLayout
-            android:id="@+id/scrollable_layout"
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcyViewHomeAppitems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:scrollable_defaultCloseUp="false">
-
-          <include layout="@layout/layout_home_headview"/>
-
-            <RelativeLayout
-                android:id="@+id/rl_home_drink_tab"
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:background="@color/bg_grey">
-
-                <LinearLayout
-                    android:layout_centerInParent="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_home_dark_grey_border"
-                    android:orientation="vertical"
-                    android:layout_marginTop="9dp"
-                    android:padding="1dp">
-
-                    <android.support.design.widget.TabLayout
-                        android:id="@+id/tblayoutHomefrgTab"
-                        style="@style/OrderTabLayout"
-                        android:layout_width="270dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center_horizontal"
-                        app:tabMode="fixed"
-                        app:tabTextColor="@color/coffee"
-                        />
-                </LinearLayout>
-            </RelativeLayout>
-
-
-            <android.support.v4.view.ViewPager
-                android:layout_marginTop="53dp"
-                android:id="@+id/vPgHomefrgShow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </ru.noties.scrollable.ScrollableLayout>
+            android:layout_marginBottom="@dimen/mybanlance_ritem_padh"
+            />
     </in.srain.cube.views.ptr.PtrClassicFrameLayout>
 
 
@@ -100,5 +63,35 @@
         </RelativeLayout>
 
     </com.hzjytech.coffeeme.widgets.TransparentToolBar>
+
+
+
+<RelativeLayout
+    android:clickable="true"
+    android:visibility="visible"
+    android:id="@+id/rl_guide"
+    android:background="@color/trans_black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+   <ImageView
+       android:layout_centerInParent="true"
+       android:src="@drawable/guide_home"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_guide"
+        android:clickable="true"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentRight="true"
+        android:text="我知道了"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/bg_guide_text"
+        android:layout_width="80dp"
+        android:layout_height="40dp" />
+
+</RelativeLayout>
 
 </FrameLayout>

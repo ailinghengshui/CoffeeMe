@@ -16,7 +16,6 @@
         <include layout="@layout/titlebar"/>
 
         <RelativeLayout
-            android:id="@+id/rlScanForCoupon"
             android:layout_width="match_parent"
             android:layout_height="63dp"
             android:background="@color/coffee"
@@ -76,11 +75,11 @@
     <Button
         android:id="@+id/btnMycouponExchange"
         android:layout_width="match_parent"
+        android:layout_height="48dp"
         android:background="@color/coffee"
         android:layout_alignParentBottom="true"
         android:text="使用积分兑换"
         android:textSize="15dp"
-        android:layout_height="48dp"
         android:textColor="@color/normal_white"
         />
 

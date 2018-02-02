@@ -4,74 +4,70 @@
     android:layout_height="100dp"
     android:gravity="center_vertical"
     android:id="@+id/rlAppitemContainer"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="7.5dp"
-    android:layout_marginRight="7.5dp"
-    android:background="@drawable/bg_item">
-
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="@drawable/bg_item_rect"
+    >
+    <RelativeLayout
+        android:layout_marginBottom="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
   <ImageView
-      android:scaleType="fitCenter"
-      android:translationY="10dp"
+     android:translationY="15dp"
      android:id="@+id/iv_item"
-      android:layout_marginLeft="5dp"
-     android:layout_width="154.5dp"
-      android:layout_marginTop="7.5dp"
-      android:src="@drawable/cup"
-     android:layout_height="match_parent" />
+     android:layout_width="167dp"
+     android:layout_height="100dp" />
     <LinearLayout
-        android:paddingRight="10dp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/iv_item"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center_vertical">
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/tvAppitemName_ch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="玛琪雅朵"
-                    android:textSize="14sp"
-                    android:textColor="@color/standard_black"
-                    />
-                <TextView
-                    android:id="@+id/tvAppitemName_eg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="Macciato"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:textColor="@color/standard_black"
-                    android:textSize="12dp"/>
-
-            </LinearLayout>
+        <TextView
+            android:id="@+id/tvAppitemName_ch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="玛琪雅朵"
+            android:textSize="14dp"
+            android:textColor="@color/standard_black"
+            />
             <TextView
-                android:id="@+id/tv_desc"
-                android:layout_marginTop="7dp"
+                android:id="@+id/tvAppitemName_eg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/standard_black"
+                android:layout_marginLeft="10dp"
+                android:text="Macciato"
+                android:singleLine="true"
                 android:ellipsize="end"
-                android:textSize="12dp"
-                android:maxLines="2"
-                android:text="水+咖啡，\n无奶 醇正 低热量"/>
-            <RelativeLayout
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                >
+                android:textColor="@color/standard_black"
+                android:textSize="12dp"/>
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/standard_black"
+            android:ellipsize="end"
+            android:textSize="12dp"
+            android:maxLines="2"
+            android:text="水+咖啡，\n无奶 醇正 低热量"/>
+        <RelativeLayout
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            >
                 <TextView
                     android:id="@+id/tv_price_original"
                     android:layout_centerVertical="true"
@@ -80,19 +76,18 @@
                     android:textColor="@color/standard_black"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_centerVertical="true"
-                    android:id="@+id/tv_price_current"
-                    android:layout_alignParentRight="true"
-                    android:text="¥ 10.8"
-                    android:textColor="@color/standard_black"
-                    android:textSize="17dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
-        </LinearLayout>
-
+            <TextView
+                android:layout_centerVertical="true"
+                android:id="@+id/tv_price_current"
+                android:layout_alignParentRight="true"
+                android:text="¥ 10.8"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/standard_black"
+                android:textSize="17dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
 
     </LinearLayout>
-
+    </RelativeLayout>
 </RelativeLayout>

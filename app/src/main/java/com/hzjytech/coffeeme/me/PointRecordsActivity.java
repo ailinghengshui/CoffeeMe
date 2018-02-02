@@ -225,6 +225,7 @@ public class PointRecordsActivity extends BaseActivity {
         super.onResume();
         MobclickAgent.onPageStart(UmengConfig.POINTRECORDSACTIVITY);
         MobclickAgent.onResume(this);
+
         addRefreshData();
         initShow();
     }

@@ -59,7 +59,6 @@ import org.xutils.x;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeMap;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -343,8 +342,13 @@ public class LoginActivity extends BaseActivity {
                 try {
                     JSONObject weiboObj = new JSONObject(result);
                     if (weiboObj.getInt("statusCode") == 200) {
-                        LogUtil.e("weiboResult",result);
+                       // Log.e("weiboResult",result);
                         User user = JSON.parseObject(weiboObj.getJSONObject("results").getString("user"), User.class);
+                        //新用户赠送优惠券
+                        User.BenefitCouponBean benefit_coupon = user.getBenefit_coupon();
+                        if(benefit_coupon!=null){
+                            SharedPrefUtil.saveIsFirstRegister(true);
+                        }
                         SharedPrefUtil.loginSuccess(SharedPrefUtil.LOGIN_VIA_WEIBO);
                         UserUtils.saveUserInfo(user);
                         finish();
@@ -549,6 +553,11 @@ public class LoginActivity extends BaseActivity {
                             JSONObject object = new JSONObject(result);
                             if (object.getInt(Configurations.STATUSCODE) == 200) {
                                 User user = JSON.parseObject(object.getJSONObject("results").getString("user"), User.class);
+                                //新用户赠送优惠券
+                                User.BenefitCouponBean benefit_coupon = user.getBenefit_coupon();
+                                if(benefit_coupon!=null){
+                                    SharedPrefUtil.saveIsFirstRegister(true);
+                                }
                                 SharedPrefUtil.loginSuccess(SharedPrefUtil.LOGIN_VIA_WECHAT);
                                 UserUtils.saveUserInfo(user);
 
@@ -656,7 +665,7 @@ public class LoginActivity extends BaseActivity {
 
         params.addParameter(Configurations.PHONE, metLoginTel.getText().toString());
         params.addParameter(Configurations.PASSWORD, metLoginPsd.getText().toString());
-//      params.addParameter(Configurations.REG_ID, JPushInterface.getRegistrationID(getApplicationContext()));
+//        params.addParameter(Configurations.REG_ID, JPushInterface.getRegistrationID(getApplicationContext()));
         params.addParameter(Configurations.REG_ID, device_id);
 
         long timeStamp= TimeUtil.getCurrentTime();
@@ -684,6 +693,7 @@ public class LoginActivity extends BaseActivity {
                         UserUtils.saveUserInfo(user);
                         UserUtils.saveLocalMobileAndPwd(user.getPhone(), "");
                         LoginActivity.this.finish();
+
 
                     } else {
                         ToastUtil.showShort(LoginActivity.this, object.getString(Configurations.STATUSMSG));

@@ -269,7 +269,7 @@ public class PointRateActivity extends BaseActivity {
     }
 
     private void initTitle() {
-        titleBar.setTitle(R.string.member_benefits);
+        titleBar.setTitle(R.string.string_pointrate);
         titleBar.setTitleColor(Color.WHITE);
         titleBar.setLeftClickListener(new View.OnClickListener() {
             @Override

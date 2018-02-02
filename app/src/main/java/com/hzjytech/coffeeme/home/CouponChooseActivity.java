@@ -25,7 +25,6 @@ import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.Coupon;
 import com.hzjytech.coffeeme.listeners.OnRecyclerItemClickListener;
-import com.hzjytech.coffeeme.utils.DateTimeUtil;
 import com.hzjytech.coffeeme.utils.DateUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
 import com.hzjytech.coffeeme.utils.TimeUtil;
@@ -46,8 +45,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.TreeMap;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -87,7 +84,7 @@ public class CouponChooseActivity extends BaseActivity {
             currentPrice = getIntent().getFloatExtra("currentPrice", 0.0f);
         }
 
-        /*if (couponId == -1) {
+        if (couponId == -1) {
             updateCouponChoose("请选择优惠券", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -101,7 +98,7 @@ public class CouponChooseActivity extends BaseActivity {
                     finish();
                 }
             });
-        }*/
+        }
 
         initTitle();
         initAdapter();
@@ -125,7 +122,7 @@ public class CouponChooseActivity extends BaseActivity {
     private void loadCoupons() {
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
         if (UserUtils.getUserInfo() != null) {
-            entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+            entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         }
         entity.addParameter(Configurations.AVAILABLE, true);
 
@@ -134,8 +131,8 @@ public class CouponChooseActivity extends BaseActivity {
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
         entity.addParameter(Configurations.DEVICE_ID, device_id);
 
-        Map<String, String> map = new TreeMap<>();
-        map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         map.put(Configurations.AVAILABLE, String.valueOf(true));
         entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
 
@@ -192,89 +189,87 @@ public class CouponChooseActivity extends BaseActivity {
                             finish();
                         }
                     });
-
+//                    Snackbar.make(coorlayoutCouponchooseRoot, "请选择优惠券", Snackbar.LENGTH_INDEFINITE).setAction("确定", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//
+//                            couponId = -1;
+//                            itemView.setSelected(false);
+//                            setResult(RESULT_CANCELED);
+//                            finish();
+//                        }
+//                    }).setActionTextColor(getResources().getColor(R.color.coffee)).show();
                 } else {
+
                     itemView.setSelected(true);
-                    couponId=coupons.get(position).getId();
-                   // changeBottomState(coupons,position);
                     adapter.notifyDataSetChanged();
 
-//
-                }
-            }
-        });
+                    updateCouponChoose("使用选中优惠券", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-    }
+                            try {
+                                if(DateUtil.ISO8601toCalendar(coupons.get(position).getStart_date()).after(Calendar.getInstance())){
+                                    int day = DateUtil.getDay(DateUtil.ISO8601toCalendar(coupons.get(position).getStart_date()));
+                                    int mon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(coupons.get(position).getStart_date()));
+                                    int year = DateUtil.getYear(DateUtil.ISO8601toCalendar(coupons.get(position).getStart_date()));
 
-    private void changeBottomState(final List<Coupon> coupons, final int position) {
-        Coupon checkedCoupon = coupons.get(position);
-        String des="";
-        switch (checkedCoupon.getCoupon_type()){
-            case 1:
-                DecimalFormat decimalFormat = new DecimalFormat("##0.0");
-                des = decimalFormat.format(Float.valueOf(checkedCoupon.getValue()) * 0.1f)+"折优惠券";
-                break;
-            case 2:
-                String[] strings = checkedCoupon.getValue().split("-");
-                des=strings[1]+"元优惠券";
-                break;
-            case 3:
-                des= checkedCoupon.getValue()+"元优惠券";
-                break;
-
-        }
-        tvCouponchooseDesc.setText(des+"(可用)");
-        if (checkedCoupon.getCoupon_type() == 2) {
-            String[] strings =checkedCoupon.getValue().split("-");
-            if (Float.valueOf(strings[0]) > currentPrice) {
-                des.replace("(可用)","");
-                tvCouponchooseDesc.setText(des+"("+"满￥" + strings[0] + "可用)");
-            }
-        }
-
-        tvCouponchoose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if(DateTimeUtil.after(coupons.get(position).getStart_date(),System.currentTimeMillis())){
-                        int day = DateUtil.getDay(DateUtil.ISO8601toCalendar(CouponChooseActivity.this.coupons.get(position).getStart_date()));
-                        int mon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(CouponChooseActivity.this.coupons.get(position).getStart_date()));
-                        int year = DateUtil.getYear(DateUtil.ISO8601toCalendar(CouponChooseActivity.this.coupons.get(position).getStart_date()));
-
-                        StringBuilder sb=new StringBuilder();
-                        sb.append(year).append(".");
-                        sb.append(mon).append(".");
-                        sb.append(day).append("以后可用");
-                        ToastUtil.showShort(CouponChooseActivity.this, sb.toString());
-                        return;
-                    }else{
-                        if (CouponChooseActivity.this.coupons.get(position).getCoupon_type() == 2) {
-                            String[] strings = CouponChooseActivity.this.coupons.get(position).getValue().split("-");
-                            if (Float.valueOf(strings[0]) > currentPrice) {
-                                ToastUtil.showShort(CouponChooseActivity.this, "满￥" + strings[0] + "可用");
-                                return;
+                                    StringBuilder sb=new StringBuilder();
+                                    sb.append(year).append(".");
+                                    sb.append(mon).append(".");
+                                    sb.append(day).append("以后可用");
+                                    ToastUtil.showShort(CouponChooseActivity.this, sb.toString());
+                                    return;
+                                }else{
+                                    if (coupons.get(position).getCoupon_type() == 2) {
+                                        String[] strings = coupons.get(position).getValue().split("-");
+                                        if (Float.valueOf(strings[0]) > currentPrice) {
+                                            ToastUtil.showShort(CouponChooseActivity.this, "满￥" + strings[0] + "可用");
+                                            return;
+                                        }
+                                    }
+                                    Intent data = new Intent();
+                                    couponId = coupons.get(position).getId();
+                                    data.putExtra("coupon", coupons.get(position));
+                                    setResult(RESULT_OK, data);
+                                    finish();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
+
                         }
-                        Intent data = new Intent();
-                        couponId = CouponChooseActivity.this.coupons.get(position).getId();
-                        data.putExtra("coupon", CouponChooseActivity.this.coupons.get(position));
-                        setResult(RESULT_OK, data);
-                        finish();
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    });
+//                    Snackbar.make(coorlayoutCouponchooseRoot, "使用选中优惠券", Snackbar.LENGTH_INDEFINITE).setAction("确定", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//
+//                            if (coupons.get(position).getCoupon_type() == 2) {
+//                                String[] strings = coupons.get(position).getValue().split("-");
+//                                if (Float.valueOf(strings[0]) > currentPrice) {
+//                                    ToastUtil.showShort(CouponChooseActivity.this, "满￥" + strings[0] + "可用");
+//                                    return;
+//                                }
+//                            }
+//                            Intent data = new Intent();
+//                            couponId = coupons.get(position).getId();
+//                            data.putExtra("coupon", coupons.get(position));
+//                            setResult(RESULT_OK, data);
+//                            finish();
+//                        }
+//                    }).setActionTextColor(getResources().getColor(R.color.coffee)).show();
                 }
             }
         });
-    }
 
+    }
     private void updateCouponChoose(String desc, View.OnClickListener listener) {
         tvCouponchooseDesc.setText(desc);
         tvCouponchoose.setOnClickListener(listener);
     }
 
     private void initTitle() {
-        tbCouponchooseTitle.setTitle("选择优惠券");
+        tbCouponchooseTitle.setTitle("我的优惠券");
         tbCouponchooseTitle.setTitleColor(Color.WHITE);
         tbCouponchooseTitle.setLeftImageResource(R.drawable.icon_left);
         tbCouponchooseTitle.setLeftClickListener(new View.OnClickListener() {
@@ -320,40 +315,89 @@ public class CouponChooseActivity extends BaseActivity {
             return new CouponChooseLstHolder(view);
         }
 
+        private String createAvalDate(String startDate, String endDate) {
+            StringBuilder sb = new StringBuilder("有效期: ");
+            try {
+                int startDay = DateUtil.getDay(DateUtil.ISO8601toCalendar(startDate));
+
+                int startMon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(startDate));
+                int startYear = DateUtil.getYear(DateUtil.ISO8601toCalendar(startDate));
+                int day = DateUtil.getDay(DateUtil.ISO8601toCalendar(endDate));
+                int mon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(endDate));
+                int year = DateUtil.getYear(DateUtil.ISO8601toCalendar(endDate));
+
+
+                sb.append(startYear).append(".");
+                sb.append(startMon).append(".");
+                sb.append(startDay).append("-");
+                sb.append(year).append(".");
+                sb.append(mon).append(".");
+                sb.append(day);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return sb.toString();
+        }
+
+        private String createAvalDate(String startDate) {
+            StringBuilder sb = new StringBuilder("有效期:");
+            try {
+                int startDay = DateUtil.getDay(DateUtil.ISO8601toCalendar(startDate));
+
+                int startMon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(startDate));
+                int startYear = DateUtil.getYear(DateUtil.ISO8601toCalendar(startDate));
+
+                sb.append(startYear).append(".");
+                sb.append(startMon).append(".");
+                sb.append(startDay).append("-");
+                sb.append(getString(R.string.str_end_date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return sb.toString();
+        }
 
         @Override
         public void onBindViewHolder(CouponChooseLstAdapter.CouponChooseLstHolder holder, final int pos) {
             if (couponId == coupons.get(pos).getId()) {
                 holder.itemView.setSelected(true);
-                changeBottomState(coupons,pos);
-               /* updateCouponChoose("使用选中优惠券", new View.OnClickListener() {
+                updateCouponChoose("使用选中优惠券", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        if(DateTimeUtil.after(coupons.get(pos).getStart_date(),System.currentTimeMillis())){
-
-                            StringBuilder sb=new StringBuilder();
-                            sb.append(DateTimeUtil.getShort7TimeFromLong(coupons.get(pos).getStart_date()));
-                            sb.append("以后可用");
-                            ToastUtil.showShort(CouponChooseActivity.this, sb.toString());
-                            return;
-                        }else{
-                            if (coupons.get(pos).getCoupon_type() == 2) {
-                                String[] strings = coupons.get(pos).getValue().split("-");
-                                if (Float.valueOf(strings[0]) > currentPrice) {
-                                    ToastUtil.showShort(CouponChooseActivity.this, "满￥" + strings[0] + "可用");
-                                    return;
+                        try {
+                            if(DateUtil.ISO8601toCalendar(coupons.get(pos).getStart_date()).after(Calendar.getInstance())){
+                                int day = DateUtil.getDay(DateUtil.ISO8601toCalendar(coupons.get(pos).getStart_date()));
+                                int mon = DateUtil.getMonth(DateUtil.ISO8601toCalendar(coupons.get(pos).getStart_date()));
+                                int year = DateUtil.getYear(DateUtil.ISO8601toCalendar(coupons.get(pos).getStart_date()));
+                                StringBuilder sb=new StringBuilder();
+                                sb.append(year).append(".");
+                                sb.append(mon).append(".");
+                                sb.append(day).append("以后可用");
+                                ToastUtil.showShort(CouponChooseActivity.this, sb.toString());
+                                return;
+                            }else{
+                                if (coupons.get(pos).getCoupon_type() == 2) {
+                                    String[] strings = coupons.get(pos).getValue().split("-");
+                                    if (Float.valueOf(strings[0]) > currentPrice) {
+                                        ToastUtil.showShort(CouponChooseActivity.this, "满￥" + strings[0] + "可用");
+                                        return;
+                                    }
                                 }
+                                Intent data = new Intent();
+                                couponId = coupons.get(pos).getId();
+                                data.putExtra("coupon", coupons.get(pos));
+                                setResult(RESULT_OK, data);
+                                finish();
                             }
-                            Intent data = new Intent();
-                            couponId = coupons.get(pos).getId();
-                            data.putExtra("coupon", coupons.get(pos));
-                            setResult(RESULT_OK, data);
-                            finish();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
 
                     }
-                });*/
+                });
             } else {
                 holder.itemView.setSelected(false);
             }
@@ -370,10 +414,10 @@ public class CouponChooseActivity extends BaseActivity {
 
                     if (!TextUtils.isEmpty(coupons.get(pos).getEnd_date())) {
 
-                            holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
+                            holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
 
                     } else {
-                        holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date()));
+                        holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date()));
                     }
 
                     break;
@@ -389,9 +433,9 @@ public class CouponChooseActivity extends BaseActivity {
                 }
 
                     if (!TextUtils.isEmpty(coupons.get(pos).getEnd_date())) {
-                            holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
+                            holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
                     } else {
-                        holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date()));
+                        holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date()));
                     }
                     break;
                 //立减优惠券
@@ -402,9 +446,9 @@ public class CouponChooseActivity extends BaseActivity {
                     holder.tvMycouponitemCondition.setText("立减优惠券");
 
                     if (!TextUtils.isEmpty(coupons.get(pos).getEnd_date())) {
-                            holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
+                            holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date(),coupons.get(pos).getEnd_date()));
                     } else {
-                        holder.tvMycouponitemEnddate.setText(DateTimeUtil.createAvalDate(coupons.get(pos).getStart_date()));
+                        holder.tvMycouponitemEnddate.setText(createAvalDate(coupons.get(pos).getStart_date()));
                     }
                     break;
             }

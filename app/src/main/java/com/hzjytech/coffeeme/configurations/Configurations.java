@@ -1,35 +1,15 @@
 package com.hzjytech.coffeeme.configurations;
 
 
-import com.hzjytech.coffeeme.BuildConfig;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 public class Configurations {
-
-
-    //    public static final String URL_PREFIX = "http://app.jijiakafei.com/";
- //public static final String URL_PREFIX ="http://192.168.0.188:3000/";
- //public static final String URL_PREFIX = "http://coffeeme.hzjytech.com/";
-public static  String URL_PREFIX;
- public static  String NEW_URL_PREFIX;
- public static String WEB_URL_PREFIX;
-  static {
-   if(BuildConfig.DEBUG){
-    URL_PREFIX ="https://test.coffee-me.com/";
-    NEW_URL_PREFIX = "https://newtest.coffee-me.com/api/v1/";
-    WEB_URL_PREFIX="https://newtest.coffee-me.com/dist/index.html#/h5/";
-   }else{
-    URL_PREFIX = "https://coffee-me.com/";
-    NEW_URL_PREFIX = "https://new.coffee-me.com/api/v1/";
-    WEB_URL_PREFIX="https://new.coffee-me.com/dist/index.html#/h5/";
-   }
-}
-    //H5
-    public static final String URL_NEW_COMMODITIES =WEB_URL_PREFIX+"pointMall" ;
-    public static final String URL_INVITINGFRIENDS = WEB_URL_PREFIX+"invitingFriends";
-    public static final String  URL_SHARE="https://coffee-me.com/";
-
-    public static final String URL_DOMAIN = URL_PREFIX + "api/v1/";
-    public static final String NEW_URL_DOMAIN = NEW_URL_PREFIX;
+//    public static final String URL = "http://app.jijiakafei.com/";
+    // public static final String URL ="https://test.coffee-me.com/";
+     //public static final String URL ="http://192.168.0.188:3000/";
+    //public static final String URL = "http://coffeeme.hzjytech.com/";
+   public static final String URL = "https://coffee-me.com/";
+   public static final String  URL_SHARE="https://coffee-me.com/";
+    public static final String URL_DOMAIN = URL + "api/v1/";
     public static final String PHONE = "phone";
     public static final String PASSWORD = "password";
     public static final String RESET_PASSWORD = "reset_password";
@@ -43,54 +23,52 @@ public static  String URL_PREFIX;
     public static final String SUM = "sum";
     public static final String ORDERID = "order_id";
     public static final String VMID = "vm_id";
-    public static final String URL_SESSIONS = NEW_URL_DOMAIN  + "sessions";
-    public static final String URL_SEND_SMS_CODE = NEW_URL_DOMAIN  + "users/send_sms_code";
-    public static final String URL_CHECK_SMS_CODE = NEW_URL_DOMAIN  + "users/check_sms_code";
-    public static final String URL_SET_PASSWORD = NEW_URL_DOMAIN  + "users/set_password";
-    public static final String URL_RESET_PASSWORD =NEW_URL_DOMAIN + "users/reset_password";
-    public static final String URL_CHECK_TOKEN = NEW_URL_DOMAIN  + "sessions/check_token";
+    public static final String URL_SESSIONS = URL_DOMAIN + "sessions";
+    public static final String URL_SEND_SMS_CODE = URL_DOMAIN + "users/send_sms_code";
+    public static final String URL_CHECK_SMS_CODE = URL_DOMAIN + "users/check_sms_code";
+    public static final String URL_SET_PASSWORD = URL_DOMAIN + "users/set_password";
+    public static final String URL_RESET_PASSWORD = URL_DOMAIN + "users/reset_password";
+    public static final String URL_CHECK_TOKEN = URL_DOMAIN + "sessions/check_token";
     public static final String URL_LOGIN_WECHAT = URL_DOMAIN + "sessions/wx_login";
-    public static final String URL_BANNERS = NEW_URL_DOMAIN + "banners";
-    public static final String URL_VENDING_MACHINES = NEW_URL_DOMAIN + "vending_machines";
-    public static final String URL_CHECK_PASSWORD = NEW_URL_DOMAIN  + "users/check_password";
+    public static final String URL_BANNERS = URL_DOMAIN + "banners";
+    public static final String URL_VENDING_MACHINES = URL_DOMAIN + "vending_machines";
+    public static final String URL_CHECK_PASSWORD = URL_DOMAIN + "users/check_password";
 
-    public static final String URL_CHANGE_AVATOR = NEW_URL_DOMAIN + "users/change_avator";
+    public static final String URL_CHANGE_AVATOR = URL_DOMAIN + "users/change_avator";
     public static final String URL_CULTURE = URL_DOMAIN + "cultures";
-    public static final String URL_NEW_CULTURE = NEW_URL_DOMAIN + "cultures";
-    public static final String URL_APP_ITEMS = NEW_URL_DOMAIN + "app_items";
-    public static final String URL_CHANGE_PASSWORD = NEW_URL_DOMAIN + "users/change_password";
+    public static final String URL_APP_ITEMS = URL_DOMAIN + "app_items";
+    public static final String URL_CHANGE_PASSWORD = URL_DOMAIN + "users/change_password";
     public static final String URL_APP_DOSAGES = URL_DOMAIN + "app_dosages";
-    public static final String URL_GOODS = NEW_URL_DOMAIN + "goods";
+    public static final String URL_GOODS = URL_DOMAIN + "goods";
 
-    public static final String URL_COUPONS = NEW_URL_DOMAIN + "coupon/listMyCoupons";
-    public static final String URL_ORDERS = NEW_URL_DOMAIN + "orders";
-    public static final String URL_ORDER_PAY = NEW_URL_DOMAIN+ "order/pay";
-    public static final String URL_UPDATE_NICKNAME = NEW_URL_DOMAIN+ "users/update_nickname";
-    public static final String URL_THIRD_PARTY_LOGIN = NEW_URL_DOMAIN  + "sessions/third_party_login";
+    public static final String URL_COUPONS = URL_DOMAIN + "coupons";
+    public static final String URL_ORDERS = URL_DOMAIN + "orders";
+    public static final String URL_ORDER_PAY = URL_ORDERS + "/pay";
+    public static final String URL_UPDATE_NICKNAME = URL_DOMAIN + "users/update_nickname";
+    public static final String URL_THIRD_PARTY_LOGIN = URL_DOMAIN + "sessions/third_party_login";
 
 
     public static final String URL_REDEEMED = URL_DOMAIN + "coupons/redeemed";
-    public static final String URL_BINDING_PHONE = NEW_URL_DOMAIN + "users/binding_phone";
-    public static final String URL_BINDING_THIRD_PARTY = NEW_URL_DOMAIN + "users/binding_third_party";
-    public static final String URL_UNRELATED_THIRD_PARTY = NEW_URL_DOMAIN + "users/unrelated_third_party";
-    public static final String URL_COUPON = NEW_URL_DOMAIN + "balance_records/coupon_config";
-    public static final String URL_PREPAY = NEW_URL_DOMAIN + "balance_records";
-    public static final String URL_ALIPAYBALANCENOTIFY = NEW_URL_DOMAIN + "pay_callback/alipay_balance_notify";
-    public static final String URL_ALIPAYNOTIFY = NEW_URL_DOMAIN + "pay_callback/alipay_notify";
-    public static final String URL_QRFETCH = NEW_URL_DOMAIN + "orders/qr_fetch";
-    public static final String URL_AD = NEW_URL_DOMAIN + "banners/advertisement";
-    public static final String URL_REFUND = NEW_URL_DOMAIN + "orders/refund";
-    public static final String URL_COPY = NEW_URL_DOMAIN+ "order/copy";
-    public static final String URL_ORDER_RATE = NEW_URL_DOMAIN + "orders/order_rate";
-    public static final String URL_POINT_RECORDS = NEW_URL_DOMAIN + "points/point_records";
-    public static final String URL_COMMODITIES = URL_PREFIX + "commodities";
-
-    public static final String URL_ABOUT_POINT = URL_PREFIX + "about_point";
-    public static final String URL_AGREEMENT = URL_PREFIX + "agreement";
-    public static final String URL_APP_VERSION = NEW_URL_DOMAIN + "app_versions";
+    public static final String URL_BINDING_PHONE = URL_DOMAIN + "users/binding_phone";
+    public static final String URL_BINDING_THIRD_PARTY = URL_DOMAIN + "users/binding_third_party";
+    public static final String URL_UNRELATED_THIRD_PARTY = URL_DOMAIN + "users/unrelated_third_party";
+    public static final String URL_COUPON = URL_DOMAIN + "balance_records/coupon_config";
+    public static final String URL_PREPAY = URL_DOMAIN + "balance_records";
+    public static final String URL_ALIPAYBALANCENOTIFY = URL_DOMAIN + "pay_callback/alipay_balance_notify";
+    public static final String URL_ALIPAYNOTIFY = URL_DOMAIN + "pay_callback/alipay_notify";
+    public static final String URL_QRFETCH = URL_DOMAIN + "orders/qr_fetch";
+    public static final String URL_AD = URL_DOMAIN + "banners/advertisement";
+    public static final String URL_REFUND = URL_DOMAIN + "orders/refund";
+    public static final String URL_COPY = URL_DOMAIN + "orders/copy";
+    public static final String URL_ORDER_RATE = URL_DOMAIN + "orders/order_rate";
+    public static final String URL_POINT_RECORDS = URL_DOMAIN + "points/point_records";
+    public static final String URL_COMMODITIES = URL + "commodities";
+    public static final String URL_ABOUT_POINT = URL + "about_point";
+    public static final String URL_AGREEMENT = URL + "agreement";
+    public static final String URL_APP_VERSION = URL_DOMAIN + "app_versions";
     public static final String URL_APK = "http://download.coffee-me.com/coffee-me.apk";
-    public static final String URL_CAPTCHAS = NEW_URL_DOMAIN + "users/captchas";
-    public static final String URL_FEEDBACKS = NEW_URL_DOMAIN + "feedbacks";
+    public static final String URL_CAPTCHAS = URL_DOMAIN + "users/captchas";
+    public static final String URL_FEEDBACKS = URL_DOMAIN + "feedbacks";
     //about result parameter
     public static final String STATUSCODE = "statusCode";
     public static final String STATUSMSG = "statusMsg";
@@ -138,14 +116,5 @@ public static  String URL_PREFIX;
     public static final String DEVICE_ID = "device_id";
 
     public static final String URL_APP_MATERIALS=URL_DOMAIN+"app_materials";
- public static final String ITEM = "item";
-    public static final String PAKAGE = "package";
- public static final String STATUS = "status";
- public static final String IDENTIFIER = "identifier";
- public static final String POINT = "point";
- public static final String REDEEMPTION_ID = "redeemption_id";
-
-    public static final String PACKAGE_ID = "package_id";
-    public static final String SUGAR = "sugar";
     public static BaseResp baseResp = null;
 }

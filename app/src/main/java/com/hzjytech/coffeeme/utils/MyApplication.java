@@ -2,11 +2,10 @@ package com.hzjytech.coffeeme.utils;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
+import android.support.v4.app.DialogFragment;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.hzjytech.coffeeme.baidumap.BaiduLocationService;
-import com.mcxiaoke.packer.helper.PackerNg;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -17,9 +16,12 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.x;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -50,12 +52,6 @@ public class MyApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
 
         initJPush();
-        // 如果没有使用PackerNg打包添加渠道，默认返回的是""
-        // com.mcxiaoke.packer.helper.PackerNg
-        final String market = PackerNg.getChannel(this);
-        // 或者使用 PackerNg.getMarket(Context,defaultValue)
-        // 之后就可以使用了，比如友盟可以这样设置
-        MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(this, "5771e09be0f55a44d4000f8f", market));
     }
 
     private void initJPush() {
@@ -63,13 +59,6 @@ public class MyApplication extends Application {
         JPushInterface.init(this);
     }
 
-
-    @Override
-    protected void attachBaseContext(Context context) {
-        super.attachBaseContext(context);
-        //Avoiding the 64K Limit
-        MultiDex.install(this);
-    }
 
     public static void initImageLoader(Context context) {
         /*

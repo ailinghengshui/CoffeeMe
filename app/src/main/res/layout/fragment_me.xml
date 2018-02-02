@@ -1,36 +1,34 @@
-
-<LinearLayout android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/light_white"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tool="http://schemas.android.com/tools"
+    tools:context="com.hzjytech.coffeeme.me.MeFragment">
+<ScrollView
+    android:id="@+id/sv"
+    android:background="@color/light_grey"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    >
+
     <RelativeLayout
         android:id="@+id/rl_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="230dp"
         android:background="@drawable/bg_me_top"
         >
-        <TextView
-            android:id="@+id/tv_me_title"
-            android:layout_centerHorizontal="true"
-            android:textSize="17sp"
-            android:layout_marginTop="34.5dp"
-            android:text="个人信息"
-            android:textColor="@color/standard_white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
         <com.hzjytech.coffeeme.widgets.CircleImageView
-            android:layout_below="@id/tv_me_title"
             android:id="@+id/civMefrgAvator"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_centerHorizontal="true"
@@ -50,16 +48,34 @@
                 android:background="@drawable/icon_setting"
                 />
         </RelativeLayout>
-        <LinearLayout
+
+
+      
+        <TextView
+            android:id="@+id/tvMefrgNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:gravity="center"
+            android:maxWidth="120dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:layout_below="@+id/civMefrgAvator"
             android:layout_centerHorizontal="true"
-            tool:visibility="visible"
+            android:textColor="@color/normal_white"
+            android:layout_marginTop="5dp"
+            />
+
+        <LinearLayout
             android:id="@+id/llMefrgLevelContainer"
-            android:layout_below="@id/civMefrgAvator"
+            android:layout_toRightOf="@+id/tvMefrgNickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/bg_circ_rec_coffee_big"
-            android:layout_marginTop="10.5dp"
+            android:layout_alignTop="@+id/tvMefrgNickname"
+            android:layout_alignBottom="@+id/tvMefrgNickname"
+            android:layout_marginLeft="2dp"
             android:gravity="center"
             android:visibility="invisible"
             android:paddingLeft="4dp"
@@ -83,196 +99,218 @@
                 />
         </LinearLayout>
 
-      
-        <TextView
-            tool:visibility="visible"
-            android:id="@+id/tvMefrgNickname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:gravity="center"
-            android:maxWidth="120dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:layout_below="@id/llMefrgLevelContainer"
+        <RelativeLayout
+            android:id="@+id/MefrgSharelayout"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circ_rec_right_angle"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/normal_white"
-            android:layout_marginTop="9.5dp"
-            android:layout_marginBottom="9dp"
-            />
+            android:layout_below="@+id/tvMefrgNickname"
+            >
 
-
+            <TextView
+                android:id="@+id/tvMefrgReferralcode"
+                android:textColor="@color/coffee"
+                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:textSize="15dp"
+                android:text="邀请好友得优惠券"
+                android:layout_height="match_parent"
+                />
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/ivMefrgShare"
+                android:layout_width="8.5dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/icon_for_share"
+                />
+        </RelativeLayout>
 
     </RelativeLayout>
-        <ImageView
-            android:id="@+id/iv_recharge"
-            android:src="@drawable/img_recharge"
-            android:scaleType="fitXY"
-            android:layout_width="match_parent"
-            android:padding="10dp"
-            android:layout_height="110dp" />
+
     <LinearLayout
-        android:id="@+id/llMefrgBalance"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:background="@color/normal_white"
-        android:layout_height="50dp">
-        <TextView
-            android:layout_marginLeft="12.5dp"
-            android:layout_width="wrap_content"
-            android:textSize="14dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/heavy_black"
-            android:text="余额"
-            />
-        <View
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/btnMefrgBalance"
-            android:layout_marginRight="6.5dp"
-            android:textColor="@color/more_grey"
-            android:textSize="14sp"
-            android:text="42.00"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:layout_marginRight="12dp"
-            android:src="@drawable/icon_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/llMefrgCoupon"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:background="@color/normal_white"
-        android:layout_marginTop="10dp"
-        android:layout_height="50dp">
-        <TextView
-            android:layout_marginLeft="12.5dp"
-            android:layout_width="wrap_content"
-            android:textSize="14dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/heavy_black"
-            android:text="我的优惠券"
-            />
-        <View
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/btnMefrgCoupon"
-            android:layout_marginRight="6.5dp"
-            android:textColor="@color/more_grey"
-            android:textSize="14sp"
-            android:text="9张优惠券"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:layout_marginRight="12dp"
-            android:src="@drawable/icon_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        >
+
         <LinearLayout
-            android:id="@+id/llMeExgCoupon"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:background="@color/normal_white"
-            android:layout_marginTop="10dp"
-            android:layout_height="50dp">
+            android:id="@+id/llMefrgBalance"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
             <TextView
-                android:layout_marginLeft="12.5dp"
+                android:id="@+id/btnMefrgBalance"
+                android:gravity="center_horizontal|bottom"
                 android:layout_width="wrap_content"
-                android:textSize="14dp"
-                android:layout_height="wrap_content"
-                android:textColor="@color/heavy_black"
-                android:text="我的兑换券"
-                />
-            <View
+                android:textSize="17dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
+                android:textColor="@color/standard_black"
+                android:text="0.00"
+                android:background="@android:color/transparent"
+                />
             <TextView
-                android:id="@+id/btnMeExgCoupon"
-                android:layout_marginRight="6.5dp"
-                android:textColor="@color/more_grey"
-                android:textSize="14sp"
-                android:text="9张兑换券"
+                android:gravity="center_horizontal|top"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:layout_marginRight="12dp"
-                android:src="@drawable/icon_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:textSize="10dp"
+                android:layout_height="0dp"
+                android:textColor="@color/standard_black"
+                android:layout_weight="1"
+                android:text="余额"
+                />
         </LinearLayout>
-    <LinearLayout
-        android:id="@+id/MefrgSharelayout"
-        android:layout_marginTop="10dp"
-        android:background="@color/normal_white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
+
         <TextView
-            android:layout_marginLeft="12.5dp"
-            android:layout_width="wrap_content"
-            android:textSize="14dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/heavy_black"
-            android:text="邀请好友得优惠券"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/light_grey"
             />
-        <View
-            android:layout_weight="1"
+        <LinearLayout
+            android:id="@+id/llMefrgCoupon"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_marginRight="6.5dp"
-            android:textColor="@color/more_grey"
-            android:textSize="14sp"
-            android:text="去邀请"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:layout_marginRight="12dp"
-            android:src="@drawable/icon_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
+            <TextView
+                android:id="@+id/btnMefrgCoupon"
+                android:gravity="center_horizontal|bottom"
+                android:layout_width="wrap_content"
+                android:textSize="17dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:text="0张"
+                android:textColor="@color/standard_black"
+                />
+            <TextView
+                android:gravity="center_horizontal|top"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textSize="10dp"
+                android:textColor="@color/standard_black"
+                android:text="优惠券"
+                />
+            </LinearLayout>
+
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/MefrgPointlayout"
-        android:layout_marginTop="10dp"
-        android:background="@color/normal_white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+
+
+    <TextView
+        android:id="@+id/rlMefrgMycoffees"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <TextView
-            android:layout_marginLeft="12.5dp"
-            android:layout_width="wrap_content"
-            android:textSize="14dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/heavy_black"
-            android:text="会员福利"
-            />
-        <View
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-        <ImageView
-            android:layout_marginRight="12dp"
-            android:src="@drawable/icon_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    </LinearLayout>
+        android:layout_height="45dp"
+        android:background="@color/normal_white"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        android:drawableRight="@drawable/icon_right"
+        android:textColor="@color/standard_black"
+        android:text="我的收藏"
+        android:gravity="left|center_vertical"
+        android:textSize="17dp"
+        />
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rlMefrgMycoffees"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:paddingLeft="22dp"-->
+        <!--android:background="@color/normal_white"-->
+        <!--&gt;-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:textSize="17dp"-->
+            <!--android:text="我的收藏"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--/>-->
+
+        <!--<ImageView-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_width="9dp"-->
+            <!--android:layout_height="9dp"-->
+            <!--android:layout_marginRight="22dp"-->
+            <!--android:scaleType="centerInside"-->
+            <!--android:src="@drawable/icon_right"-->
+            <!--/>-->
+
+    <!--</RelativeLayout>-->
+    <TextView
+        android:id="@+id/nologintx"
+        android:layout_width="match_parent"
+        android:background="@color/normal_white"
+        android:layout_height="200dp"
+        android:textSize="17dp"
+        android:text="你还没有登录哦～"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/standard_black"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcyViewMefrgShow"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:background="@color/normal_white"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"
+        >
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>
 </ScrollView>
 
-</LinearLayout>
+    <RelativeLayout
+        android:clickable="true"
+        android:visibility="visible"
+        android:id="@+id/rl_guide"
+        android:background="@color/trans_black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+       <ImageView
+           android:id="@+id/guide_card"
+           android:layout_alignParentBottom="true"
+           android:layout_marginLeft="20dp"
+           android:layout_marginBottom="43dp"
+           android:src="@drawable/guide_card_copy"
+           android:scaleType="fitXY"
+           android:layout_width="125dp"
+           android:layout_height="207dp" />
+        <ImageView
+            android:layout_marginTop="260dp"
+            android:layout_marginLeft="120dp"
+            android:src="@drawable/guide_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_guide"
+            android:clickable="true"
+            android:layout_marginTop="50dp"
+            android:layout_alignParentRight="true"
+            android:text="我知道了"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:gravity="center"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/bg_guide_text"
+            android:layout_width="80dp"
+            android:layout_height="40dp" />
 
+    </RelativeLayout>
+</FrameLayout>

@@ -113,7 +113,7 @@ public class CoffeeCupView extends LinearLayout {
         for (AppDosages appDosage : fineAppDosages) {
             appDosages.add(new AppDosages(appDosage.getId(),appDosage.getWeight(),appDosage.getSelfWater(),appDosage.getWater(),appDosage.getSequence(),appDosage.getMaterial_name()));
         }
-        LogUtil.e("fineAppDOsages",fineAppDosages.toString());
+        Log.e("fineAppDOsages",fineAppDosages.toString());
         initView(context);
         if (measuredHeight!=0){
             float realTotalHeight = measuredHeight;

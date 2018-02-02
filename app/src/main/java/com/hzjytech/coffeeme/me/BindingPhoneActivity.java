@@ -17,7 +17,6 @@ import com.hzjytech.coffeeme.BaseActivity;
 import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
-import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.NetUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
 import com.hzjytech.coffeeme.utils.StringUtil;
@@ -90,7 +89,7 @@ public class BindingPhoneActivity extends BaseActivity {
                 x.http().post(entity, new Callback.CommonCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        LogUtil.e("smsresult",result);
+                        Log.e("smsresult",result);
                         try {
                             JSONObject object = new JSONObject(result);
                             checkResOld(object);

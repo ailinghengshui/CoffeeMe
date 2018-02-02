@@ -32,7 +32,6 @@ import com.hzjytech.coffeeme.me.MeFragment;
 import com.hzjytech.coffeeme.order.OrderFragment;
 import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.DownloadManagerPro;
-import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyApplication;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
@@ -60,7 +59,6 @@ import cn.jpush.android.api.JPushInterface;
 public class MainActivity extends BaseActivity implements MeFragment.MeFragmentable {
 
     public boolean goOrder = false;
-    public boolean goHome=false;
     FragmentManager fragmentManager = getSupportFragmentManager();
     @ViewInject(R.id.flMainContent)
     private FrameLayout flHomeContent;
@@ -224,7 +222,6 @@ public class MainActivity extends BaseActivity implements MeFragment.MeFragmenta
         mInstance = this;
 
         goOrder = false;
-        goHome=false;
 
         setTabSelection(position);
         initBottom();
@@ -249,7 +246,7 @@ public class MainActivity extends BaseActivity implements MeFragment.MeFragmenta
         x.http().post(entity, new Callback.CommonCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {
-                LogUtil.e("result", result.toString());
+                Log.e("result", result.toString());
                 try {
                     if (result.getInt(Configurations.STATUSCODE) == 200) {
                         if (!TextUtils.isEmpty(result.getJSONObject("results").getString("app_version"))) {
@@ -547,12 +544,6 @@ private void downLoadApkWithProgress(final String downloadUrl, final ForceUpdate
             initBottom();
             llMainOrder.setSelected(true);
 
-        }
-        if(goHome){
-            goHome= false;
-            setTabSelection(0);
-            initBottom();
-            llMainHome.setSelected(true);
         }
         super.onResume();
     }

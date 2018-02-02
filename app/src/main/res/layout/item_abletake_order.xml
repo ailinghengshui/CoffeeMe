@@ -7,6 +7,11 @@
     android:background="@color/normal_white"
     >
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        />
     <RelativeLayout
         android:paddingLeft="22dp"
         android:paddingRight="22dp"
@@ -42,7 +47,11 @@
             />
 
     </RelativeLayout>
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        />
 
     <com.hzjytech.coffeeme.widgets.orderview.OrderGroup
         android:id="@+id/ogOrderitemdetailGoods"

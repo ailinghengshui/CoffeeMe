@@ -221,26 +221,7 @@ public class CaptureActivity extends FragmentActivity implements SurfaceHolder.C
             Toast.makeText(CaptureActivity.this, "扫描失败", Toast.LENGTH_SHORT).show();
             CaptureActivity.this.finish();
         } else {
-            if(resultString.contains("#")){
-                int i = resultString.indexOf("#")+1;
-                try {
-                    resultString = resultString.substring(i, resultString.length());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    TitleButtonsDialog descCenterDialog = TitleButtonsDialog.newInstance("二维码有误", "扫一扫");
-                    closeCamera();
-                    viewfinderView.setVisibility(View.GONE);
-                    descCenterDialog.setOnButtonClickListener(new IButtonClick() {
-                        @Override
-                        public void onButtonClick() {
-                            restartCamera();
-                        }
-                    });
-                    descCenterDialog.show(CaptureActivity.this.getSupportFragmentManager(), "asktag");
-                    return;
-                }
-                }
-                if (isFromHome&&!resultString.startsWith("MDEt")) {
+            if (isFromHome&&!resultString.startsWith("MDEt")) {
                 TitleButtonsDialog descCenterDialog = TitleButtonsDialog.newInstance("二维码有误", "扫一扫");
                 closeCamera();
                 viewfinderView.setVisibility(View.GONE);

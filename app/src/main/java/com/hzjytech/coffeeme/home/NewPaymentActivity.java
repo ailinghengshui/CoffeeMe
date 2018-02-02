@@ -3,6 +3,7 @@ package com.hzjytech.coffeeme.home;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,27 +30,24 @@ import com.hzjytech.coffeeme.Dialogs.CustomDialogWithTwoDiffButton;
 import com.hzjytech.coffeeme.Dialogs.ITwoButtonClick;
 import com.hzjytech.coffeeme.MainActivity;
 import com.hzjytech.coffeeme.R;
-
+import com.hzjytech.coffeeme.collect.DetailRecipeActivity;
+import com.hzjytech.coffeeme.collect.NewMyCoffeesActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
-import com.hzjytech.coffeeme.entities.CreatOrderBean;
-import com.hzjytech.coffeeme.entities.DisplayItems;
+import com.hzjytech.coffeeme.entities.AppDosage;
+import com.hzjytech.coffeeme.entities.AppItem;
 import com.hzjytech.coffeeme.entities.Coupon;
-import com.hzjytech.coffeeme.entities.NewGood;
-import com.hzjytech.coffeeme.entities.NewOrder;
+import com.hzjytech.coffeeme.entities.Good;
+import com.hzjytech.coffeeme.entities.Ingredient;
+import com.hzjytech.coffeeme.entities.Order;
 import com.hzjytech.coffeeme.entities.User;
 import com.hzjytech.coffeeme.entities.preWxPayInfo;
-import com.hzjytech.coffeeme.http.JijiaHttpSubscriber;
-import com.hzjytech.coffeeme.http.SubscriberOnErrorListener;
-import com.hzjytech.coffeeme.http.SubscriberOnNextListener;
-import com.hzjytech.coffeeme.http.api.OrderApi;
 import com.hzjytech.coffeeme.me.NewRechargeActivity;
 import com.hzjytech.coffeeme.order.OrderItemDetailActivity;
 import com.hzjytech.coffeeme.pays.alipay.PayResult;
 import com.hzjytech.coffeeme.pays.alipay.SignUtils;
 import com.hzjytech.coffeeme.utils.AppUtil;
-import com.hzjytech.coffeeme.utils.CommonUtil;
-import com.hzjytech.coffeeme.utils.DateTimeUtil;
+import com.hzjytech.coffeeme.utils.DateUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyMath;
 import com.hzjytech.coffeeme.utils.NetUtil;
@@ -58,7 +56,6 @@ import com.hzjytech.coffeeme.utils.TimeUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
 import com.hzjytech.coffeeme.widgets.TitleBar;
-import com.hzjytech.coffeeme.widgets.orderview.OrderGroup;
 import com.hzjytech.coffeeme.widgets.row.RowView;
 import com.hzjytech.coffeeme.widgets.row.RowViewDesc;
 import com.hzjytech.coffeeme.widgets.switchbutton.SwitchButton;
@@ -79,15 +76,16 @@ import org.xutils.x;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import cn.jpush.android.api.JPushInterface;
-import rx.Observable;
 
 //支付界面
 @ContentView(R.layout.activity_new_payment)
@@ -97,28 +95,18 @@ public class NewPaymentActivity extends BaseActivity {
     private static final String TAG = NewPaymentActivity.class.getSimpleName();
     private static final int WECHAT_PAY_SUCCSS = 0x100001;
     private static final int WECHAT_PAY_FAILED = 0x100002;
-    private static final int WECHAT_PAY_CANCEL = 0x100003;
-    //优惠券类型
-    private static final int COUPON_TYPE_EXCHANGE=4;
-
-    //下单类型
-    //   0   'buy_now'为立即购买类型，  1  'cart_buy’ 为购物车结算,    2  'order_again’,为再来一单类型    3   待支付订单
-    private static final int BUY_NOW=0;
-    private static final int CART_BUY=1;
-    private static final int ORDER_AGAIN=2;
-    private static final int ORDER_TO_BUY=3;
     private DecimalFormat fnum = new DecimalFormat("##0.00");
     float realPay = 0.00f;
     float pay = 0.00f;
     private RowViewDesc mRowViewDesc = new RowViewDesc("优惠券：", "选择优惠券", R.drawable.icon_right, new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (buytype == ORDER_TO_BUY)
+            if (buytype == 3)
                 return;
             Intent intent = new Intent(NewPaymentActivity.this, CouponChooseActivity.class);
-            if (buytype == BUY_NOW) {
+            if (buytype == 0) {
                 intent.putExtra("currentPrice", count * appItem.getCurrent_price());
-            } else if (buytype ==CART_BUY || buytype == ORDER_AGAIN) {
+            } else if (buytype == 1 || buytype == 2) {
                 intent.putExtra("currentPrice", pay);
             }
             intent.putExtra("couponId", couponId);
@@ -167,10 +155,8 @@ public class NewPaymentActivity extends BaseActivity {
 
     @ViewInject(R.id.llPaymentPay)
     private LinearLayout llPaymentPay;
-    @ViewInject(R.id.ll_ex_point)
-    private LinearLayout mLlExPoint;
-    @ViewInject(R.id.tv_point_line)
-    private View mTvPointLine;
+
+
     //购买数量
     private int count;
 
@@ -181,25 +167,25 @@ public class NewPaymentActivity extends BaseActivity {
      * 2 for wxpay
      */
     private int payMethod = 0;
-    private List<NewGood> goods;
-    private Map<NewGood, Integer> selectGood = new HashMap<>();
+    private ArrayList<AppDosage> appDosages = new ArrayList<AppDosage>();
+    private List<Good> goods;
+    private Map<Good, Integer> selectGood = new HashMap<>();
     //coupon id
     private int couponId = -1;
     private String identifier;
     private int id;
 
-    private NewOrder mOrder;
+    private Order mOrder;
     //服务器拿到的实际金额
     private String sumFromService;
 
-
+    //   0   'buy_now'为立即购买类型，  1  'cart_buy’ 为购物车结算,    2  'order_again’,为再来一单类型    3   待支付订单
     private int buytype = -1;
     private preWxPayInfo preWxInfo;
     //是否正在支付过程中，防止重复点击支付
     private boolean isPaying=false;
     private Coupon bestCoupon;
     private float oldPay=0f;
-    private JijiaHttpSubscriber mSubscriber;
 
     //使用优惠券
     private void useCoupon(Coupon coupon) {
@@ -210,10 +196,10 @@ public class NewPaymentActivity extends BaseActivity {
         switch (coupon.getCoupon_type()) {
             //打折优惠券
             case 1:
-                if (buytype == BUY_NOW) {
+                if (buytype == 0) {
 
                     realPay = count * appItem.getCurrent_price() * Float.parseFloat(coupon.getValue()) * 0.01f;
-                } else if (buytype == CART_BUY || buytype == ORDER_AGAIN) {
+                } else if (buytype == 1 || buytype == 2) {
                     realPay = pay * Float.parseFloat(coupon.getValue()) * 0.01f;
                 }
                 if (realPay <= 0.01)
@@ -226,7 +212,7 @@ public class NewPaymentActivity extends BaseActivity {
                     if (buytype == 0) {
                         if (count * appItem.getCurrent_price() >= Float.parseFloat(strings[1]))
                             realPay = count * appItem.getCurrent_price() - Float.parseFloat(strings[1]);
-                    } else if (buytype == CART_BUY || buytype == ORDER_AGAIN) {
+                    } else if (buytype == 1 || buytype == 2) {
                         if (pay >= Float.parseFloat(strings[1]))
                             realPay = pay - Float.parseFloat(strings[1]);
                     }
@@ -236,9 +222,9 @@ public class NewPaymentActivity extends BaseActivity {
                 break;
             //立减优惠券
             case 3:
-                if (buytype == BUY_NOW) {
+                if (buytype == 0) {
                     realPay = count * appItem.getCurrent_price() - Float.parseFloat(coupon.getValue());
-                } else if (buytype == CART_BUY || buytype == ORDER_AGAIN) {
+                } else if (buytype == 1 || buytype == 2) {
                     realPay = pay - Float.parseFloat(coupon.getValue());
                 }
 
@@ -249,7 +235,7 @@ public class NewPaymentActivity extends BaseActivity {
             default:
                 if (buytype == 0) {
                     realPay = count * appItem.getCurrent_price();
-                } else if (buytype == CART_BUY || buytype == ORDER_AGAIN) {
+                } else if (buytype == 1 || buytype == 2) {
                     realPay = pay;
                 }
                 break;
@@ -262,107 +248,176 @@ public class NewPaymentActivity extends BaseActivity {
         tvPaymentamountRealpay.setText("" + fnum.format(realPay));
     }
 
+//点击某一种支付方式按钮
+/*    @Event(R.id.rlPaymentPay)
+    private void onPaymentPayClick(View view) {
+
+        if (AppUtil.isFastClick())
+            return;
+
+        isFullPointPay = false;
+        if (buytype == 3 && null != mOrder) {
+            identifier = mOrder.getIdentifier();
+            payOrder();
+        } else
+            generateOrder(buytype);
+
+    }*/
 
     @Event(R.id.btnPaymentPay)
     private void onBalancePayClick(View view) {
         if (AppUtil.isFastClick())
             return;
+
         isFullPointPay = true;
         generateOrder(buytype);
     }
 //生成订单
     private void generateOrder(int type) {
-        CreatOrderBean bean=null;
-        //type   buy_now 为立即购买类型， cart_buy 为购物车结算,  order_again 为再来一单类型
-        if (type == BUY_NOW) {
-            //app_item  当type为 buy_now 时
-            bean=new CreatOrderBean("buy_now",appItem,count,null,null,null,null);
 
-        } else if (type == CART_BUY) {
-            bean=new CreatOrderBean("cart_buy",null,1,null,null,null,null);
+        //type   buy_now 为立即购买类型， cart_buy 为购物车结算,  order_again 为再来一单类型
+        RequestParams entity = new RequestParams(Configurations.URL_ORDERS);
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+
+        String device_id= JPushInterface.getRegistrationID(NewPaymentActivity.this);
+        String timeStamp= TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.TIMESTAMP,timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
+
+        Map<String, String> map=new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+
+        if (type == 0) {
+            //app_item  当type为 buy_now 时
+            entity.addParameter(Configurations.TYPE, "buy_now");
+            map.put(Configurations.TYPE, "buy_now");
+            try {
+                JSONObject appItemObject = new JSONObject();
+                appItemObject.put("id", appItem.getId());
+                JSONArray customDosages = new JSONArray();
+
+                for (AppDosage appDosage : appDosages) {
+                    JSONObject object = new JSONObject();
+                    object.put("id", appDosage.getId());
+                    object.put("weight", appDosage.getWeight());
+                    object.put("water", appDosage.getWater());
+                    customDosages.put(object);
+                }
+                appItemObject.put("custom_dosages", customDosages);
+                LogUtil.e("appItem,pay",appItem.toString());
+                if(appItem.getName().contains("(分享)")){
+                    appItemObject.put("name",appItem.getName());
+                }
+                appItemObject.put("price", (double) (Math.round(appItem.getCurrent_price() * 100) / 100.0));
+                entity.addParameter(Configurations.APP_ITEM, appItemObject.toString());
+
+                map.put(Configurations.APP_ITEM, appItemObject.toString());
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            entity.addParameter("number", count);
+            map.put("number", String.valueOf(count));
+
+        } else if (type == 1) {
             //goods当type为cart_buy时购物车商品的id值
+            entity.addParameter(Configurations.TYPE, "cart_buy");
+            map.put(Configurations.TYPE, "cart_buy");
             try {
                 JSONArray goodarray = new JSONArray();
                 Iterator iter = selectGood.entrySet().iterator();
                 while (iter.hasNext()) {
                     Map.Entry entry = (Map.Entry) iter.next();
-                    NewGood good = (NewGood) entry.getKey();
+                    Good good = (Good) entry.getKey();
                     int num = (Integer) entry.getValue();
                     JSONObject object = new JSONObject();
                     object.put("id", good.getId());
                     object.put("buy_num", num);
                     goodarray.put(object);
                 }
-                bean.setGoods(goodarray.toString());
+                entity.addParameter(Configurations.GOODS, goodarray.toString());
+                map.put(Configurations.GOODS, goodarray.toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (type == ORDER_AGAIN) {
-            bean=new CreatOrderBean("order_again",null,1,null,id,null,null);
+            entity.addParameter("number", 1);
+            map.put("number", String.valueOf(1));
+
+        } else if (type == 2) {
             //order_id 该值为再来一单的原订单id，格式为数字
+            entity.addParameter(Configurations.TYPE, "order_again");
+            map.put(Configurations.TYPE, "order_again");
+            entity.addParameter(Configurations.ORDERID, id);
+            map.put(Configurations.ORDERID, String.valueOf(id));
+
+            entity.addParameter("number", 1);
+            map.put("number", String.valueOf(1));
         }
         //couponId=-1时，也不上传。
         if (couponId != 0&&couponId!=-1) {
-            bean.setCoupon_id(couponId);
+            entity.addParameter("coupon_id", couponId);
+            map.put("coupon_id", String.valueOf(couponId));
         }
 
         if (switchButtonPayamount.isChecked()) {
             if (!TextUtils.isEmpty(tvPaymentamountRatepoint.getText().toString())) {
-                bean.setPoint(Integer.valueOf(tvPaymentamountRatepoint.getText().toString()));
+                entity.addParameter("point", Integer.parseInt(tvPaymentamountRatepoint.getText().toString()));
+                map.put("point", tvPaymentamountRatepoint.getText().toString());
             }
         }
 
-        Observable<NewOrder> objectObservable = OrderApi.creatOrder(this,UserUtils.getUserInfo()
-                .getAuth_token(), bean);
-        mSubscriber = JijiaHttpSubscriber.buildSubscriber(this)
-                .setOnNextListener(new SubscriberOnNextListener<NewOrder>() {
-                    @Override
-                    public void onNext(NewOrder order) {
-                        identifier = order.getIdentifier();
-                        sumFromService = String.valueOf(order.getSum());
-                        if (order.getGet_point()==0) {
-                            get_point = 0;
-
-                        } else {
-                            get_point = (int) order.getGet_point();
-                        }
+        entity.addParameter(Configurations.SIGN, com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id,timeStamp,map));
 
 
-                        if (isFullPointPay) {
-                            goSuccessOrder(0);
-                        } else {
-                            payOrder();
-                        }
-                    }
-                }).setOnErrorListener(new SubscriberOnErrorListener() {
-                    @Override
-                    public void onError(Throwable e) {
-                        hideLoading();
-                        isPaying=false;
-                    }
-                })
-                .build();
-        objectObservable.subscribe(mSubscriber);
+        x.http().request(HttpMethod.POST, entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+
+                parseGenerateOrderResult(result);
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+                hideLoading();
+                showNetError();
+                isPaying=false;
+                LogUtil.d("ex", ex.toString());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 //订单支付
     private void payOrder() {
           showLoading();
         if (!isFullPointPay) {
+
             RequestParams entity = new RequestParams(Configurations.URL_ORDER_PAY);
-            entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+            entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
             entity.addParameter(Configurations.IP, NetUtil.getIPAddress(true));
-            entity.addParameter(Configurations.IDENTIFIER, identifier);
+            entity.addParameter(Configurations.ORDERID, identifier);
 
             String device_id= JPushInterface.getRegistrationID(NewPaymentActivity.this);
             String timeStamp= TimeUtil.getCurrentTimeString();
             entity.addParameter(Configurations.TIMESTAMP, timeStamp);
             entity.addParameter(Configurations.DEVICE_ID,device_id );
 
-            Map<String, String> map=new TreeMap<>();
-            map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+            Map<String, String> map=new TreeMap<String, String>();
+            map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
             map.put(Configurations.IP, NetUtil.getIPAddress(true));
-            map.put(Configurations.IDENTIFIER, identifier);
+            map.put(Configurations.ORDERID, identifier);
 
 
             switch (payMethod) {
@@ -388,7 +443,7 @@ public class NewPaymentActivity extends BaseActivity {
             x.http().request(HttpMethod.PUT, entity, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
-                   LogUtil.e("result",result);
+                   Log.e("result",result);
                     try {
                         JSONObject object = new JSONObject(result);
                         if (object.getInt(Configurations.STATUSCODE) == 200) {
@@ -417,9 +472,10 @@ public class NewPaymentActivity extends BaseActivity {
                                     MainActivity.Instance().goOrder = true;
                                     ModulationActivity.Instance().finish();
                                     NewCartActivity.Instance().finish();
-
+                                    CompletelyAdjustActivity.Instance().finish();
+                                    NewMyCoffeesActivity.Instance().finish();
                                     OrderItemDetailActivity.Instance().finish();
-
+                                    DetailRecipeActivity.Instance().finish();
                                     customDialogWithTwoDiffButton.dismiss();
                                     isPayFailure=true;
                                     isPaying=false;
@@ -442,7 +498,7 @@ public class NewPaymentActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                    LogUtil.e("result",result);
+                    Log.e("result",result);
                     hideLoading();
                 }
 
@@ -480,7 +536,7 @@ public class NewPaymentActivity extends BaseActivity {
         //total_fee = "" + fnum.format(realPay);
         //修改为从服务器拿到的金额
          total_fee=""+fnum.format(Double.valueOf(sumFromService));
-         realPay = (float) MyMath.round(realPay, 3);
+        realPay = (float) MyMath.round(realPay, 3);
         if(!fnum.format(realPay).equals(fnum.format(Double.valueOf(sumFromService)))){
 
             ToastUtil.showShort(NewPaymentActivity.this,"优惠券失效或错误，请重新选择优惠券。");
@@ -508,6 +564,8 @@ public class NewPaymentActivity extends BaseActivity {
                 preWxInfo = new preWxPayInfo();
                 preWxInfo = new Gson().fromJson(object.getJSONObject("results").getString("prepay"), new TypeToken<preWxPayInfo>() {
                 }.getType());
+
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -560,7 +618,7 @@ public class NewPaymentActivity extends BaseActivity {
 
             } else if (resultCode == CouponChooseActivity.RESULT_OK) {
                 Coupon coupon = (Coupon) data.getSerializableExtra("coupon");
-                LogUtil.e("coupon",coupon.toString());
+                Log.e("coupon",coupon.toString());
                 if (null == coupon)
                     return;
                 String des = null;
@@ -610,17 +668,22 @@ public class NewPaymentActivity extends BaseActivity {
 
                             break;
                         case -1:// failed
-//                         //   Toast.makeText(NewPaymentActivity.this, "支付失败", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(NewPaymentActivity.this, "支付失败", Toast.LENGTH_SHORT).show();
                             isPayFailure=true;
                             isPaying=false;
                             mHandler.sendEmptyMessage(WECHAT_PAY_FAILED);
                             break;
                         case -2:// cancel
-                            //ToastUtil.showShort(NewPaymentActivity.this, "取消支付");
-                            mHandler.sendEmptyMessage(WECHAT_PAY_CANCEL);
+                            ToastUtil.showShort(NewPaymentActivity.this, "取消支付");
                             isPayFailure=true;
                             isPaying=false;
-
+                            MainActivity.Instance().goOrder = true;
+                            ModulationActivity.Instance().finish();
+                            NewCartActivity.Instance().finish();
+                            CompletelyAdjustActivity.Instance().finish();
+                            DetailRecipeActivity.Instance().finish();
+                            NewMyCoffeesActivity.Instance().finish();
+                            OrderItemDetailActivity.Instance().finish();
                             //finish();
                             break;
                         default:
@@ -669,13 +732,14 @@ public class NewPaymentActivity extends BaseActivity {
                      * docType=1) 建议商户依赖异步通知
                      */
                     String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+
                     String resultStatus = payResult.getResultStatus();
                     // 判断resultStatus 为“9000”则代表支付成功，具体状态码代表含义可参考接口文档
                     if (TextUtils.equals(resultStatus, "9000")) {
                         Map<String, String> map = new HashMap<>();
                         map.put(UmengConfig.PARAM_PAYMETHOD, UmengConfig.PARAM_ALIPAY);
                         MobclickAgent.onEventValue(NewPaymentActivity.this, UmengConfig.EVENT_PAYORDER_ALIPAY, map, (int) realPay);
-                        goSuccessOrder(get_point);
+                       goSuccessOrder(get_point);
                         isPaying=false;
                     } else {
                         // 判断resultStatus 为非"9000"则代表可能支付失败
@@ -685,7 +749,7 @@ public class NewPaymentActivity extends BaseActivity {
 
                         } else {
                             // 其他值就可以判断为支付失败，包括用户主动取消支付，或者系统返回的错误
-                           // Toast.makeText(NewPaymentActivity.this, "支付失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewPaymentActivity.this, "支付失败", Toast.LENGTH_SHORT).show();
 
                             customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err, 0, false);
                             customDialogWithTwoDiffButton.setOnTwoButtonClick(new ITwoButtonClick() {
@@ -699,7 +763,9 @@ public class NewPaymentActivity extends BaseActivity {
                                     MainActivity.Instance().goOrder = true;
                                     ModulationActivity.Instance().finish();
                                     NewCartActivity.Instance().finish();
-
+                                    CompletelyAdjustActivity.Instance().finish();
+                                    DetailRecipeActivity.Instance().finish();
+                                    NewMyCoffeesActivity.Instance().finish();
                                     OrderItemDetailActivity.Instance().finish();
                                     customDialogWithTwoDiffButton.dismiss();
                                     isPayFailure=true;
@@ -741,7 +807,9 @@ public class NewPaymentActivity extends BaseActivity {
                             MainActivity.Instance().goOrder = true;
                             ModulationActivity.Instance().finish();
                             NewCartActivity.Instance().finish();
-
+                            CompletelyAdjustActivity.Instance().finish();
+                            DetailRecipeActivity.Instance().finish();
+                            NewMyCoffeesActivity.Instance().finish();
                             OrderItemDetailActivity.Instance().finish();
                             customDialogWithTwoDiffButton.dismiss();
                            // finish();
@@ -755,31 +823,6 @@ public class NewPaymentActivity extends BaseActivity {
                     isPaying=false;
 
                     break;
-                case WECHAT_PAY_CANCEL:
-                    hideLoading();
-                    customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err,"用户中途取消");
-                    customDialogWithTwoDiffButton.setOnTwoButtonClick(new ITwoButtonClick() {
-                        @Override
-                        public void onLeftButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onRightButtonClick() {
-                            MainActivity.Instance().goOrder = true;
-                            ModulationActivity.Instance().finish();
-                            NewCartActivity.Instance().finish();
-
-                            OrderItemDetailActivity.Instance().finish();
-                            customDialogWithTwoDiffButton.dismiss();
-                            // finish();
-                        }
-                    });
-                    FragmentManager fm2 = getSupportFragmentManager();
-                    FragmentTransaction ft2 = fm2.beginTransaction();
-                    ft2.add(customDialogWithTwoDiffButton,"customDialog");
-                    ft2.commitAllowingStateLoss();
-                        break;
 
                 default:
                     break;
@@ -821,7 +864,6 @@ public class NewPaymentActivity extends BaseActivity {
             public void run() {
                 // 构造PayTask 对象
                 PayTask alipay = new PayTask(NewPaymentActivity.this);
-                LogUtil.e("ali_version",alipay.getVersion());
                 // 调用支付接口，获取支付结果
                 String result = alipay.pay(payInfo, true);
 
@@ -968,7 +1010,9 @@ public class NewPaymentActivity extends BaseActivity {
      MainActivity.Instance().goOrder = true;
      ModulationActivity.Instance().finish();
      NewCartActivity.Instance().finish();
-
+     CompletelyAdjustActivity.Instance().finish();
+     DetailRecipeActivity.Instance().finish();
+     NewMyCoffeesActivity.Instance().finish();
      OrderItemDetailActivity.Instance().finish();
      finish();
  }
@@ -992,12 +1036,58 @@ public class NewPaymentActivity extends BaseActivity {
                 hideLoading();
 
             } else {
+               /* customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err, 0, false);
+                customDialogWithTwoDiffButton.setOnTwoButtonClick(new ITwoButtonClick() {
+                    @Override
+                    public void onLeftButtonClick() {
 
+                    }
+
+                    @Override
+                    public void onRightButtonClick() {
+                        MainActivity.Instance().goOrder = true;
+                        ModulationActivity.Instance().finish();
+                        NewCartActivity.Instance().finish();
+                        CompletelyAdjustActivity.Instance().finish();
+                        NewMyCoffeesActivity.Instance().finish();
+                        OrderItemDetailActivity.Instance().finish();
+                        customDialogWithTwoDiffButton.dismiss();
+                        isPayFailure=true;
+                        // finish();
+                    }
+                });
+                //这里直接调用show方法会报java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+                //因为show方法中是通过commit进行的提交(通过查看源码)
+                //这里为了修复这个问题，使用commitAllowingStateLoss()方法
+                //注意：DialogFragment是继承自android.app.Fragment，这里要注意同v4包中的Fragment区分，别调用串了
+                //DialogFragment有自己的好处，可能也会带来别的问题
+                //dialog.show(getFragmentManager(), "SignDialog");
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.add(customDialogWithTwoDiffButton,"customDialog");
+                ft.commitAllowingStateLoss();*/
                 ToastUtil.showShort(NewPaymentActivity.this, jsonObject.getString(Configurations.STATUSMSG));
                 checkResOld(jsonObject);
                 isPayFailure=true;
                 isPaying=false;
                 hideLoading();
+//                customDialogWithTwoDiffButton = CustomDialogWithTwoDiffButton.newInstance("支付失败", R.drawable.icon_pay_err, 0, false);
+//                customDialogWithTwoDiffButton.setOnTwoButtonClick(new CustomDialogWithTwoDiffButton.ITwoButtonClick() {
+//                    @Override
+//                    public void onLeftButtonClick() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onRightButtonClick() {
+//                        MainActivity.Instance().goOrder = true;
+//                        ModulationActivity.Instance().finish();
+//                        NewCartActivity.Instance().finish();
+//                        NewMyCoffeesActivity.Instance().finish();
+//                        finish();
+//                    }
+//                });
+//                customDialogWithTwoDiffButton.show(getSupportFragmentManager(), "FullPointPay");
 
             }
         } catch (JSONException e) {
@@ -1068,7 +1158,13 @@ public class NewPaymentActivity extends BaseActivity {
 
     }
 
+   // private SelectDialog payMethodDialog;
+//点击显示选择支付方式对话框
+  /*  @Event(R.id.ivPaymentMore)
+    private void onPaymentMoreClick(View v) {
 
+        getCoffeeMePockectBalance();
+    }*/
 //获取coffemepocket余额
     private void getCoffeeMePockectBalance() {
         RequestParams params = new RequestParams(Configurations.URL_CHECK_TOKEN);
@@ -1094,7 +1190,18 @@ public class NewPaymentActivity extends BaseActivity {
                        // payMethodDialog = SelectDialog.newInstance(R.layout.dialog_select,"0.0");
                         coffeeMeBalance=0.0f;
                     }
+                  /*  payMethodDialog.setListener(new SelectDialog.SelectDialogListener() {
+                        @Override
+                        public void onSelectDialogListener(int which) {
+                            ivPaymentIcon.setImageResource(SelectDialog.icons[which]);
+                            tvPaymentMethodName.setText(SelectDialog.titles[which]);
+                            payMethod = which;
+                            payMethodDialog.dismiss();
+                        }
+                    });
 
+                    payMethodDialog.setWrappableGridLayoutManager(new GridLayoutManager(NewPaymentActivity.this, 1));
+                    payMethodDialog.show(getSupportFragmentManager(), "selectDialog");*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1117,7 +1224,7 @@ public class NewPaymentActivity extends BaseActivity {
         });
     }
 
-    private DisplayItems.AppItem appItem;
+    private AppItem appItem;
     private List<Coupon> coupons = new ArrayList<Coupon>();
 
     @Override
@@ -1141,9 +1248,6 @@ public class NewPaymentActivity extends BaseActivity {
         getCoffeeMePockectBalance();
         llPaymentPay.setVisibility(View.GONE);
         llPaymentPayInit.setVisibility(View.VISIBLE);
-        //积分抵扣功能取消
-        mLlExPoint.setVisibility(View.GONE);
-        mTvPointLine.setVisibility(View.GONE);
 
         RequestParams entity2 = new RequestParams(Configurations.URL_CHECK_TOKEN);
         entity2.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
@@ -1233,19 +1337,22 @@ public class NewPaymentActivity extends BaseActivity {
             return;
         }
         float nowPrice=0;
-        if (buytype == ORDER_TO_BUY)
+        if (buytype == 3)
             return;
-        if (buytype == BUY_NOW) {
+        if (buytype == 0) {
              nowPrice= count * appItem.getCurrent_price();
-        } else if (buytype == CART_BUY || buytype ==ORDER_AGAIN) {
+        } else if (buytype == 1 || buytype == 2) {
             nowPrice=pay;
         }
         float realPay=nowPrice;
         float minPay=nowPrice;
-
         for(int i=0;i<coupons.size();i++){
-            if(DateTimeUtil.after(coupons.get(i).getStart_date(),System.currentTimeMillis())){
-                continue;
+            try {
+                if(DateUtil.ISO8601toCalendar(coupons.get(i).getStart_date()).after(Calendar.getInstance())){
+                    continue;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             switch (coupons.get(i).getCoupon_type()){
                 //打折优惠券
@@ -1315,22 +1422,20 @@ public class NewPaymentActivity extends BaseActivity {
         couponId = bestCoupon.getId();
         hideLoading();
     }
-
-
-
     private void loadCoupons() {
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
         if (UserUtils.getUserInfo() != null) {
-            entity.addParameter(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+            entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         }
-        entity.addParameter(Configurations.AVAILABLE,String.valueOf(true));
+        entity.addParameter(Configurations.AVAILABLE, true);
+
         String device_id = JPushInterface.getRegistrationID(this);
         String timeStamp = TimeUtil.getCurrentTimeString();
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
         entity.addParameter(Configurations.DEVICE_ID, device_id);
 
-        Map<String, String> map = new TreeMap<>();
-        map.put(Configurations.TOKEN, UserUtils.getUserInfo().getAuth_token());
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         map.put(Configurations.AVAILABLE, String.valueOf(true));
         entity.addParameter(Configurations.SIGN, com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id, timeStamp, map));
 
@@ -1413,21 +1518,22 @@ public class NewPaymentActivity extends BaseActivity {
 
                             buytype = getIntent().getIntExtra("type", 0);
 
-                            if (buytype == BUY_NOW) {
+                            if (buytype == 0) {
 
-                                appItem = (DisplayItems.AppItem) getIntent().getSerializableExtra("appItem");
+                                appItem = (AppItem) getIntent().getSerializableExtra("appItem");
                                 LogUtil.e("receiveAppItem",appItem.toString());
                                 count = getIntent().getIntExtra("count", 1);
 
                                 realPay = count * appItem.getCurrent_price();
+                                appDosages = getIntent().getParcelableArrayListExtra("appDosages");
 
-                            } else if (buytype == CART_BUY) {
-                                selectGood = (Map<NewGood, Integer>) getIntent().getSerializableExtra("selgoods");
+                            } else if (buytype == 1) {
+                                selectGood = (Map<Good, Integer>) getIntent().getSerializableExtra("selgoods");
                                 Iterator iter = selectGood.entrySet().iterator();
-                                goods = new ArrayList<NewGood>();
+                                goods = new ArrayList<Good>();
                                 while (iter.hasNext()) {
                                     Map.Entry entry = (Map.Entry) iter.next();
-                                    NewGood good = (NewGood) entry.getKey();
+                                    Good good = (Good) entry.getKey();
                                     int num = (Integer) entry.getValue();
                                     count = count + num;
                                     for (int i = 0; i < num; i++) {
@@ -1440,54 +1546,53 @@ public class NewPaymentActivity extends BaseActivity {
 
                                 LogUtil.d("TAG", "RealPay" + realPay + ",pay" + pay);
 
-                            } else if (buytype == ORDER_AGAIN) {
-                                mOrder = (NewOrder) getIntent().getSerializableExtra("order");
+                            } else if (buytype == 2) {
+                                mOrder = (Order) getIntent().getSerializableExtra("order");
                                 LogUtil.e("mOrder",mOrder.toString());
                                 goods = mOrder.getGoods();
                                 count = mOrder.getGoods().size();
                                 id = getIntent().getIntExtra("order_id", 0);
                                 oldPay = Float.parseFloat("" + mOrder.getOriginal_sum());
-                                for (NewGood good : goods) {
-                                     realPay+= good.getItem().getCurrent_price();
+                                for (Good good : goods) {
+                                     realPay+= good.getNewest_price().getNew_current_price();
 
                                 }
                                 pay = realPay;
                                 LogUtil.e("realPay",realPay+"");
 
-                            } else if (buytype == ORDER_TO_BUY) {
+                            } else if (buytype == 3) {
 
-                                mOrder = (NewOrder) getIntent().getSerializableExtra("order");
+                                mOrder = (Order) getIntent().getSerializableExtra("order");
                                 goods = mOrder.getGoods();
                                 count = mOrder.getGoods().size();
                                 realPay = Float.parseFloat("" + mOrder.getSum());
                                 pay = realPay;
                                 switchButtonPayamount.setClickable(false);
                             }
-                            if (buytype == BUY_NOW) {
+                            if (buytype == 0) {
                                 rvPaymentamountAmount.setData(new RowViewDesc("总价：", "￥" +
                                         fnum.format(count * appItem.getCurrent_price()), 0));
                                 tvPaymentamountRatepoint.setText("" + getPoints());
                                 tvPaymentamountRatepointMoney.setText(fnum.format(getPoints() * 0.01f));
 
-                            } else if (buytype == CART_BUY ) {
+                            } else if (buytype == 1 ) {
                                 rvPaymentamountAmount.setData(new RowViewDesc("总价：", "￥" + fnum.format(pay), 0));
                                 tvPaymentamountRatepoint.setText("" + getPoints());
                                 tvPaymentamountRatepointMoney.setText(fnum.format(getPoints() * 0.01f));
-                            }else if(buytype==ORDER_AGAIN){
+                            }else if(buytype==2){
                                 rvPaymentamountAmount.setData(new RowViewDesc("总价：", "￥" + fnum.format(pay), 0));
-                               /* if(!fnum.format(oldPay).equals(fnum.format(pay))){
+                                if(!fnum.format(oldPay).equals(fnum.format(pay))){
                                     rvPaymentamountAmount.setDesc("¥"+fnum.format(oldPay),"¥"+fnum.format(pay));
-                                }*/
-                                rvPaymentamountAmount.setData(new RowViewDesc("总价：", "￥" + fnum.format(pay), 0));
+                                }
                                 tvPaymentamountRatepoint.setText("" + getPoints());
                                 tvPaymentamountRatepointMoney.setText(fnum.format(getPoints() * 0.01f));
-                            } else if (buytype ==ORDER_TO_BUY && null != mOrder) {
+                            } else if (buytype == 3 && null != mOrder) {
                                 rvPaymentamountAmount.setData(new RowViewDesc("总价：", "￥" + fnum.format(mOrder.getOriginal_sum()), 0));
                                 mRowViewDesc.setDesc(mOrder.getCoupon_info());
                             }
                             rvPaymentamountCoupon.setData(mRowViewDesc);
 
-                            if (buytype ==ORDER_TO_BUY && null != mOrder)
+                            if (buytype == 3 && null != mOrder)
                             { tvPaymentamountRealpay.setText(String.valueOf(fnum.format(mOrder.getSum())));}
                             else
                             {tvPaymentamountRealpay.setText(String.valueOf(fnum.format(realPay)));}
@@ -1555,12 +1660,26 @@ public class NewPaymentActivity extends BaseActivity {
         private static final int DETAIL = 0;
 
         class MViewHolder1 extends RecyclerView.ViewHolder {
-            private  OrderGroup mOrderGroup;
 
+            private final TextView tvPaymentitemName;
+            private final TextView tvPaymentitemDosage1;
+            private final TextView tvPaymentitemDosage2;
+            private final TextView tvPaymentitemDosage3;
+            private final TextView tvPaymentitemDosage4;
+            private final TextView tvPaymentitemDosage5;
+            private final TextView tvPaymentitemPrice;
+            private final TextView tvPaymentitemOldPrice;
 
             public MViewHolder1(View itemView) {
                 super(itemView);
-               mOrderGroup = (OrderGroup) itemView.findViewById(R.id.ogItemPay);
+                tvPaymentitemName = (TextView) itemView.findViewById(R.id.tvPaymentitemName);
+                tvPaymentitemDosage1 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage1);
+                tvPaymentitemDosage2 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage2);
+                tvPaymentitemDosage3 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage3);
+                tvPaymentitemDosage4 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage4);
+                tvPaymentitemDosage5 = (TextView) itemView.findViewById(R.id.tvPaymentitemDosage5);
+                tvPaymentitemPrice = (TextView) itemView.findViewById(R.id.tvPaymentitemPrice);
+                tvPaymentitemOldPrice = (TextView) itemView.findViewById(R.id.tvPaymentitemOldPrice);
             }
         }
 
@@ -1576,21 +1695,115 @@ public class NewPaymentActivity extends BaseActivity {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
             MViewHolder1 mViewHolder1 = (MViewHolder1) holder;
-            mViewHolder1.mOrderGroup.setItemClickable(false);
-            if (buytype == BUY_NOW) {
-                ArrayList<DisplayItems.AppItem> list = new ArrayList<>();
-                list.add(appItem);
-                mViewHolder1.mOrderGroup.setItemData(list,count);
-            } else if (buytype == CART_BUY || buytype == ORDER_AGAIN|| buytype == ORDER_TO_BUY) {
-                mViewHolder1.mOrderGroup.setData(goods);
-               /*  mViewHolder1.tvPaymentitemPrice.setText("价格: ¥" + String.valueOf(fnum.format(goods.get(position).getCurrent_price())));
-               if(buytype==2&&!fnum.format(goods.get(position).getNewest_price().getNew_current_price()).equals(fnum.format(goods.get(position).getCurrent_price()))){
+
+            if (buytype == 0) {
+
+                mViewHolder1.tvPaymentitemName.setText(appItem.getName());
+
+                if (appDosages.size() == 1&&appDosages.get(0).getApp_material().getName().equals("咖啡豆")) {
+                    mViewHolder1.tvPaymentitemDosage1.setText("咖啡豆" + "\n" + (int) appDosages.get(0).getWeight() + "份");
+                } else {
+                    switch (appDosages.size()) {
+                        case 5:
+                            if ("咖啡豆".equals(appDosages.get(4).getApp_material().getName())) {
+                                mViewHolder1.tvPaymentitemDosage5.setText("咖啡浓度" + "\n" + (int) appDosages.get(4).getWeight() + "%");
+                            } else {
+                                mViewHolder1.tvPaymentitemDosage5.setText(appDosages.get(4).getApp_material().getName() + "\n" + appDosages.get(4).getWeight() + "克");
+                            }
+                        case 4:
+                            if ("咖啡豆".equals(appDosages.get(3).getApp_material().getName())) {
+                                mViewHolder1.tvPaymentitemDosage4.setText("咖啡浓度" + "\n" + (int) appDosages.get(3).getWeight() + "%");
+                            } else {
+                                mViewHolder1.tvPaymentitemDosage4.setText(appDosages.get(3).getApp_material().getName() + "\n" + appDosages.get(3).getWeight() + "克");
+                            }
+                        case 3:
+                            if ("咖啡豆".equals(appDosages.get(2).getApp_material().getName())) {
+                                mViewHolder1.tvPaymentitemDosage3.setText("咖啡浓度" + "\n" + (int) appDosages.get(2).getWeight() + "%");
+                            } else {
+                                mViewHolder1.tvPaymentitemDosage3.setText(appDosages.get(2).getApp_material().getName() + "\n" + appDosages.get(2).getWeight() + "克");
+                            }
+                        case 2:
+                            if ("咖啡豆".equals(appDosages.get(1).getApp_material().getName())) {
+                                mViewHolder1.tvPaymentitemDosage2.setText("咖啡浓度" + "\n" + (int) appDosages.get(1).getWeight() + "%");
+                            } else {
+                                mViewHolder1.tvPaymentitemDosage2.setText(appDosages.get(1).getApp_material().getName() + "\n" + appDosages.get(1).getWeight() + "克");
+                            }
+                        case 1:
+                            if ("咖啡豆".equals(appDosages.get(0).getApp_material().getName())) {
+                                mViewHolder1.tvPaymentitemDosage1.setText("咖啡浓度" + "\n" + (int) appDosages.get(0).getWeight() + "%");
+                            } else {
+                                mViewHolder1.tvPaymentitemDosage1.setText(appDosages.get(0).getApp_material().getName() + "\n" + appDosages.get(0).getWeight() + "克");
+                            }
+                            break;
+                    }
+                }
+                mViewHolder1.tvPaymentitemPrice.setText("价格: " +"¥"+String.valueOf(fnum.format(appItem.getCurrent_price())) );
+            } else if (buytype == 1 || buytype == 2 || buytype == 3) {
+                mViewHolder1.tvPaymentitemOldPrice.setVisibility(View.GONE);
+                mViewHolder1.tvPaymentitemName.setText(goods.get(position).getName());
+
+                List<Ingredient> ingredients = new ArrayList<>();
+                ingredients.clear();
+                ingredients = JSON.parseArray((goods.get(position)).getIngredients(), Ingredient.class);
+
+                boolean doubleBean = false;
+                Iterator<Ingredient> iterator = ingredients.iterator();
+                while (iterator.hasNext()) {
+                    String name = iterator.next().getName();
+                    if ("杯子".equals(name)) {
+                        iterator.remove();
+                    }
+                    if ("水".equals(name)) {
+                        iterator.remove();
+                    }
+
+                    if ("咖啡豆".equals(name)) {
+                        if (!doubleBean) {
+                            doubleBean = true;
+                        } else {
+                            iterator.remove();
+                        }
+                    }
+
+                }
+
+                switch (ingredients.size()) {
+                    case 5:
+                        if (null == ingredients.get(4).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage5.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage5.setText(ingredients.get(4).getDisplay_name() + "\n" + ingredients.get(4).getDisplay_value());
+                    case 4:
+                        if (null == ingredients.get(3).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage4.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage4.setText(ingredients.get(3).getDisplay_name() + "\n" + ingredients.get(3).getDisplay_value());
+                    case 3:
+                        if (null == ingredients.get(2).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage3.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage3.setText(ingredients.get(2).getDisplay_name() + "\n" + ingredients.get(2).getDisplay_value());
+                    case 2:
+                        if (null == ingredients.get(1).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage2.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage2.setText(ingredients.get(1).getDisplay_name() + "\n" + ingredients.get(1).getDisplay_value());
+                    case 1:
+                        if (null == ingredients.get(0).getDisplay_name())
+                            mViewHolder1.tvPaymentitemDosage1.setText("");
+                        else
+                            mViewHolder1.tvPaymentitemDosage1.setText(ingredients.get(0).getDisplay_name() + "\n" + ingredients.get(0).getDisplay_value());
+                        break;
+                }
+
+                mViewHolder1.tvPaymentitemPrice.setText("价格: ¥" + String.valueOf(fnum.format(goods.get(position).getCurrent_price())));
+                if(buytype==2&&!fnum.format(goods.get(position).getNewest_price().getNew_current_price()).equals(fnum.format(goods.get(position).getCurrent_price()))){
                     LogUtil.e("price",fnum.format(goods.get(position).getNewest_price().getNew_current_price())+"======="+fnum.format(goods.get(position).getCurrent_price()));
                     mViewHolder1.tvPaymentitemOldPrice.setVisibility(View.VISIBLE);
                     mViewHolder1.tvPaymentitemPrice.setText("价格: ¥"+String.valueOf(fnum.format(goods.get(position).getNewest_price().getNew_current_price())) );
                     mViewHolder1.tvPaymentitemOldPrice.setText("¥"+String.valueOf(fnum.format(goods.get(position).getCurrent_price())) );
                     mViewHolder1.tvPaymentitemOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG|Paint.ANTI_ALIAS_FLAG);
-                }*/
+                }
             }
 //            switch (holder.getItemViewType()) {
 //                case LAST:
@@ -1623,13 +1836,8 @@ public class NewPaymentActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return 1;
+            return count;
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        CommonUtil.unSubscribeSubs(mSubscriber);
-    }
 }

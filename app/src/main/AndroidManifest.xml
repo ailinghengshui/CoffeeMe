@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hzjytech.coffeeme"
-    android:versionCode="24"
-    android:versionName="v2.9.0">
+    android:versionCode="19"
+    android:versionName="v2.4.3">
 
     <permission
         android:name="${applicationId}.permission.JPUSH_MESSAGE"
@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- locaiton permission -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -44,7 +45,6 @@
             android:value="${APP_CHANNEL_VALUE}" />
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
             android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait"
             android:theme="@style/MainTheme"
@@ -57,6 +57,9 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="5771e09be0f55a44d4000f8f" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
 
         <activity
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
@@ -119,11 +122,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
-            android:name=".culture.MoreCultureActivity"
-            android:label="@string/title_activity_culture_detail"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
-        <activity
             android:name=".home.BannerDetailActivity"
             android:label="@string/title_activity_culture_detail"
             android:screenOrientation="portrait"
@@ -135,10 +133,6 @@
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
             android:name=".home.ModulationActivity"
-            android:theme="@style/NotitleTheme"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".home.PackageModulationActivity"
             android:theme="@style/NotitleTheme"
             android:screenOrientation="portrait" />
         <activity
@@ -181,10 +175,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
-            android:name=".me.CouponInfoActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
-        <activity
             android:name=".home.CouponChooseActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainTheme"
@@ -194,19 +184,15 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
+            android:name=".collect.NewMyCoffeesActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
+        <activity
             android:name=".me.BindingPhoneActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
             android:name=".order.OrderItemDetailActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
-        <activity
-            android:name=".order.DetailPackageOrderActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
-        <activity
-            android:name=".order.MyPackageCouponsActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
@@ -257,13 +243,26 @@
             android:name=".me.SetLoginPwdActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
-
+        <activity
+            android:name=".home.CompletelyAdjustActivity"
+            android:theme="@style/NotitleTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden|stateUnchanged|adjustPan"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".home.FineActivity"
+            android:theme="@style/NotitleTheme"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" />
         <activity
             android:name=".me.ShareActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" >
         </activity>
-
+        <activity
+            android:name=".collect.DetailRecipeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|stateUnchanged|adjustPan" >
+        </activity>
         <activity android:name=".weibomanager.WBEntryActivity">
             <intent-filter>
                 <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY"/>
@@ -278,10 +277,7 @@
         <activity android:name=".home.SuccessOrderActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".home.SuccessPackageOrderActivity"
-            android:screenOrientation="portrait">
-        </activity>
-
+        <service android:name=".service.MusicService"/>
         <!-- Rich push 核心功能 since 2.0.6 -->
         <activity
             android:name="cn.jpush.android.ui.PopWinActivity"

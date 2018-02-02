@@ -12,8 +12,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.hzjytech.coffeeme.utils.LogUtil;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,7 +102,7 @@ public class ExampleUtil {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             imei = telephonyManager.getDeviceId();
         } catch (Exception e) {
-            LogUtil.e(ExampleUtil.class.getSimpleName(), e.getMessage());
+            Log.e(ExampleUtil.class.getSimpleName(), e.getMessage());
         }
         return imei;
     }

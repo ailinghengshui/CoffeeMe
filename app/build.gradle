@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'packer'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '23.0.1'
 
     defaultConfig {
         applicationId "com.hzjytech.coffeeme"
@@ -22,16 +20,11 @@ android {
             storePassword '2016coffeeme'
             keyAlias 'coffeeme'
             keyPassword '2016coffeeme'
-            v2SigningEnabled true
         }
     }
 
-    packer {
-        archiveNameFormat = '${projectName}-${versionName}-${channel}-${buildType}'
-        archiveOutput = new File(project.rootProject.buildDir, "apks")
-        channelFile = new File(project.rootDir, "markets.txt")
 
-    }
+
     lintOptions {
         abortOnError false
     }
@@ -54,11 +47,7 @@ android {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/DEPENDENCIES'
     }
-    //加速dex构建时间
-    dexOptions {
-        maxProcessCount 4 // this is the default value
-        javaMaxHeapSize "2g"
-    }
+
     buildTypes {
 
         release {
@@ -73,15 +62,93 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    lintOptions {
-        disable 'MissingTranslation'
-        checkReleaseBuilds false
-    }
+
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn(nativeLibsToJar)
     }
 
+    productFlavors{
 
+        coffeeme{
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "coffeeme"]
+        }
+
+        anzhuo {
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "anzhuo"]
+        }
+        anzhi {
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "anzhi"]
+        }
+
+        xiaomi {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+        }
+
+        sougou {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "sougou"]
+        }
+
+        taobao {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "taobao"]
+        }
+
+        meizu {
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "meizu"]
+        }
+
+        oppo {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "oppo"]
+        }
+
+        kupai {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "kupai"]
+        }
+
+        leshi {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "leshi"]
+        }
+
+        huawei {
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "huawei"]
+        }
+
+        wandoujia {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
+        }
+
+        tengxun {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "tengxun"]
+        }
+
+        yingyonghui {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yingyonghui"]
+        }
+
+        jinli {
+            manifestPlaceholders = [ UMENG_CHANNEL_VALUE: "jinli"]
+        }
+
+        lianxiang {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "lianxiang"]
+        }
+
+        vivo {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
+        }
+
+        baidu {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
+        }
+
+        jiuyi91 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "jiuyi91"]
+        }
+
+        qihu360 {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "qihu360"]
+        }
+
+    }
 }
 
 dependencies {
@@ -96,32 +163,15 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
     compile 'com.android.support:support-v4:23.2.1'
-    compile 'com.android.support:cardview-v7:23.2.1'
     compile 'com.qiniu:qiniu-android-sdk:7.1.2'
     compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'org.xutils:xutils:3.3.36'
+
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.alibaba:fastjson:1.2.11'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.umeng.analytics:analytics:latest.integration'
-    //添加multidex 解决超过64k问题
-    compile 'com.android.support:multidex:1.0.1'
-    //retrofit+rxjava
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'io.reactivex:rxandroid:1.1.0'
-    // Retrofit的rx解析库
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.2'
     compile files('libs/alipaySdk-20160427.jar')
     compile files('libs/universal-image-loader-1.9.5.jar')
-    //jodate
-    compile 'joda-time:joda-time:2.9.9'
-    compile 'org.jsoup:jsoup:1.10.1'
-    //快速打包工具
-    compile 'com.mcxiaoke.packer-ng:helper:2.0.0'
-
     compile project(':crop')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2') {
         // Necessary if your app targets Marshmallow (since Espresso
@@ -142,13 +192,5 @@ dependencies {
     }
     compile files('libs/BaiduLBS_Android.jar')
     compile 'com.plattysoft.leonids:LeonidsLib:1.3.1'
-    compile('ru.noties:scrollable:1.3.0') {
-        exclude module: 'appcompat-v7'
-        exclude group: 'com.android.support'
-    }
-    apt 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile('com.jakewharton:butterknife:8.8.1') {
-        exclude module: 'appcompat-v7'
-        exclude group: 'com.android.support'
-    }
+
 }

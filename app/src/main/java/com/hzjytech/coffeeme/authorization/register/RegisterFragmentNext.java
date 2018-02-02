@@ -257,7 +257,7 @@ public class RegisterFragmentNext extends BaseFragment {
 
         entity.addParameter(Configurations.TOKEN, token);
         entity.addParameter(Configurations.PASSWORD, etRegPsd.getText().toString().trim());
-       // entity.addParameter(Configurations.REFERRAL_CODE, etRegReferralcode.getText().toString().trim());
+        entity.addParameter(Configurations.REFERRAL_CODE, etRegReferralcode.getText().toString().trim());
         entity.addParameter(Configurations.REG_ID, device_id);
 
         long timeStamp = TimeUtil.getCurrentTime();
@@ -267,7 +267,7 @@ public class RegisterFragmentNext extends BaseFragment {
         Map<String, String> map = new TreeMap<>();
         map.put(Configurations.TOKEN, token);
         map.put(Configurations.PASSWORD, etRegPsd.getText().toString().trim());
-       // map.put(Configurations.REFERRAL_CODE, etRegReferralcode.getText().toString().trim());
+        map.put(Configurations.REFERRAL_CODE, etRegReferralcode.getText().toString().trim());
         map.put(Configurations.REG_ID, device_id);
 
         entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
@@ -275,7 +275,7 @@ public class RegisterFragmentNext extends BaseFragment {
         x.http().request(HttpMethod.PUT, entity, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                LogUtil.e("result",result);
+                Log.e("result",result);
                 try {
                     JSONObject object = new JSONObject(result);
                     if (object.getInt(Configurations.STATUSCODE) == 200) {

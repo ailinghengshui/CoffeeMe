@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.me.SettingActivity;
-import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 
 import java.util.LinkedHashSet;
@@ -162,12 +161,12 @@ public class PushSetActivity extends InstrumentedActivity implements View.OnClic
                     if(ExampleUtil.isConnected(getApplicationContext())){
                         mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS,alias),1000*60);
                     }else{
-                        LogUtil.i(TAG,"No network");
+                        Log.i(TAG,"No network");
                     }
                     break;
                 default:
                     logs="Failed with errorCode= "+code;
-                    LogUtil.e(TAG,logs);
+                    Log.e(TAG,logs);
             }
             ExampleUtil.showToast(logs,getApplicationContext());
 
@@ -195,7 +194,7 @@ public class PushSetActivity extends InstrumentedActivity implements View.OnClic
 
                 default:
                     logs = "Failed with errorCode = " + code;
-                    LogUtil.e(TAG, logs);
+                    Log.e(TAG, logs);
             }
             ExampleUtil.showToast(logs, getApplicationContext());
         }

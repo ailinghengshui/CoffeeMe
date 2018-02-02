@@ -1,8 +1,6 @@
 package com.hzjytech.coffeeme.widgets;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +20,21 @@ public class AddSubView extends LinearLayout {
     private Button btnAddSubAdd;
     private Context context;
     private AddSubViewable listener;
-    private int mActionTextColor;
 
     public interface AddSubViewable{
         public void onAddSubViewClick(int count);
     }
 
     public AddSubView(Context context) {
-        this(context,null);
-
+        super(context);
+        this.context=context;
+        init();
     }
 
     public AddSubView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        super(context, attrs);
+        this.context=context;
+        init();
     }
 
     public AddSubView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -53,6 +53,7 @@ public class AddSubView extends LinearLayout {
         btnAddSubSub= (Button) view.findViewById(R.id.btnAddSubSub);
         tvAddSubShow= (TextView) view.findViewById(R.id.tvAddSubShow);
         btnAddSubAdd= (Button) view.findViewById(R.id.btnAddSubAdd);
+
         tvAddSubShow.setText("1");
 
         btnAddSubSub.setOnClickListener(new OnClickListener() {

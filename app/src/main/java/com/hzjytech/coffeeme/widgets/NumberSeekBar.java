@@ -14,7 +14,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.hzjytech.coffeeme.R;
-import com.hzjytech.coffeeme.utils.LogUtil;
 
 import java.text.DecimalFormat;
 
@@ -156,15 +155,15 @@ public class NumberSeekBar extends SeekBar implements SeekBar.OnSeekBarChangeLis
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        LogUtil.e("x",event.getX()+"");
+        Log.e("x",event.getX()+"");
         int width = getWidth();
         float x = getLeft();
-        LogUtil.e("x","left"+x);
+        Log.e("x","left"+x);
         int right = getRight();
-        LogUtil.e("x","right"+right);
+        Log.e("x","right"+right);
         if(event.getX()<right&&event.getX()>x){
             float v = (event.getX() - x) / (float) width;
-            LogUtil.e("x","百分比"+v);
+            Log.e("x","百分比"+v);
         }
 
         return super.onTouchEvent(event);
@@ -189,9 +188,9 @@ public class NumberSeekBar extends SeekBar implements SeekBar.OnSeekBarChangeLis
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-        LogUtil.e("offset",getXPosition(seekBar)+"offset");
-        LogUtil.e("offset",getX()+"x");
-        LogUtil.e("offset",getScrollX()+"");
+        Log.e("offset",getXPosition(seekBar)+"offset");
+        Log.e("offset",getX()+"x");
+        Log.e("offset",getScrollX()+"");
         String popupText = null;
         if (b&&mProgressChangeListener!=null){
             popupText = mProgressChangeListener.onHintTextChanged(this, getValue());
@@ -231,7 +230,7 @@ public class NumberSeekBar extends SeekBar implements SeekBar.OnSeekBarChangeLis
             return ((int)(sum/10)*10);
 
         }else if(type==SEEKBARTYPE_FINE){
-            LogUtil.e("progress",getProgress()+"进度条");
+            Log.e("progress",getProgress()+"进度条");
             float sum = (max - min) / 100.0f * (float) getProgress() + min;
             return (float) (Math.round(sum * 100f)) / 100f;
         }else{

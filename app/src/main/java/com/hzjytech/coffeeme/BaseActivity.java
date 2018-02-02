@@ -22,14 +22,11 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.alibaba.fastjson.JSON;
-import com.hzjytech.coffeeme.Dialogs.HintDialog;
 import com.hzjytech.coffeeme.Dialogs.ShareClipDialogWithTwoButton;
 import com.hzjytech.coffeeme.authorization.login.LoginActivity;
-
+import com.hzjytech.coffeeme.collect.DetailRecipeActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.entities.ComputeAppItem;
-import com.hzjytech.coffeeme.entities.DisplayItems;
-import com.hzjytech.coffeeme.entities.NewGood;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyApplication;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
@@ -61,7 +58,8 @@ import cz.msebera.android.httpclient.Header;
  * Created by Hades on 2016/1/26.
  */
 public class BaseActivity extends AppCompatActivity {
-    
+
+
     private ProgressDialog mProgressDlg = null;
     //程序是否恢复为前台
     private boolean isActive=false;
@@ -242,9 +240,6 @@ public class BaseActivity extends AppCompatActivity {
     public void checkResOld(JSONObject res) {
         try {
             if (res.getInt(Configurations.STATUSCODE) == 401 || res.getInt(Configurations.STATUSCODE) == 403) {
-                if(res.getString(Configurations.STATUSMSG).equals("非法请求")){
-                    return;
-                }
                 ToastUtil.showShort(BaseActivity.this, res.getString(Configurations.STATUSMSG));
                 goLogin();
             }
@@ -256,6 +251,10 @@ public class BaseActivity extends AppCompatActivity {
 
     public void goLogin() {
         SharedPrefUtil.loginout();
+//        SharedPrefUtil.saveAvatorUrl("");
+//        SharedPrefUtil.saveUri("");
+//        SharedPrefUtil.saveWeiboId("");
+//        UserUtils.saveUserInfo(null);
 
         Intent intent = new Intent(BaseActivity.this,  LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -284,9 +283,118 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        c.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+            @Override
+            public void onPrimaryClipChanged() {
+                LogUtil.e("clipboard","剪切板");
+            }
+        });
+        if(c.getPrimaryClip()!=null&&c.getPrimaryClip().getItemCount()>0)
+        {
+             String s = c.getPrimaryClip().getItemAt(0).getText().toString();
+            LogUtil.e("aa",s);
+            final String regex="&.*&";
+            Pattern pattern = Pattern.compile(regex);
+            //2.将字符串和正则表达式相关联
+            final Matcher matcher = pattern.matcher(s);
+            if(!TextUtils.isEmpty(s)&&matcher.find())
+            {
+                matcher.reset();
+                String dialogName = null;
+                String finalId=null;
+                while (matcher.find()){
+                    String group =  matcher.group();
+                    String substring = group.substring(1, group.length() - 1);
+                    try{
+                        byte[] decode = Base64.decode(substring,Base64.DEFAULT);
+                        String s2 = new String(decode);
+                        if(!s2.contains("#CM#")){
+                            return;
+                        }
+                        finalId = s2.replace("#CM#", "");
+                        getNameById(finalId,group);
+                    }catch (Exception e){
+                        c.setPrimaryClip( ClipData.newPlainText("clip",""));
+                    }
+
+                }
+
+               // Log.e("group",matcher.group());
+                //处理之前清楚掉,剪切版,省的多事
+
+            }
+
+
+        }
+
+
     }
 
+    private void getNameById(final String id,final String group) {
+        //如果已经弹出过dialog，不再弹出
+        if(application.getHasShowDialog()){
+            return;
+        }
+        LogUtil.e("id",id+"");
+        String Url = Configurations.URL_APP_ITEMS + "/" + id;
+        com.loopj.android.http.RequestParams params = new com.loopj.android.http.RequestParams();
+        //params.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
 
+        String device_id= JPushInterface.getRegistrationID(this);
+        String timeStamp= TimeUtil.getCurrentTimeString();
+        params.put(Configurations.TIMESTAMP, timeStamp);
+        params.put(Configurations.DEVICE_ID,device_id );
+
+        Map<String ,String > map=new TreeMap<>();
+        //map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+
+        params.put(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+                try {
+                    if (response.getInt(Configurations.STATUSCODE) == 200) {
+                        LogUtil.e("result",response.getJSONObject("results").toString());
+                        ComputeAppItem computeAppItems = JSON.parseObject(response.getJSONObject("results").getString("app_item"), ComputeAppItem.class);
+                        LogUtil.e("compute_appitems>>>", computeAppItems.toString());
+                        String dialogName= "【"+computeAppItems.getName().replace("(自调)", "").replace("(分享)", "")+"】";
+                        final ShareClipDialogWithTwoButton shareClipDialogWithTwoButton = ShareClipDialogWithTwoButton.newInstance(dialogName, group);
+                        shareClipDialogWithTwoButton.setOnTwoButtonClickListener(new ShareClipDialogWithTwoButton.OnShareTwoButtonClickListener() {
+                            @Override
+                            public void onLeftClick() {
+                                Intent intent = new Intent(BaseActivity.this, DetailRecipeActivity.class);
+                                intent.putExtra("id",Integer.valueOf(id));
+                                startActivity(intent);
+                                shareClipDialogWithTwoButton.dismiss();
+                                application.setHasShowDialog(false);
+                            }
+
+                            @Override
+                            public void onRightClick() {
+                                shareClipDialogWithTwoButton.dismiss();
+                                application.setHasShowDialog(false);
+                                //3.String 对象中的matches 方法就是通过这个Matcher和pattern来实现的。
+                                // System.out.println(matcher.matches());
+
+                            }
+                        });
+                        application.setHasShowDialog(true);
+                        shareClipDialogWithTwoButton.show(getSupportFragmentManager(),"clip");
+                        c.setPrimaryClip( ClipData.newPlainText("clip",""));
+
+                    }else {
+                        ToastUtil.showShort(BaseActivity.this,"该配方不存在！");
+                    }
+                    // ToastUtil.showShort(DetailRecipeActivity.this, response.getString(Configurations.STATUSMSG));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     /**
      * 1、除了欢迎界面都可以弹出
@@ -320,32 +428,5 @@ public class BaseActivity extends AppCompatActivity {
         config.setToDefaults();
         res.updateConfiguration(config, res.getDisplayMetrics());
         return res;
-    }
-    public boolean buyEnable(DisplayItems.AppItem appItem){
-        if(appItem.isBuy_enable()){
-            return true;
-        }else{
-            showAppItemIsClose();
-            return false;
-        }
-    }
-    public boolean buyEnable(List<NewGood> goods) {
-        for (NewGood good : goods) {
-            if (!good.getItem()
-                    .isBuy_enable()) {
-                showSomeAppItemIsClose();
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-    private void showSomeAppItemIsClose() {
-        HintDialog.newInstance("提示", "所含饮品已下架", "确定").show(getSupportFragmentManager(), "personInfoHint");
-    }
-
-    private void showAppItemIsClose() {
-        HintDialog.newInstance("提示", "该饮品已下架", "确定").show(getSupportFragmentManager(), "personInfoHint");
     }
 }

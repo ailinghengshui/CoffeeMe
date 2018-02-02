@@ -3,12 +3,20 @@ package com.hzjytech.coffeeme.me;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -18,22 +26,35 @@ import com.hzjytech.coffeeme.Dialogs.ITwoButtonClick;
 import com.hzjytech.coffeeme.Dialogs.NewCustomBenefitDialog;
 import com.hzjytech.coffeeme.Dialogs.NewOutTimeCouponDialog;
 import com.hzjytech.coffeeme.R;
+import com.hzjytech.coffeeme.collect.DetailRecipeActivity;
+import com.hzjytech.coffeeme.collect.NewMyCoffeesActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
+import com.hzjytech.coffeeme.entities.AppDosage;
+import com.hzjytech.coffeeme.entities.AppDosages;
+import com.hzjytech.coffeeme.entities.AppItem;
+import com.hzjytech.coffeeme.entities.AppItems;
+import com.hzjytech.coffeeme.entities.ComputeAppItem;
 import com.hzjytech.coffeeme.entities.Coupon;
 import com.hzjytech.coffeeme.entities.User;
 import com.hzjytech.coffeeme.fragments.BaseFragment;
-import com.hzjytech.coffeeme.utils.DateTimeUtil;
+import com.hzjytech.coffeeme.home.NewPaymentActivity;
+import com.hzjytech.coffeeme.utils.AppUtil;
 import com.hzjytech.coffeeme.utils.DateUtil;
+import com.hzjytech.coffeeme.utils.DensityUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.MyApplication;
+import com.hzjytech.coffeeme.utils.MyMath;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
-import com.hzjytech.coffeeme.utils.TextUtil;
 import com.hzjytech.coffeeme.utils.TimeUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
 import com.hzjytech.coffeeme.widgets.CircleImageView;
+import com.hzjytech.coffeeme.widgets.Dosageview.DosageGroup;
+import com.hzjytech.coffeeme.widgets.Dosageview.DosageRowDesc;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -41,11 +62,11 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
+import org.xutils.http.HttpMethod;
 import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -56,37 +77,47 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import cn.jpush.android.api.JPushInterface;
+import cz.msebera.android.httpclient.Header;
 
 @ContentView(R.layout.fragment_me)
 public class MeFragment extends BaseFragment {
 
+    private static final String TAG = MeFragment.class.getSimpleName();
+    private static final int ADD_CHART =1 ;
+    private static final int BOOK = 2;
+    private static final float BASE_PRICE = 2.0f;
     private static int MEFRAGMENT_REQUEST_CODE = 0x00001;
     private User user;
     private boolean loadFromUser = true;
+    private ComputeAppItem computeAppItems;
+    private ArrayList<ComputeAppItem.AppDosagesBean> appDosages;
+    private int clickEvent=-1;
+    private Handler handler=new Handler();
     private DecimalFormat df;
-    private boolean meFragmentVisible = true;
+    private boolean meFragmentVisible=true;
     private MyApplication application;
 
     public interface MeFragmentable {
         void onMeFragmentClick(String info);
     }
+    private MefrgShowAdapter adapter;
 
     /**
      * Adapter all data list
      */
+    private List<AppItems> mAppItemsList = new ArrayList<>();
     @ViewInject(R.id.btnMefrgBalance)
     private TextView btnMefrgBalance;
 
     @ViewInject(R.id.btnMefrgCoupon)
     private TextView btnMefrgCoupon;
-
-    @ViewInject(R.id.btnMeExgCoupon)
-    private TextView btnMeExgCoupon;
 
     @ViewInject(R.id.llMefrgBalance)
     private LinearLayout llMefrgBalance;
@@ -110,10 +141,25 @@ public class MeFragment extends BaseFragment {
     private ImageView ivMeFrgLevelImage;
 
     @ViewInject(R.id.MefrgSharelayout)
-    private LinearLayout MefrgSharelayout;
+    private RelativeLayout MefrgSharelayout;
 
-    @ViewInject(R.id.iv_recharge)
-    private ImageView mIvRecharge;
+    @ViewInject(R.id.tvMefrgReferralcode)
+    private TextView tvMefrgReferralcode;
+    @ViewInject(R.id.nologintx)
+    private TextView nologintx;
+    @ViewInject(R.id.rcyViewMefrgShow)
+    private RecyclerView rcyViewMefrgShow;
+    @ViewInject(R.id.rl_top)
+    private RelativeLayout rl_top;
+    @ViewInject(R.id.sv)
+    private ScrollView sv;
+    @ViewInject(R.id.rl_guide)
+   private RelativeLayout rl_guide;
+    @ViewInject(R.id.tv_guide)
+   private TextView tv_guide;
+    @ViewInject(R.id.guide_card)
+    private ImageView iv_guide_card;
+
     @Event(R.id.ivMefrgSetting)
     private void onMefrgSettingClick(View view) {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
@@ -121,33 +167,454 @@ public class MeFragment extends BaseFragment {
     }
 
 
-    @Event(value = {R.id.MefrgPointlayout,R.id.llMefrgLevelContainer})
+    @Event(R.id.llMefrgLevelContainer)
     private void onMefrgLevelContainerClick(View view) {
-        if (null == user) {
-            goLogin();
-            return;
-        }
         Intent intent = new Intent(getActivity(), PointRateActivity.class);
         startActivity(intent);
     }
-    @Event(R.id.llMeExgCoupon)
-    private void onLlMeExgCouponClick(View view){
-        if (null == user) {
-            goLogin();
-            return;
-        }
-        Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-        intent.putExtra("type","redeem");
+
+    @Event(R.id.MefrgSharelayout)
+    private void onShareClick(View view){
+        Intent intent = new Intent(getActivity(), ShareActivity.class);
         startActivity(intent);
     }
-    @Event(R.id.iv_recharge)
-     private void onRechargeClick(View view){
+    @Event(R.id.rlMefrgMycoffees)
+    private void onMefrgMyCoffeesClick(View view) {
+
         if (null == user) {
             goLogin();
             return;
         }
-        Intent intent = new Intent(getActivity(), NewRechargeActivity.class);
+        Intent intent = new Intent(getActivity(), NewMyCoffeesActivity.class);
         startActivity(intent);
+
+    }
+
+    class MefrgShowAdapter extends RecyclerView.Adapter<MefrgShowAdapter.ViewHolder> {
+       // Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/qk.ttf");
+        class ViewHolder extends RecyclerView.ViewHolder {
+            private  DosageGroup dosggrpMycoffeeitemDosages;
+            private TextView tvMycoffeeitemName;
+            private  TextView tvMycoffeeitemDate;
+            private  ImageView ivMycoffeeitemDel;
+            private  TextView btnMyCoffeeitem;
+            private  LinearLayout ll_to_detail;
+            private  TextView tv_add_chart;
+            public ViewHolder(View itemView) {
+                super(itemView);
+                tvMycoffeeitemName = (TextView) itemView.findViewById(R.id.tvMycoffeeitemName);
+                tvMycoffeeitemDate = (TextView) itemView.findViewById(R.id.tvMycoffeeitemDate);
+                ivMycoffeeitemDel = (ImageView) itemView.findViewById(R.id.ivMycoffeeitemDel);
+                dosggrpMycoffeeitemDosages = (DosageGroup) itemView.findViewById(R.id.dosggrpMycoffeeitemDosages);
+                btnMyCoffeeitem = (TextView) itemView.findViewById(R.id.btnMyCoffeeitem);
+                ll_to_detail = (LinearLayout) itemView.findViewById(R.id.ll_to_detail);
+                tv_add_chart = (TextView) itemView.findViewById(R.id.btnMyCoffeeAddChart);
+                ivMycoffeeitemDel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        delMyCoffee();
+                    }
+                });
+
+                btnMyCoffeeitem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = getLayoutPosition();
+                        int id = mAppItemsList.get(position).getId();
+                        clickEvent=BOOK;
+                        getCurrentPriceById(id);
+
+                    }
+
+                });
+                ll_to_detail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        toDetailRecipe();
+                    }
+                });
+                tv_add_chart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int position = getLayoutPosition();
+                        int id = mAppItemsList.get(position).getId();
+                        clickEvent=ADD_CHART;
+                        getCurrentPriceById(id);
+                    }
+                });
+            }
+            /**
+             * 根据id实时获取价格，因为时间过长，价格可能会发生变化
+             * @param id
+             */
+            private void getCurrentPriceById(int id) {
+                LogUtil.e("id",id+"");
+                String Url = Configurations.URL_APP_ITEMS + "/" + id;
+                com.loopj.android.http.RequestParams params = new com.loopj.android.http.RequestParams();
+                params.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+
+                String device_id= JPushInterface.getRegistrationID(getActivity());
+                String timeStamp= TimeUtil.getCurrentTimeString();
+                params.put(Configurations.TIMESTAMP, timeStamp);
+                params.put(Configurations.DEVICE_ID,device_id );
+
+                Map<String ,String > map=new TreeMap<>();
+                map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+
+                params.put(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.get(Url, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+                        try {
+                            if (response.getInt(Configurations.STATUSCODE) == 200) {
+                                LogUtil.e("result",response.getJSONObject("results").toString());
+                                computeAppItems = JSON.parseObject(response.getJSONObject("results").getString("app_item"), ComputeAppItem.class);
+                                LogUtil.e("compute_appitems>>>", computeAppItems.toString());
+                                appDosages =new ArrayList<ComputeAppItem.AppDosagesBean>();
+                                appDosages.addAll(computeAppItems.getApp_dosages());
+                                float price=computePrice();
+                                LogUtil.e("price",price+"");
+                                if(clickEvent==ADD_CHART){
+                                    addToChart(price);
+                                }else if(clickEvent==BOOK){
+                                    book(price);
+                                }
+                            }
+                            //ToastUtil.showShort(getActivity(), response.getString(Configurations.STATUSMSG));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            /**
+             * 根据获取到的信息重新计算价格，多处涉及到价格的会复用
+             */
+            private float computePrice() {
+                int parent_id = computeAppItems.getParent_id();
+                int id = computeAppItems.getId();
+                float price;
+                if(parent_id==id){
+                    price= (computeAdjustPrice()+BASE_PRICE);
+                }else{
+                    price= computeSystemPrice();
+                }
+                return price;
+            }
+
+            /**
+             * 计算自调咖啡的新价格
+             * 根据物料与物料价格直接相乘
+             */
+            private float computeAdjustPrice() {
+                List<ComputeAppItem.AppDosagesBean> app_dosages = computeAppItems.getApp_dosages();
+                double adjustPrice=0;
+                for (ComputeAppItem.AppDosagesBean app_dosage : app_dosages) {
+                    float singlePrice = app_dosage.getMaterial_name().equals("咖啡豆") ? (app_dosage.getWeight() * app_dosage.getAdjust_price() / 10f) : (app_dosage.getWeight() * app_dosage.getAdjust_price());
+                    adjustPrice= MyMath.add(adjustPrice+"",singlePrice+"");
+                }
+                return (float) MyMath.round(adjustPrice,2);
+            }
+
+            /**
+             * 计算系统咖啡的新价格
+             * 1、得到基础总价
+             * 2、遍历所有物料与系统物料标准重量对比，不同则乘以sys_price
+             * 3、得到新价格
+             * 4、设置给currentPrice
+             */
+            private float computeSystemPrice() {
+                double basePrice =MyMath.round(Float.valueOf(computeAppItems.getSys_app_item().getCurrent_price()),2);
+                List<ComputeAppItem.AppDosagesBean> baseAppdosages = computeAppItems.getSys_app_item().getApp_dosages();
+                List<ComputeAppItem.AppDosagesBean> app_dosages = computeAppItems.getApp_dosages();
+                if(app_dosages.size()==1&&app_dosages.get(0).getMaterial_name().equals("咖啡豆")&&app_dosages.get(0).getWeight()<=2.0){
+                    if(app_dosages.get(0).getWeight()<1.5){
+                        basePrice= Float.valueOf(computeAppItems.getSys_app_item().getCurrent_price());
+                    }else{
+                        basePrice= Float.valueOf(computeAppItems.getSys_app_item().getPrice());
+                    }
+                }else{
+                    for (ComputeAppItem.AppDosagesBean baseAppdosage : baseAppdosages) {
+                        for (ComputeAppItem.AppDosagesBean app_dosage : app_dosages) {
+                            if(app_dosage.getMaterial_name().equals(baseAppdosage.getMaterial_name())){
+                                if(true){
+                                    float extraPrice=0;
+                                    if(app_dosage.getMaterial_name().equals("咖啡豆")){
+                                        extraPrice=  ((float)MyMath.sub(app_dosage.getWeight()+"",baseAppdosage.getWeight()+"")/10f * baseAppdosage.getSys_price());
+                                    }else{
+                                        extraPrice= (float) (MyMath.sub(app_dosage.getWeight()+"", baseAppdosage.getWeight()+"") * baseAppdosage.getSys_price());
+                                    }
+                                    basePrice+=extraPrice;
+                                }
+                            }
+                        }
+                    }
+                }
+                basePrice=MyMath.round(basePrice,2);
+                computeAppItems.getSys_app_item().setCurrent_price(basePrice+"");
+                return (float) basePrice;
+            }
+            /**
+             * 先计算价格再加入购物车，此处注意方法调用顺序与区间
+             * 加入购物车
+             */
+            public  void addToChart(float price){
+                int number=1;
+                final int position = getLayoutPosition();
+                AppItem appItem = new AppItem();
+                appItem.setId(mAppItemsList.get(position).getId());
+                appItem.setName(mAppItemsList.get(position).getName());
+                appItem.setPrice(price);
+                ArrayList<AppDosage> appDosages = new ArrayList<>();
+                for (int i = 0; i < mAppItemsList.get(position).getApp_dosages().size(); i++) {
+                    AppDosage appDosage = new AppDosage();
+                    AppDosage.AppMaterialEntity appMaterialEntity = new AppDosage.AppMaterialEntity();
+                    appMaterialEntity.setId(mAppItemsList.get(position).getApp_dosages().get(i).getId());
+                    appMaterialEntity.setName(mAppItemsList.get(position).getApp_dosages().get(i).getMaterial_name());
+                    appDosage.setApp_material(appMaterialEntity);
+                    appDosage.setId(mAppItemsList.get(position).getApp_dosages().get(i).getId());
+                    appDosage.setWater(mAppItemsList.get(position).getApp_dosages().get(i).getWater());
+                    appDosage.setWeight(mAppItemsList.get(position).getApp_dosages().get(i).getWeight());
+                    appDosages.add(appDosage);
+                }
+                String auth_token = UserUtils.getUserInfo().getAuth_token();
+                int item_id = appItem.getId();
+                JSONArray array = new JSONArray();
+                try {
+                    for (int i = 0; i < appDosages.size(); i++) {
+                        JSONObject object = new JSONObject();
+                        object.put("id", appDosages.get(i).getId());
+                        object.put("weight", appDosages.get(i).getWeight());
+//                object.put("weight", getWeightFromText(tabModulationDosage.getTabAt(i).getText().toString().trim()));
+                        object.put("water", appDosages.get(i).getWater());
+                        array.put(object);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String custom_dosages = array.toString();
+                //float price = appItem.getCurrent_price();
+                RequestParams entity = new RequestParams(Configurations.URL_GOODS);
+                entity.addParameter(Configurations.AUTH_TOKEN, auth_token);
+                entity.addParameter(Configurations.APP_ITEM_ID, item_id);
+                entity.addParameter("custom_dosages", custom_dosages);
+                entity.addParameter(Configurations.PRICE, price);
+                entity.addParameter(Configurations.NUMBER, number);
+
+                String device_id= JPushInterface.getRegistrationID(getActivity());
+                String timeStamp= TimeUtil.getCurrentTimeString();
+                entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+                entity.addParameter(Configurations.DEVICE_ID,device_id );
+
+                Map<String, String> map=new TreeMap<String, String>();
+                map.put(Configurations.AUTH_TOKEN, auth_token);
+                map.put(Configurations.APP_ITEM_ID, String.valueOf(item_id));
+                map.put("custom_dosages", custom_dosages);
+                map.put(Configurations.PRICE, String.valueOf(price));
+                map.put(Configurations.NUMBER, String.valueOf(number));
+                entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+
+
+                x.http().post(entity, new Callback.CommonCallback<JSONObject>() {
+
+                    @Override
+                    public void onSuccess(JSONObject result) {
+
+                        checkResOld(result);
+                        try {
+                            if (result.getInt(Configurations.STATUSCODE) == 200) {
+                                ToastUtil.showShort(getActivity(), result.getString(Configurations.STATUSMSG));
+                                LogUtil.e("result",result.toString());
+                                MobclickAgent.onEvent(getActivity(), UmengConfig.EVENT_ADD_CART);
+                            }else{
+                                ToastUtil.showShort(getActivity(),"加入购物车成功");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+
+                    }
+
+                    @Override
+                    public void onFinished() {
+
+                    }
+                });
+            }
+
+            /**
+             * 点击进入详情页
+             */
+               private void toDetailRecipe(){
+                   final int position = getLayoutPosition();
+                   int id = mAppItemsList.get(position).getId();
+                   Intent intent = new Intent(getActivity(), DetailRecipeActivity.class);
+                   intent.putExtra("id",id);
+                   intent.putExtra("isFromMyCoffee",true);
+                   startActivity(intent);
+
+               }
+            /**
+             * 立即购买
+             */
+            private void book(float price) {
+                final int position = getLayoutPosition();
+                AppItem appItem = new AppItem();
+                appItem.setId(mAppItemsList.get(position).getId());
+                appItem.setName(mAppItemsList.get(position).getName());
+                appItem.setCurrent_price(price);
+                ArrayList<AppDosage> appDosages = new ArrayList<>();
+                for (int i = 0; i < mAppItemsList.get(position).getApp_dosages().size(); i++) {
+                    AppDosage appDosage = new AppDosage();
+                    AppDosage.AppMaterialEntity appMaterialEntity = new AppDosage.AppMaterialEntity();
+                    appMaterialEntity.setId(mAppItemsList.get(position).getApp_dosages().get(i).getId());
+                    appMaterialEntity.setName(mAppItemsList.get(position).getApp_dosages().get(i).getMaterial_name());
+                    appDosage.setApp_material(appMaterialEntity);
+                    appDosage.setId(mAppItemsList.get(position).getApp_dosages().get(i).getId());
+                    appDosage.setWater(mAppItemsList.get(position).getApp_dosages().get(i).getWater());
+                    appDosage.setWeight(mAppItemsList.get(position).getApp_dosages().get(i).getWeight());
+                    appDosages.add(appDosage);
+                }
+
+                Intent intent = new Intent(getActivity(), NewPaymentActivity.class);
+                intent.putExtra("type", 0);
+                intent.putExtra("count", 1);
+                intent.putExtra("appItem", appItem);
+                intent.putParcelableArrayListExtra("appDosages", appDosages);
+                startActivity(intent);
+
+            }
+
+
+            private void delMyCoffee() {
+
+                final int position = getLayoutPosition();
+
+                RequestParams entity = new RequestParams(Configurations.URL_APP_ITEMS + "/" + mAppItemsList.get(position).getId());
+                entity.addParameter(Configurations.AUTH_TOKEN, user.getAuth_token());
+
+                String device_id= JPushInterface.getRegistrationID(getContext());
+                String timeStamp= TimeUtil.getCurrentTimeString();
+                entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+                entity.addParameter(Configurations.DEVICE_ID,device_id );
+
+                Map<String ,String > map=new TreeMap<>();
+                map.put(Configurations.AUTH_TOKEN, user.getAuth_token());
+
+                entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+
+
+                x.http().request(HttpMethod.DELETE, entity, new Callback.CommonCallback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+//                            checkResOld(jsonObject);
+                            if (jsonObject.getInt(Configurations.STATUSCODE) == 200) {
+                                ToastUtil.showShort(getContext(), jsonObject.getString(Configurations.STATUSMSG));
+                                mAppItemsList.remove(position);
+                                notifyItemRemoved(position);
+                            } else {
+                                ToastUtil.showShort(getContext(), jsonObject.getString(Configurations.STATUSMSG));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                        showNetError();
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+
+                    }
+
+                    @Override
+                    public void onFinished() {
+
+                    }
+                });
+
+            }
+
+
+        }
+
+        @Override
+        public MefrgShowAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.mycoffee_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MefrgShowAdapter.ViewHolder holder, int position) {
+            holder.tvMycoffeeitemName.setText(mAppItemsList.get(position).getName());
+            //holder.btnMyCoffeeitem.setTypeface (font);
+            //holder.tv_add_chart.setTypeface(font);
+            try {
+                String date = DateUtil.getMonth(DateUtil.ISO8601toCalendar(mAppItemsList.get(position).getUpdated_at()))
+                        + "月" + DateUtil.getDay(DateUtil.ISO8601toCalendar(mAppItemsList.get(position).getUpdated_at()))+"日"+" "
+                        +DateUtil.getHour(DateUtil.ISO8601toCalendar(mAppItemsList.get(position).getUpdated_at()))+":"
+                        +DateUtil.getMinute(DateUtil.ISO8601toCalendar(mAppItemsList.get(position).getUpdated_at()));
+                holder.tvMycoffeeitemDate.setText(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            holder.dosggrpMycoffeeitemDosages.removeAllViews();
+            List<DosageRowDesc> couponRowDescs = new ArrayList<>();
+            couponRowDescs.clear();
+
+            if (1 == mAppItemsList.get(position).getApp_dosages().size()&&mAppItemsList.get(position).getApp_dosages().get(0).getMaterial_name().equals("咖啡豆")
+                    &&mAppItemsList.get(position).getApp_dosages().get(0).getWeight()<=2) {
+                couponRowDescs.add(new DosageRowDesc(mAppItemsList.get(position).getApp_dosages().get(0).getMaterial_name(), mAppItemsList.get(position).getApp_dosages().get(0).getWeight(), "份"));
+            } else if (mAppItemsList.get(position).getApp_dosages().size() > 1) {
+                List<AppDosages> app_dosages = mAppItemsList.get(position).getApp_dosages();
+                Collections.sort(app_dosages,new MyComparetor());
+                for (int i = 0; i < app_dosages.size(); i++) {
+
+                    if ("咖啡豆".equals(app_dosages.get(i).getMaterial_name())) {
+
+                        couponRowDescs.add(new DosageRowDesc(getString(R.string.str_concentration),app_dosages.get(i).getWeight(), "%"));
+                    } else {
+                        couponRowDescs.add(new DosageRowDesc(app_dosages.get(i).getMaterial_name(), app_dosages.get(i).getWeight(), "克"));
+                    }
+                }
+            }else if(mAppItemsList.get(position).getApp_dosages().size()==1){
+                if ("咖啡豆".equals(mAppItemsList.get(position).getApp_dosages().get(0).getMaterial_name())) {
+
+                    couponRowDescs.add(new DosageRowDesc(getString(R.string.str_concentration), mAppItemsList.get(position).getApp_dosages().get(0).getWeight(), "%"));
+                } else {
+                    couponRowDescs.add(new DosageRowDesc(mAppItemsList.get(position).getApp_dosages().get(0).getMaterial_name(), mAppItemsList.get(position).getApp_dosages().get(0).getWeight(), "克"));
+                }
+            } else {
+                couponRowDescs.add(new DosageRowDesc("数据异常", 0, ""));
+            }
+
+            holder.dosggrpMycoffeeitemDosages.setData(couponRowDescs);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mAppItemsList.size();
+        }
     }
 
     @Override
@@ -157,15 +624,42 @@ public class MeFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        application = (MyApplication) getActivity().getApplication();
+        application = (MyApplication)getActivity().getApplication();
         df = new DecimalFormat("0.00");
         super.onViewCreated(view, savedInstanceState);
-        if (SharedPrefUtil.getLoginType()
-                .equals(SharedPrefUtil.LOGINING)) {
+        if(SharedPrefUtil.getIsFirstEnterMe()){
+            sv.setFocusable(true);
+            sv.requestFocus();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(ScrollView.FOCUS_DOWN);
+                }
+            });
+             if(AppUtil.checkDeviceHasNavigationBar(getActivity())){
+                 int virtualBarHeigh = AppUtil.getVirtualBarHeigh(getActivity());
+                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) iv_guide_card.getLayoutParams();
+                 lp.bottomMargin= DensityUtil.dp2px(getActivity(),43)-virtualBarHeigh;
+                 iv_guide_card.setLayoutParams(lp);
+             }
+            rl_guide.setVisibility(View.GONE);
+        }else{
+            rl_guide.setVisibility(View.GONE);
+        }
+        tv_guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rl_guide.setVisibility(View.GONE);
+                SharedPrefUtil.saveIsFirstEnterMe(false);
+            }
+        });
+        if (SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
             user = UserUtils.getUserInfo();
         } else {
             user = null;
         }
+        adapter = new MefrgShowAdapter();
+        rcyViewMefrgShow.setAdapter(adapter);
 
         civMefrgAvator.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,11 +682,9 @@ public class MeFragment extends BaseFragment {
                     return;
                 }
                 Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-                intent.putExtra("type","coupon");
                 startActivity(intent);
             }
         });
-
 
         llMefrgBalance.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,18 +698,6 @@ public class MeFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
-        MefrgSharelayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null == user) {
-
-                    goLogin();
-                    return;
-                }
-                Intent intent = new Intent(getActivity(), ShareActivity.class);
-                startActivity(intent);
-            }
-        });
 
         if (null == user) {
             llMefrgLevelContainer.setVisibility(View.INVISIBLE);
@@ -227,12 +707,12 @@ public class MeFragment extends BaseFragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (hidden) {
-            meFragmentVisible = false;
-        } else {
-            if (!meFragmentVisible) {
-                LogUtil.e("meFragmentVisible", meFragmentVisible + "");
-                meFragmentVisible = true;
+        if(hidden){
+            meFragmentVisible =false;
+        }else{
+            if(!meFragmentVisible){
+                LogUtil.e("meFragmentVisible",meFragmentVisible+"");
+                meFragmentVisible =true;
                 initAllData();
             }
 
@@ -241,112 +721,107 @@ public class MeFragment extends BaseFragment {
 
     @Override
     public void onResume() {
-        if (meFragmentVisible) {
+        if(meFragmentVisible){
             initAllData();
-            LogUtil.e("meFragmentVisible", true + "");
-        } else {
+            LogUtil.e("meFragmentVisible",true+"");
+        }else{
 
         }
+          /* rcyViewMefrgShow.setFocusable(false);
+           rcyViewMefrgShow.post(new Runnable() {
 
+            @Override
+            public void run() {
+                sv.scrollTo(0,0);
+
+            }
+        });*/
         super.onResume();
 
     }
-
     //初始化所有数据
-    private void initAllData() {
+    private void initAllData(){
         initBenefitDialog();
         //登录后检查是否有快过期的优惠券
         checkCouponsIsOutOfTime();
         initData();
         MobclickAgent.onPageStart(UmengConfig.MEFRAGMENT);
-        if (SharedPrefUtil.getLoginType()
-                .equals(SharedPrefUtil.LOGINING)) {
+        if (SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
             user = UserUtils.getUserInfo();
         } else {
             user = null;
         }
         initMefrgCoupon();
-        initMeExgCoupon();
         initMefrgBalance();
+        getData(1);
         initMefrgAvator();
         intiMefrgNickname();
         initMefrgLevel();
+        intiMefrgReferralcode();
 
     }
-
-    private void initData() {
+    private void initData(){
         showLoading();
-        RequestParams entity = new RequestParams(Configurations.URL_CHECK_TOKEN);
-        if (UserUtils.getUserInfo() != null) {
-            entity.addParameter(Configurations.AUTH_TOKEN,
-                    UserUtils.getUserInfo()
-                            .getAuth_token());
+        RequestParams entity=new RequestParams(Configurations.URL_CHECK_TOKEN);
+        if(UserUtils.getUserInfo()!=null) {
+            entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
 
-            String timeStamp = TimeUtil.getCurrentTimeString();
-            String device_id = JPushInterface.getRegistrationID(getActivity());
-            entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-            entity.addParameter(Configurations.DEVICE_ID, device_id);
+            String timeStamp= TimeUtil.getCurrentTimeString();
+            String device_id= JPushInterface.getRegistrationID(getActivity());
+            entity.addParameter(Configurations.TIMESTAMP,timeStamp);
+            entity.addParameter(Configurations.DEVICE_ID,device_id );
 
-            Map<String, String> map = new TreeMap<>();
-            map.put(Configurations.AUTH_TOKEN,
-                    UserUtils.getUserInfo()
-                            .getAuth_token());
-            entity.addParameter(Configurations.SIGN,
-                    com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id,
-                            timeStamp,
-                            map));
+            Map<String,String> map=new TreeMap<>();
+            map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+            entity.addParameter(Configurations.SIGN, com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id,timeStamp,map));
         }
 
-        x.http()
-                .get(entity, new Callback.CommonCallback<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject result) {
-                        hideLoading();
-                        try {
-                            if (result.getInt(Configurations.STATUSCODE) == 200) {
-                                user = JSON.parseObject(result.getJSONObject("results")
-                                        .getString("user"), User.class);
-                                UserUtils.saveUserInfo(user);
-                                initMefrgLevel();
-                            } else {
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject result) {
+                hideLoading();
+                try {
+                    if(result.getInt(Configurations.STATUSCODE)==200){
+                        user = JSON.parseObject(result.getJSONObject("results").getString("user"), User.class);
+                        UserUtils.saveUserInfo(user);
+                        initMefrgLevel();
+                    }else{
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                hideLoading();
+                showNetError();
 
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        hideLoading();
-                        showNetError();
+            }
 
-                    }
+            @Override
+            public void onCancelled(CancelledException cex) {
 
-                    @Override
-                    public void onCancelled(CancelledException cex) {
+            }
 
-                    }
+            @Override
+            public void onFinished() {
 
-                    @Override
-                    public void onFinished() {
-                        hideLoading();
-                    }
-                });
+            }
+        });
     }
-
     //新用户注册赠送优惠券
     //// TODO: 2017/1/3 修改user类中userbenefit字段，加入有效期字段
     private void initBenefitDialog() {
-        if (application.getHasShowDialog()) {
+        if(application.getHasShowDialog()){
             return;
         }
-        if (SharedPrefUtil.getIsFirstRegister()) {
+        if(SharedPrefUtil.getIsFirstRegister()){
             User user = UserUtils.getUserInfo();
-            if (user == null) {
+            if(user==null){
                 return;
             }
             User.BenefitCouponBean benefit = user.getBenefit_coupon();
-            if (benefit == null) {
+            if(benefit==null){
                 return;
             }
             int coupon_type = benefit.getCoupon_type();
@@ -356,40 +831,38 @@ public class MeFragment extends BaseFragment {
             String count = null;
             String unit = null;
             String able = null;
-            String date = null;
+            String date=null;
             switch (coupon_type) {
                 //打折优惠劵
                 case 1:
                     DecimalFormat decimalFormat = new DecimalFormat("##0.0");
-                    count = decimalFormat.format(Float.valueOf(value) * 0.1f);
-                    unit = "折";
-                    able = "可直接使用";
+                    count =  decimalFormat.format(Float.valueOf(value) * 0.1f);
+                    unit="折";
+                    able="可直接使用";
                     break;
                 //满减优惠券
                 case 2:
                     if (!TextUtils.isEmpty(value)) {
                         String[] strings = value.split("-");
-                        count = strings[1];
-                        unit = "￥";
-                        able = "满" + strings[0] + "元可用";
+                        count=strings[1];
+                        unit="￥";
+                        able="满" + strings[0] + "元可用";
                     }
                     break;
                 //立减优惠券
                 case 3:
-                    count = value;
-                    unit = "￥";
-                    able = "可直接使用";
+                    count=value;
+                    unit="￥";
+                    able="可直接使用";
                     break;
             }
-            date =DateTimeUtil.longToShort7(Long.valueOf(end_date));
-
-            final NewCustomBenefitDialog newCustomBenefitDialog = NewCustomBenefitDialog
-                    .newInstance(
-                    title,
-                    count,
-                    unit,
-                    able,
-                    "有效期至" + date);
+            try {
+                        date = DateUtil.getYear(DateUtil.ISO8601toCalendar(end_date))
+                        + "." + DateUtil.getMonth(DateUtil.ISO8601toCalendar(end_date)) + "." + DateUtil.getDay(DateUtil.ISO8601toCalendar(end_date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            final NewCustomBenefitDialog newCustomBenefitDialog = NewCustomBenefitDialog.newInstance(title,count, unit, able, "有效期至"+date);
             newCustomBenefitDialog.setOnTwoButtonClick(new ITwoButtonClick() {
                 @Override
                 public void onLeftButtonClick() {
@@ -400,47 +873,35 @@ public class MeFragment extends BaseFragment {
                 @Override
                 public void onRightButtonClick() {
                     Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-                    intent.putExtra("type","coupon");
                     startActivity(intent);
                     newCustomBenefitDialog.dismiss();
                     application.setHasShowDialog(false);
                 }
             });
-            newCustomBenefitDialog.show(getFragmentManager(), "newBenefit");
+            newCustomBenefitDialog.show(getFragmentManager(),"newBenefit");
             application.setHasShowDialog(true);
             SharedPrefUtil.saveIsFirstRegister(false);
         }
 
     }
-
     private void initMefrgLevel() {
         if (null != user) {
             llMefrgLevelContainer.setVisibility(View.VISIBLE);
-            if (UserUtils.getUserInfo()
-                    .getUser_level() != null) {
-                tvMeFrgLevelName.setText(TextUtils.isEmpty(UserUtils.getUserInfo()
-                        .getUser_level()
-                        .getLevel_name()) ? "" : UserUtils.getUserInfo()
-                        .getUser_level()
-                        .getLevel_name());
+            if (UserUtils.getUserInfo().getUser_level() != null) {
+                tvMeFrgLevelName.setText(TextUtils.isEmpty(UserUtils.getUserInfo().getUser_level().getLevel_name()) ? "" : UserUtils.getUserInfo().getUser_level().getLevel_name());
 
-                if (TextUtils.isEmpty(UserUtils.getUserInfo()
-                        .getUser_level()
-                        .getImage())) {
+                if (TextUtils.isEmpty(UserUtils.getUserInfo().getUser_level().getImage())) {
                     ivMeFrgLevelImage.setVisibility(View.INVISIBLE);
 
                 } else {
                     ivMeFrgLevelImage.setVisibility(View.VISIBLE);
-                    DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(
-                            true)/*缓存至内存*/
+                    DisplayImageOptions options = new DisplayImageOptions.Builder()
+                            .cacheInMemory(true)/*缓存至内存*/
                             .cacheOnDisk(true)/*缓存值SDcard*/
                             .bitmapConfig(Bitmap.Config.RGB_565)
                             .imageScaleType(ImageScaleType.EXACTLY)
                             .build();
-                    ImageLoader.getInstance()
-                            .displayImage(UserUtils.getUserInfo()
-                                    .getUser_level()
-                                    .getImage(), ivMeFrgLevelImage, options);
+                    ImageLoader.getInstance().displayImage(UserUtils.getUserInfo().getUser_level().getImage(), ivMeFrgLevelImage, options);
                 }
 
             }
@@ -457,32 +918,27 @@ public class MeFragment extends BaseFragment {
         if (requestCode == MEFRAGMENT_REQUEST_CODE && resultCode == MeActivity.RESULTCODE_OK) {
             if (null != SharedPrefUtil.getUri()) {
 
-                DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory
-                        (true)/*缓存至内存*/
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .cacheInMemory(true)/*缓存至内存*/
                         .cacheOnDisk(true)/*缓存值SDcard*/
                         .bitmapConfig(Bitmap.Config.RGB_565)
                         .imageScaleType(ImageScaleType.EXACTLY)
-                        .showImageOnLoading(R.drawable.icon_user_default)
                         .build();
-                ImageLoader.getInstance()
-                        .displayImage(SharedPrefUtil.getUri(), civMefrgAvator, options);
+                ImageLoader.getInstance().displayImage(SharedPrefUtil.getUri(), civMefrgAvator, options);
             } else {
                 civMefrgAvator.setImageResource(R.drawable.icon_user_default);
             }
-        } else if (requestCode == MEFRAGMENT_REQUEST_CODE && resultCode == MeActivity
-                .RESULTCODE_CAMERA_OK) {
+        } else if (requestCode == MEFRAGMENT_REQUEST_CODE && resultCode == MeActivity.RESULTCODE_CAMERA_OK) {
 
             if (null != SharedPrefUtil.getUri()) {
 
-                DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory
-                        (true)/*缓存至内存*/
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .cacheInMemory(true)/*缓存至内存*/
                         .cacheOnDisk(true)/*缓存值SDcard*/
                         .bitmapConfig(Bitmap.Config.RGB_565)
                         .imageScaleType(ImageScaleType.EXACTLY)
-                        .showImageOnLoading(R.drawable.icon_user_default)
                         .build();
-                ImageLoader.getInstance()
-                        .displayImage(SharedPrefUtil.getUri(), civMefrgAvator, options);
+                ImageLoader.getInstance().displayImage(SharedPrefUtil.getUri(), civMefrgAvator, options);
             } else {
                 civMefrgAvator.setImageResource(R.drawable.icon_user_default);
             }
@@ -490,24 +946,111 @@ public class MeFragment extends BaseFragment {
     }
 
 
+    private void getData(final int i) {
+
+        if (null == user) {
+            nologintx.setVisibility(View.VISIBLE);
+            nologintx.setText("你还没有登录哦～");
+            rcyViewMefrgShow.setVisibility(View.GONE);
+            return;
+        } else {
+            showLoading();
+        }
+        mAppItemsList.clear();
+        nologintx.setVisibility(View.GONE);
+        rcyViewMefrgShow.setVisibility(View.VISIBLE);
+        rcyViewMefrgShow.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        RequestParams entity = new RequestParams(Configurations.URL_APP_ITEMS + "/my");
+        entity.addParameter(Configurations.AUTH_TOKEN, user.getAuth_token());
+        entity.addParameter(Configurations.PAGE, i);
+
+        String device_id= JPushInterface.getRegistrationID(getContext());
+        String timeStamp= TimeUtil.getCurrentTimeString();
+
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
+
+        Map<String ,String > map=new TreeMap<>();
+        map.put(Configurations.AUTH_TOKEN, user.getAuth_token());
+        map.put(Configurations.PAGE, String.valueOf(i));
+
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
+
+
+        x.http().get(entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                hideLoading();
+                try {
+                    JSONObject object = new JSONObject(result);
+
+                    checkResOld(object);
+                    if (object.getInt(Configurations.STATUSCODE) == 200) {
+                        LogUtil.e("app_items_meFragment",result);
+                        mAppItemsList = JSON.parseArray(object.getJSONObject(Configurations.RESULTS).getString("app_items"), AppItems.class);
+                        if (mAppItemsList.size() > 0) {
+
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            rcyViewMefrgShow.setVisibility(View.GONE);
+                            nologintx.setVisibility(View.VISIBLE);
+                            nologintx.setText("你还没有收藏哦~");
+
+                        }
+                    } else {
+                        ToastUtil.showShort(getContext(), object.getString(Configurations.STATUSMSG));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                hideLoading();
+                showNetError();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
+
+    }
+
+
+    private void intiMefrgReferralcode() {
+
+        if (null != user) {
+
+            MefrgSharelayout.setVisibility(View.VISIBLE);
+        } else {
+            MefrgSharelayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void intiMefrgNickname() {
 
         if (null != user) {
             tvMefrgNickname.setVisibility(View.VISIBLE);
             if (loadFromUser) {
-                if (!TextUtils.isEmpty(user.getNickname())) {
+                if (!TextUtils.isEmpty( user.getNickname())) {
                     tvMefrgNickname.setText(user.getNickname());
                 } else {
                     tvMefrgNickname.setText(user.getPhone());
                 }
             } else {
-                if (!TextUtils.isEmpty(UserUtils.getUserInfo()
-                        .getNickname())) {
-                    tvMefrgNickname.setText(UserUtils.getUserInfo()
-                            .getNickname());
+                if (!TextUtils.isEmpty(UserUtils.getUserInfo().getNickname())) {
+                    tvMefrgNickname.setText(UserUtils.getUserInfo().getNickname());
                 } else {
-                    tvMefrgNickname.setText(UserUtils.getUserInfo()
-                            .getPhone());
+                    tvMefrgNickname.setText(UserUtils.getUserInfo().getPhone());
                 }
             }
 
@@ -528,115 +1071,92 @@ public class MeFragment extends BaseFragment {
 
         if (!TextUtils.isEmpty(SharedPrefUtil.getUri())) {
 
-            DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
-                    /*缓存至内存*/
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)/*缓存至内存*/
                     .cacheOnDisk(true)/*缓存值SDcard*/
                     .bitmapConfig(Bitmap.Config.RGB_565)
                     .imageScaleType(ImageScaleType.EXACTLY)
                     .build();
-            ImageLoader.getInstance()
-                    .displayImage(SharedPrefUtil.getUri(),
-                            civMefrgAvator,
-                            options,
-                            new ImageLoadingListener() {
-                                @Override
-                                public void onLoadingStarted(String s, View view) {
+            ImageLoader.getInstance().displayImage(SharedPrefUtil.getUri(), civMefrgAvator, options, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
 
-                                }
+                }
 
-                                @Override
-                                public void onLoadingFailed(
-                                        String s,
-                                        View view,
-                                        FailReason failReason) {
-                                    civMefrgAvator.setImageResource(R.drawable.icon_user_default);
-                                }
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    civMefrgAvator.setImageResource(R.drawable.icon_user_default);
+                }
 
-                                @Override
-                                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
 
-                                }
+                }
 
-                                @Override
-                                public void onLoadingCancelled(String s, View view) {
+                @Override
+                public void onLoadingCancelled(String s, View view) {
 
-                                }
-                            });
+                }
+            });
 
-        } else if (UserUtils.getUserInfo() != null && !TextUtils.isEmpty(UserUtils.getUserInfo()
-                .getAvator_url())) {
-            DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
-                    /*缓存至内存*/
+        } else if (UserUtils.getUserInfo() != null && !TextUtils.isEmpty(UserUtils.getUserInfo().getAvator_url())) {
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)/*缓存至内存*/
                     .cacheOnDisk(true)/*缓存值SDcard*/
                     .bitmapConfig(Bitmap.Config.RGB_565)
                     .build();
-            ImageLoader.getInstance()
-                    .displayImage(UserUtils.getUserInfo()
-                            .getAvator_url(), civMefrgAvator, options, new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String s, View view) {
+            ImageLoader.getInstance().displayImage(UserUtils.getUserInfo().getAvator_url(), civMefrgAvator, options, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
 
-                        }
+                }
 
-                        @Override
-                        public void onLoadingFailed(String s, View view, FailReason failReason) {
-                            civMefrgAvator.setImageResource(R.drawable.icon_user_default);
-                        }
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    civMefrgAvator.setImageResource(R.drawable.icon_user_default);
+                }
 
-                        @Override
-                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
 
-                        }
+                }
 
-                        @Override
-                        public void onLoadingCancelled(String s, View view) {
+                @Override
+                public void onLoadingCancelled(String s, View view) {
 
-                        }
-                    });
+                }
+            });
 
         } else if (user != null) {
 
-            if (!TextUtils.isEmpty(UserUtils.getUserInfo()
-                    .getAvator_url())) {
-                DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory
-                        (true)/*缓存至内存*/
+            if (!TextUtils.isEmpty(UserUtils.getUserInfo().getAvator_url())) {
+                DisplayImageOptions options = new DisplayImageOptions.Builder()
+                        .cacheInMemory(true)/*缓存至内存*/
                         .cacheOnDisk(true)/*缓存值SDcard*/
                         .bitmapConfig(Bitmap.Config.RGB_565)
                         .build();
-                ImageLoader.getInstance()
-                        .displayImage(UserUtils.getUserInfo()
-                                        .getAvator_url(),
-                                civMefrgAvator,
-                                options,
-                                new ImageLoadingListener() {
-                                    @Override
-                                    public void onLoadingStarted(String s, View view) {
+                ImageLoader.getInstance().displayImage(UserUtils.getUserInfo().getAvator_url(), civMefrgAvator, options, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
 
-                                    }
+                    }
 
-                                    @Override
-                                    public void onLoadingFailed(
-                                            String s,
-                                            View view,
-                                            FailReason failReason) {
-                                        civMefrgAvator.setImageResource(R.drawable
-                                                .icon_user_default);
-                                    }
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                        civMefrgAvator.setImageResource(R.drawable.icon_user_default);
+                    }
 
-                                    @Override
-                                    public void onLoadingComplete(
-                                            String s,
-                                            View view,
-                                            Bitmap bitmap) {
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
 
-                                    }
+                    }
 
-                                    @Override
-                                    public void onLoadingCancelled(String s, View view) {
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
 
-                                    }
-                                });
-            } else {
+                    }
+                });
+            }else{
                 civMefrgAvator.setImageResource(R.drawable.icon_user_default);
             }
         } else {
@@ -648,59 +1168,47 @@ public class MeFragment extends BaseFragment {
 
         if (null != user) {
             RequestParams params = new RequestParams(Configurations.URL_CHECK_TOKEN);
-            params.addParameter(Configurations.AUTH_TOKEN,
-                    UserUtils.getUserInfo()
-                            .getAuth_token());
+            params.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
 
-            String timeStamp = TimeUtil.getCurrentTimeString();
+            String timeStamp= TimeUtil.getCurrentTimeString();
 
-            String device_id = JPushInterface.getRegistrationID(getContext());
+            String device_id= JPushInterface.getRegistrationID(getContext());
             params.addParameter(Configurations.TIMESTAMP, timeStamp);
-            params.addParameter(Configurations.DEVICE_ID, device_id);
+            params.addParameter(Configurations.DEVICE_ID,device_id );
 
-            Map<String, String> map = new TreeMap<>();
-            map.put(Configurations.AUTH_TOKEN,
-                    UserUtils.getUserInfo()
-                            .getAuth_token());
-            params.addParameter(Configurations.SIGN,
-                    com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id,
-                            timeStamp,
-                            map));
+            Map<String,String> map=new TreeMap<>();
+            map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+            params.addParameter(Configurations.SIGN, com.hzjytech.coffeeme.utils.SignUtils.createSignString(device_id,timeStamp,map));
 
-            x.http()
-                    .get(params, new Callback.CommonCallback<JSONObject>() {
-                        @Override
-                        public void onSuccess(JSONObject result) {
+            x.http().get(params, new Callback.CommonCallback<JSONObject>() {
+                @Override
+                public void onSuccess(JSONObject result) {
 
-                            try {
-                                if (result.getInt(Configurations.STATUSCODE) == 200) {
-                                    String balance = result.getJSONObject("results")
-                                            .getJSONObject("user")
-                                            .getString("balance");
-                                    btnMefrgBalance.setText(df.format(Float.valueOf(balance)));
-                                } else {
-                                    btnMefrgBalance.setText("0.00");
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                    try {
+                        if (result.getInt(Configurations.STATUSCODE) == 200) {
+                            String balance = result.getJSONObject("results").getJSONObject("user").getString("balance");
+                            btnMefrgBalance.setText(df.format(Float.valueOf(balance)));
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                        @Override
-                        public void onError(Throwable ex, boolean isOnCallback) {
-                            showNetError();
-                        }
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    showNetError();
+                }
 
-                        @Override
-                        public void onCancelled(CancelledException cex) {
+                @Override
+                public void onCancelled(CancelledException cex) {
 
-                        }
+                }
 
-                        @Override
-                        public void onFinished() {
+                @Override
+                public void onFinished() {
 
-                        }
-                    });
+                }
+            });
         } else {
             btnMefrgBalance.setText("0.00");
         }
@@ -710,153 +1218,57 @@ public class MeFragment extends BaseFragment {
     private void initMefrgCoupon() {
 
         if (null == user) {
-            btnMefrgCoupon.setText("0张优惠券");
+            btnMefrgCoupon.setText("0张");
             return;
         }
-        //获取优惠券数量
         String authToken = user.getAuth_token();
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        entity.addParameter(Configurations.TOKEN, authToken);
-        entity.addParameter(Configurations.TYPE,"coupon");
-        String device_id = JPushInterface.getRegistrationID(getContext());
-        String timeStamp = TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.AUTH_TOKEN, authToken);
+        entity.addParameter(Configurations.AVAILABLE, true);
+
+        String device_id= JPushInterface.getRegistrationID(getContext());
+        String timeStamp= TimeUtil.getCurrentTimeString();
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-        entity.addParameter(Configurations.DEVICE_ID, device_id);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
 
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put(Configurations.TOKEN, authToken);
-        map.put(Configurations.TYPE,"coupon");
-        entity.addParameter(Configurations.SIGN,
-                SignUtils.createSignString(device_id, timeStamp, map));
+        Map<String, String> map=new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, authToken);
+        map.put(Configurations.AVAILABLE, String.valueOf(true));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
 
-        x.http()
-                .get(entity, new Callback.CommonCallback<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        try {
-                            JSONObject object = new JSONObject(result);
-                            if (object.getInt(Configurations.STATUSCODE) == 200) {
-                                List<Coupon> coupons = new Gson().fromJson(object.getJSONObject(
-                                        "results")
-                                                .getString("coupons"),
-                                        new TypeToken<ArrayList<Coupon>>() {}.getType());
-                                int num = 0;
-                                for (Coupon coupon : coupons) {
-                                    String start_date = coupon.getStart_date();
-                                    String end_date = coupon.getEnd_date();
-                                    if ((start_date != null && !start_date.equals("") &&
-                                            DateTimeUtil.after(
-                                            start_date,
-                                            System.currentTimeMillis()) || (end_date != null &&
-                                            !end_date.equals(
-                                            "") && DateTimeUtil.before(end_date,
-                                            System.currentTimeMillis())))) {
-                                       LogUtil.e("coupon",coupon.toString());
-                                    }else{
-                                        num++;
-                                    }
-                                }
-                                btnMefrgCoupon.setText(num + "张优惠券");
-                            } else {
-                                btnMefrgCoupon.setText(0 + "张优惠券");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+        x.http().get(entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject object = new JSONObject(result);
+                    if (object.getInt(Configurations.STATUSCODE) == 200) {
+                        List<Coupon> coupons = new Gson().fromJson(object.getJSONObject("results").getString("coupons"), new TypeToken<ArrayList<Coupon>>() {
+                        }.getType());
+                        btnMefrgCoupon.setText(coupons.size() + "张");
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        showNetError();
-                    }
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                showNetError();
+            }
 
-                    @Override
-                    public void onCancelled(CancelledException cex) {
-                    }
+            @Override
+            public void onCancelled(CancelledException cex) {
+            }
 
-                    @Override
-                    public void onFinished() {
-                    }
-                });
+            @Override
+            public void onFinished() {
+            }
+        });
     }
-    //获取兑换券数量
-    private void initMeExgCoupon() {
-
-        if (null == user) {
-            btnMeExgCoupon.setText("0张兑换券");
-            return;
-        }
-        //获取优惠券数量
-        String authToken = user.getAuth_token();
-        RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        entity.addParameter(Configurations.TOKEN, authToken);
-        entity.addParameter(Configurations.TYPE,"redeem");
-        String device_id = JPushInterface.getRegistrationID(getContext());
-        String timeStamp = TimeUtil.getCurrentTimeString();
-        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-        entity.addParameter(Configurations.DEVICE_ID, device_id);
-
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put(Configurations.TOKEN, authToken);
-        map.put(Configurations.TYPE,"redeem");
-        entity.addParameter(Configurations.SIGN,
-                SignUtils.createSignString(device_id, timeStamp, map));
-
-        x.http()
-                .get(entity, new Callback.CommonCallback<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        try {
-                            JSONObject object = new JSONObject(result);
-                            if (object.getInt(Configurations.STATUSCODE) == 200) {
-                                List<Coupon> coupons = new Gson().fromJson(object.getJSONObject(
-                                        "results")
-                                                .getString("coupons"),
-                                        new TypeToken<ArrayList<Coupon>>() {}.getType());
-                                int num = 0;
-                                for (Coupon coupon : coupons) {
-                                    String start_date = coupon.getStart_date();
-                                    String end_date = coupon.getEnd_date();
-                                    if ((start_date != null && !start_date.equals("") &&
-                                            DateTimeUtil.after(
-                                            start_date,
-                                            System.currentTimeMillis()) || (end_date != null &&
-                                            !end_date.equals(
-                                            "") && DateTimeUtil.before(end_date,
-                                            System.currentTimeMillis())))) {
-                                       LogUtil.e("coupon",coupon.toString());
-                                    }else{
-                                        num++;
-                                    }
-                                }
-                                btnMeExgCoupon.setText(num + "张兑换券");
-                            } else {
-                                btnMefrgCoupon.setText(0 + "张兑换券");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        showNetError();
-                    }
-
-                    @Override
-                    public void onCancelled(CancelledException cex) {
-                    }
-
-                    @Override
-                    public void onFinished() {
-                    }
-                });
-    }
-
     private void checkCouponsIsOutOfTime() {
-        if (application.getHasShowDialog()) {
+        if(application.getHasShowDialog()){
 
-        } else {
+        }else{
             loadCoupons();
         }
 
@@ -865,90 +1277,71 @@ public class MeFragment extends BaseFragment {
 
     private void loadCoupons() {
         RequestParams entity = new RequestParams(Configurations.URL_COUPONS);
-        if (UserUtils.getUserInfo() == null || UserUtils.getUserInfo()
-                .getAuth_token() == null) {
+        if(UserUtils.getUserInfo()==null|| UserUtils.getUserInfo().getAuth_token()==null){
             return;
         }
-        String auth_token = UserUtils.getUserInfo()
-                .getAuth_token();
-        entity.addParameter(Configurations.TOKEN,
-                UserUtils.getUserInfo()
-                        .getAuth_token());
+        String auth_token = UserUtils.getUserInfo().getAuth_token();
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         //entity.addParameter(Configurations.AVAILABLE, true);
-        String device_id = JPushInterface.getRegistrationID(getActivity());
-        String timeStamp = TimeUtil.getCurrentTimeString();
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        String timeStamp= TimeUtil.getCurrentTimeString();
         entity.addParameter(Configurations.TIMESTAMP, timeStamp);
-        entity.addParameter(Configurations.DEVICE_ID, device_id);
+        entity.addParameter(Configurations.DEVICE_ID,device_id );
 
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put(Configurations.TOKEN,
-                UserUtils.getUserInfo()
-                        .getAuth_token());
+        Map<String, String> map=new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
         //map.put(Configurations.AVAILABLE, String.valueOf(true));
-        entity.addParameter(Configurations.SIGN,
-                SignUtils.createSignString(device_id, timeStamp, map));
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id,timeStamp,map));
 
-        x.http()
-                .get(entity, new Callback.CommonCallback<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        LogUtil.e("result", result);
-                        parseCouponResult(result);
+        x.http().get(entity, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                LogUtil.e("result",result);
+                parseCouponResult(result);
 
-                    }
+            }
 
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        hideLoading();
-                        showNetError();
-                    }
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                hideLoading();
+                showNetError();
+            }
 
-                    @Override
-                    public void onCancelled(CancelledException cex) {
+            @Override
+            public void onCancelled(CancelledException cex) {
 
-                    }
+            }
 
-                    @Override
-                    public void onFinished() {
+            @Override
+            public void onFinished() {
 
-                    }
-                });
+            }
+        });
 
     }
-
     private void parseCouponResult(String result) {
         try {
             JSONObject object = new JSONObject(result);
             checkResOld(object);
             if (object.getInt(Configurations.STATUSCODE) == 200) {
-                List<Coupon> coupons = new Gson().fromJson(object.getJSONObject("results")
-                        .getString("coupons"), new TypeToken<ArrayList<Coupon>>() {}.getType());
+                List<Coupon> coupons  = new Gson().fromJson(object.getJSONObject("results").getString("coupons"), new TypeToken<ArrayList<Coupon>>() {
+                }.getType());
                 long nowday = SharedPrefUtil.getLong("nowday");
                 for (int i = 0; i < coupons.size(); i++) {
-                    if (coupons.get(i)
-                            .getEnd_date() == null || coupons.get(i)
-                            .getEnd_date()
-                            .equals("")) {
+                    if(coupons.get(i).getEnd_date()==null){
                         continue;
                     }
-                    LogUtil.d("coupon" + i,
-                            coupons.get(i)
-                                    .getEnd_date() + "");
-                    DateTime endDate = DateTime.parse(coupons.get(i)
-                                    .getEnd_date(),
-                            DateTimeFormat.forPattern(DateTimeUtil.DATE_FORMAT_LONG));
-                    long diff = endDate.getMillis() - Calendar.getInstance()
-                            .getTimeInMillis();
-                    long difDays = (diff / (3600 * 24 * 1000)) + 1;
-                    long olddif = endDate.getMillis() - nowday;
-                    long olddays = (olddif / (3600 * 24 * 1000)) + 1;
-                    LogUtil.e("days", difDays + "+++++" + olddays);
-                    if (difDays > 0 && difDays <= 3 && olddays > 3) {
+                    LogUtil.d("coupon" + i, coupons.get(i).getEnd_date()+"");
+                    Calendar calendar = DateUtil.ISO8601toCalendar(coupons.get(i).getEnd_date());
+                    long diff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+                    long difDays = (diff / (3600 * 24 * 1000))+1;
+                    long olddif = calendar.getTimeInMillis() - nowday;
+                    long olddays = (olddif / (3600 * 24 * 1000))+1;
+                    LogUtil.e("days",difDays+"+++++"+olddays);
+                    if(difDays>0&&difDays<=3&&olddays>3){
                         //根据时间判断，如果已经弹出过则弹出时间3天内的不再弹出
-                        showOutOfTimeCoupouDialog(difDays + "天",coupons.get(i).getCoupon_type());
-                        SharedPrefUtil.putLong("nowday",
-                                Calendar.getInstance()
-                                        .getTimeInMillis());
+                        showOutOfTimeCoupouDialog(difDays+"天");
+                        SharedPrefUtil.putLong("nowday",Calendar.getInstance().getTimeInMillis());
                         break;
                     }
                 }
@@ -958,33 +1351,43 @@ public class MeFragment extends BaseFragment {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
-
     //弹出优惠券过期提示弹窗
-    private void showOutOfTimeCoupouDialog(String date, final int coupon_type) {
-        final NewOutTimeCouponDialog newOutTimeCouponDialog = NewOutTimeCouponDialog.newInstance(
-                date);
+    private void showOutOfTimeCoupouDialog(String date) {
+        final NewOutTimeCouponDialog newOutTimeCouponDialog = NewOutTimeCouponDialog.newInstance(date);
         newOutTimeCouponDialog.setOnTwoButtonClick(new ITwoButtonClick() {
             @Override
             public void onLeftButtonClick() {
                 newOutTimeCouponDialog.dismiss();
                 application.setHasShowDialog(false);
             }
-
             @Override
             public void onRightButtonClick() {
                 Intent intent = new Intent(getActivity(), MyCouponActivity.class);
-                if(coupon_type==4){
-                    intent.putExtra("type","redeem");
-                }else {   intent.putExtra("type","coupon");}
                 startActivity(intent);
                 newOutTimeCouponDialog.dismiss();
                 application.setHasShowDialog(false);
             }
         });
-        newOutTimeCouponDialog.show(getFragmentManager(), "outTimeDialog");
+        newOutTimeCouponDialog.show(getFragmentManager(),"outTimeDialog");
         application.setHasShowDialog(true);
     }
-
+    /**
+     *自定义排序接口
+     */
+    private class MyComparetor implements Comparator<AppDosages> {
+        @Override
+        public int compare(AppDosages b0, AppDosages b1) {
+            if(b0.getSequence()>b1.getSequence()){
+                return 1;
+            }else if(b0.getSequence()<b1.getSequence()){
+                return -1;
+            }else{
+                return 0;
+            }
+        }
+    }
 }

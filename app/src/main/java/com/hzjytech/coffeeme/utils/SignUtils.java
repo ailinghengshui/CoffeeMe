@@ -17,7 +17,7 @@ public final class SignUtils {
 
     private static String keyString="key=okbr6kq3bici6qis009dagtayryjvrh3"+"&";
 
-    public static  String createSignString(String device_id, long timeStamp , Map<String,String> map){
+    public static  String createSignString(String device_id, long timeStamp , Map<String, String> map){
         StringBuilder stringBuilder=new StringBuilder();
 
         stringBuilder.append(keyString);
@@ -26,7 +26,8 @@ public final class SignUtils {
 
         if(map!=null) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                stringBuilder.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+                stringBuilder.append("&");
+                stringBuilder.append(entry.getKey() + "=" + entry.getValue());
             }
         }
 
@@ -42,11 +43,11 @@ public final class SignUtils {
 
         if(map!=null) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                stringBuilder.append("&").append(entry.getKey()).append("=").append(entry.getValue().toString());
+                stringBuilder.append("&");
+                stringBuilder.append(entry.getKey() + "=" + entry.getValue());
             }
         }
-       LogUtil.e("sign_before",stringBuilder.toString());
-        LogUtil.e("sign_after",MD5Util.getMD5(stringBuilder.toString()));
+
         return MD5Util.getMD5(stringBuilder.toString());
     }
 
@@ -58,17 +59,5 @@ public final class SignUtils {
     public static String createSignString(String device_id,long timestamp) {
 
         return createSignString(device_id,timestamp,null);
-    }
-
-    public static String createJsonSignString(String device_id,String timestamp, String paramsStr) {
-        StringBuilder stringBuilder=new StringBuilder();
-
-        stringBuilder.append(keyString);
-        stringBuilder.append("device_id="+ device_id+"&");
-        stringBuilder.append("timestamp="+timestamp);
-        stringBuilder.append(paramsStr);
-        LogUtil.e("sign_before",stringBuilder.toString());
-        LogUtil.e("sign_after",MD5Util.getMD5(stringBuilder.toString()));
-        return MD5Util.getMD5(stringBuilder.toString());
     }
 }

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.hzjytech.coffeeme.MainActivity;
 import com.hzjytech.coffeeme.OtherLoginDialogActivity;
 import com.hzjytech.coffeeme.authorization.login.LoginActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
-import com.hzjytech.coffeeme.entities.DisplayItems;
+import com.hzjytech.coffeeme.entities.AppItem;
+import com.hzjytech.coffeeme.entities.PointRecord;
 import com.hzjytech.coffeeme.home.ModulationActivity;
 import com.hzjytech.coffeeme.me.MyCouponActivity;
 import com.hzjytech.coffeeme.utils.AppUtil;
@@ -81,7 +83,7 @@ public class MyReceiver extends BroadcastReceiver {
                         }  else if ("NEWGOOD".equals(extra.getString(Configurations.JPUSHTYPE))) {
 
                                 Intent newGood = new Intent(context, ModulationActivity.class);
-                                DisplayItems.AppItem appItem = new DisplayItems.AppItem();
+                                AppItem appItem = new AppItem();
                                 if (extra.has("id")) {
                                     appItem.setId(extra.getInt("id"));
                                 }

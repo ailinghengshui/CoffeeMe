@@ -197,8 +197,8 @@ public class ValidateCodeDialog extends BaseCustomDialog {
 
     private void loadValidateImage(String url) {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheInMemory(false)/*缓存至内存*/
-                .cacheOnDisk(false)/*缓存值SDcard*/
+                .cacheInMemory(true)/*缓存至内存*/
+                .cacheOnDisk(true)/*缓存值SDcard*/
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();

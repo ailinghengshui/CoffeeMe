@@ -70,6 +70,15 @@
         android:layout_height="wrap_content"
         ></com.hzjytech.coffeeme.widgets.orderview.OrderGroup>
 
+    <TextView
+        android:id="@+id/tvOrderitemdetailMore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11dp"
+        android:text="等5件饮品"
+        android:gravity="center_horizontal"
+        android:textColor="@color/standard_grey"
+        />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -121,7 +130,6 @@
         android:background="@color/light_grey"
         />
     <RelativeLayout
-        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:paddingLeft="22dp"
@@ -136,6 +144,7 @@
             android:textColor="@color/light_red"
             android:layout_alignParentLeft="true"
             android:text="待取"
+            android:layout_centerVertical="true"
             />
 
         <Button
@@ -143,10 +152,11 @@
             android:layout_width="100dp"
             android:layout_height="27dp"
             android:text="扫一扫取单"
+            android:layout_alignParentRight="true"
             android:background="@drawable/bg_circ_rec_coffee"
             android:textColor="@color/normal_white"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_centerVertical="true"
+            />
     </RelativeLayout>
 
     <TextView

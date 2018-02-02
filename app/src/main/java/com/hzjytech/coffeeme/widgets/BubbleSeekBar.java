@@ -456,7 +456,7 @@ package com.hzjytech.coffeeme.widgets;
                 case MotionEvent.ACTION_DOWN:
                     oldX=event.getX();
                     isThumbOnDragging = isThumbTouched(event);
-                    LogUtil.e("isThumb",isThumbOnDragging+"");
+                    Log.e("isThumb",isThumbOnDragging+"");
                     if (isThumbOnDragging) {
                         showBubble();
                         invalidate();
@@ -824,7 +824,7 @@ package com.hzjytech.coffeeme.widgets;
             if (mProgress == progress || progress < mMin || progress > mMax) {
                 return;
             }
-            LogUtil.e("progress",progress+"");
+            Log.e("progress",progress+"");
             mProgress = progress;
             mBubbleCenterRawX = mBubbleCenterRawSolidX + mTrackLength * (mProgress - mMin) / mDelta;
            // showBubble();
@@ -834,7 +834,7 @@ package com.hzjytech.coffeeme.widgets;
                 mProgressListener.getProgressOnFinally(getProgress());
                 mProgressListener.getProgressOnFinally(getProgressInFloat());
             }
-            LogUtil.e("progress",getProgress()+"getProgress");
+            Log.e("progress",getProgress()+"getProgress");
             postInvalidate();
             invalidate();
         }

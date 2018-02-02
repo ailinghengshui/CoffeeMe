@@ -48,7 +48,6 @@
         android:layout_marginRight="22dp"
         />
     <LinearLayout
-        android:id="@+id/ll_ex_point"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -111,7 +110,6 @@
             />
     </LinearLayout>
     <TextView
-        android:id="@+id/tv_point_line"
         android:layout_width="match_parent"
         android:layout_height="@dimen/line_height"
         android:background="@color/line_color"

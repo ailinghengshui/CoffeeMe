@@ -20,18 +20,9 @@ import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.configurations.Configurations;
 import com.hzjytech.coffeeme.configurations.UmengConfig;
 import com.hzjytech.coffeeme.entities.Good;
-import com.hzjytech.coffeeme.entities.NewGoods;
-import com.hzjytech.coffeeme.entities.NewOrders;
 import com.hzjytech.coffeeme.entities.Order;
-import com.hzjytech.coffeeme.entities.RestoreAppDosages;
 import com.hzjytech.coffeeme.fragments.BaseFragment;
 import com.hzjytech.coffeeme.home.NewCartActivity;
-import com.hzjytech.coffeeme.http.JijiaHttpSubscriber;
-import com.hzjytech.coffeeme.http.SubscriberOnCompletedListener;
-import com.hzjytech.coffeeme.http.SubscriberOnErrorListener;
-import com.hzjytech.coffeeme.http.SubscriberOnNextListener;
-import com.hzjytech.coffeeme.http.api.GoodApi;
-import com.hzjytech.coffeeme.utils.CommonUtil;
 import com.hzjytech.coffeeme.utils.LogUtil;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.SignUtils;
@@ -55,10 +46,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import cn.jpush.android.api.JPushInterface;
-import rx.Observable;
 
 @ContentView(R.layout.fragment_order)
 public class OrderFragment extends BaseFragment{
+
     public static final int ORDER_STATUS_UNFINISHED = 0;
     public static final int ORDER_STATUS_ALL = 1;
 
@@ -84,7 +75,6 @@ public class OrderFragment extends BaseFragment{
     private List<String> list_title;
     private BadgeView cartBadgeView;
     private String device_id;
-    private JijiaHttpSubscriber mSubscriber;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +85,7 @@ public class OrderFragment extends BaseFragment{
     @Override
     public void onResume() {
         super.onResume();
+        showLoading();
         MobclickAgent.onPageStart(UmengConfig.ORDERFRAGMENT);
         getCartGoodsCount();
 
@@ -104,6 +95,7 @@ public class OrderFragment extends BaseFragment{
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        //getCartGoodsCount();
     }
 
     @Override
@@ -124,20 +116,10 @@ public class OrderFragment extends BaseFragment{
         initCartGoodsCount();
         partfra = new OrderItemFragment();
         partfra.setStatus(ORDER_STATUS_UNFINISHED);
-        partfra.setListener(new OrderItemFragment.onIReresh() {
-            @Override
-            public void refresh() {
-                refreshAll();
-            }
-        });
+
         allfra = new OrderItemFragment();
         allfra.setStatus(ORDER_STATUS_ALL);
-        allfra.setListener(new OrderItemFragment.onIReresh() {
-            @Override
-            public void refresh() {
-                refreshAll();
-            }
-        });
+
         list_fragment = new ArrayList<>();
         list_fragment.add(partfra);
         list_fragment.add(allfra);
@@ -158,7 +140,6 @@ public class OrderFragment extends BaseFragment{
         tblayoutOrderfrgTab.setupWithViewPager(vPgOrderfrgShow);
 
     }
-
     private void initCartGoodsCount() {
         //getCartGoodsCount();
 
@@ -171,27 +152,41 @@ public class OrderFragment extends BaseFragment{
                     return;
                 }
                 startActivity(new Intent(getActivity(), NewCartActivity.class));
+//                startActivity(new Intent(getActivity(), JPushMainActivity.class));
 
             }
         });
 
     }
     private void getCartGoodsCount() {
-        showLoading();
+
         if (!SharedPrefUtil.getLoginType().equals(SharedPrefUtil.LOGINING)) {
             cartBadgeView.hide();
             hideLoading();
             return;
         }
-        Observable<NewGoods> cartObservable = GoodApi.getGoodCartList(getActivity(),UserUtils.getUserInfo()
-                .getAuth_token(),1);
-        mSubscriber = JijiaHttpSubscriber.buildSubscriber(getActivity())
-                .setOnNextListener(new SubscriberOnNextListener<NewGoods>() {
+        RequestParams entity = new RequestParams(Configurations.URL_GOODS);
+        entity.addParameter(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        String device_id= JPushInterface.getRegistrationID(getActivity());
+        String timeStamp = TimeUtil.getCurrentTimeString();
+        entity.addParameter(Configurations.TIMESTAMP, timeStamp);
+        entity.addParameter(Configurations.DEVICE_ID, device_id);
+
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put(Configurations.AUTH_TOKEN, UserUtils.getUserInfo().getAuth_token());
+        entity.addParameter(Configurations.SIGN, SignUtils.createSignString(device_id, timeStamp, map));
 
 
-                    @Override
-                    public void onNext(NewGoods goods) {
-                        int count = goods.getTotal();
+        x.http().get(entity, new Callback.CommonCallback<JSONObject>() {
+            @Override
+            public void onSuccess(JSONObject result) {
+
+                LogUtil.e("Home goods", result.toString());
+                hideLoading();
+                try {
+                    checkResOld(result);
+                    if (result.getInt(Configurations.STATUSCODE) == 200) {
+                       int count = result.getJSONObject("results").getInt("goods_count");
                         cartBadgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
                         if (count < 1) {
                             cartBadgeView.hide();
@@ -210,22 +205,32 @@ public class OrderFragment extends BaseFragment{
                             cartBadgeView.setText(R.string.cart_count_max_value);
                             cartBadgeView.show();
                         }
+
                     }
-                })
-                .setOnCompletedListener(new SubscriberOnCompletedListener() {
-                    @Override
-                    public void onCompleted() {
-                     hideLoading();
-                    }
-                })
-                .setOnErrorListener(new SubscriberOnErrorListener() {
-                    @Override
-                    public void onError(Throwable e) {
-                        hideLoading();
-                    }
-                })
-                .build();
-        cartObservable.subscribe(mSubscriber);
+//                    result.getJSONObject("results").getString("goods");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                hideLoading();
+                showNetError();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
     }
 
 
@@ -268,20 +273,4 @@ public class OrderFragment extends BaseFragment{
             return list_Title.get(position % list_Title.size());
         }
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        CommonUtil.unSubscribeSubs(mSubscriber);
-    }
- public void refreshAll(){
-     List<Fragment> fragments = getChildFragmentManager().getFragments();
-     for (Fragment fragment : fragments) {
-         OrderItemFragment itemFragment = (OrderItemFragment) fragment;
-         if(itemFragment!=null){
-             itemFragment.refreshData(true);
-         }
-     }
- }
-
 }

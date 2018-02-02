@@ -18,8 +18,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
@@ -160,15 +158,6 @@ public class BadgeView extends TextView {
 
             group.removeView(target);
             group.addView(container, index, lp);
-            if(target.getLayoutParams() instanceof LinearLayout.LayoutParams){
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(target.getLayoutParams());
-                params.setMargins(0,0,0,0);
-                target.setLayoutParams(params);
-            }else if(target.getLayoutParams() instanceof RelativeLayout.LayoutParams){
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(target.getLayoutParams());
-                params.setMargins(0,0,0,0);
-                target.setLayoutParams(params);
-            }
 
             container.addView(target);
 

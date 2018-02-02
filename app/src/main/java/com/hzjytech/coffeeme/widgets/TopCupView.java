@@ -15,7 +15,6 @@ import android.view.View;
 
 import com.alipay.security.mobile.module.commonutils.LOG;
 import com.hzjytech.coffeeme.utils.DensityUtil;
-import com.hzjytech.coffeeme.utils.LogUtil;
 
 /**
  * Created by hehongcan on 2016/12/5.
@@ -52,13 +51,13 @@ public class TopCupView extends View{
     public void setWidth(Context context,int height,View view){
         this.context=context;
         mHeight = DensityUtil.dp2px(context, height);
-        LogUtil.e("height", mHeight +"");
+        Log.e("height", mHeight +"");
         if(mHeight <65){
             mWidth = (float) (0.012 * (Math.sqrt(mHeight)) + 0.6682 * mHeight + 112.01);
         }else {
             mWidth=205;
         }
-        LogUtil.e("width",mWidth+"");
+        Log.e("width",mWidth+"");
         /*ColorDrawable background = (ColorDrawable) view.getBackground();
         int color = background.getColor();*/
         mPaint.setColor(Color.BLUE);
@@ -75,8 +74,8 @@ public class TopCupView extends View{
     protected void onDraw(Canvas canvas) {
         float left = DensityUtil.dp2px(context, 187 / 2) - mWidth / 2;
         float right = DensityUtil.dp2px(context, 187 / 2) + mWidth / 2;
-        LogUtil.e("left",left+"");
-        LogUtil.e("right",right+"");
+        Log.e("left",left+"");
+        Log.e("right",right+"");
         int bottom = DensityUtil.dp2px(context, DensityUtil.dp2px(context, 91) - mHeight);
         rectF = new RectF(left, -8, right, 0);
         canvas.drawArc(rectF,180,360,true,mPaint);

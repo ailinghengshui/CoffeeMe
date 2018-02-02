@@ -3,7 +3,6 @@ package com.hzjytech.coffeeme.home;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -32,16 +31,6 @@ public class BannerDetailActivity extends BaseActivity {
 
         if (getIntent() != null) {
             String url_article = getIntent().getStringExtra("url_article");
-            wvCultureDetailShow.getSettings().setSupportZoom(false);//缩放
-            /**
-             * 用WebView显示图片，可使用这个参数 设置网页布局类型：
-             * 1、LayoutAlgorithm.NARROW_COLUMNS:适应内容大小
-             * 2、LayoutAlgorithm.SINGLE_COLUMN:适应屏幕，内容将自动缩放
-             */
-            wvCultureDetailShow.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-            wvCultureDetailShow.getSettings().setUseWideViewPort(true);//将图片调整到适合webview的大小
-            wvCultureDetailShow.getSettings().setDomStorageEnabled(true);
-            wvCultureDetailShow.getSettings().setLoadWithOverviewMode(true);
             wvCultureDetailShow.loadUrl(url_article);
             wvCultureDetailShow.getSettings().setJavaScriptEnabled(true);
 

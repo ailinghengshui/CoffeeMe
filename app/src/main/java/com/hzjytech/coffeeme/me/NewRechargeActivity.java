@@ -177,7 +177,6 @@ public class NewRechargeActivity extends BaseActivity {
 
             }
         });
-        btnpay.setEnabled(false);
     }
 
     private void initPayType() {
@@ -209,7 +208,6 @@ public class NewRechargeActivity extends BaseActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                  beforeStr= s.toString();
-
             }
 
             @Override
@@ -236,10 +234,8 @@ public class NewRechargeActivity extends BaseActivity {
                 if (null != btnpay){
                     LogUtil.e("pay",etmoney.getText().toString()+"pay");
                     if(etmoney.getText().toString().equals("")){
-                        btnpay.setEnabled(false);
                         btnpay.setText("确认支付:  ￥" +"0.00"+"元");
                     }else{
-                        btnpay.setEnabled(true);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
                         String format = decimalFormat.format(Float.valueOf(etmoney.getText().toString()));
                         btnpay.setText("确认支付:  ￥" +format+"元");

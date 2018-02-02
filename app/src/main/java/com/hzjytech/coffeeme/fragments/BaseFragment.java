@@ -12,11 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hzjytech.coffeeme.Dialogs.HintDialog;
 import com.hzjytech.coffeeme.R;
 import com.hzjytech.coffeeme.authorization.login.LoginActivity;
 import com.hzjytech.coffeeme.configurations.Configurations;
-import com.hzjytech.coffeeme.entities.NewGood;
 import com.hzjytech.coffeeme.utils.SharedPrefUtil;
 import com.hzjytech.coffeeme.utils.ToastUtil;
 import com.hzjytech.coffeeme.utils.UserUtils;
@@ -24,8 +22,6 @@ import com.hzjytech.coffeeme.utils.UserUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.x;
-
-import java.util.List;
 
 /**
  * Created by Hades on 2016/1/28.
@@ -58,10 +54,8 @@ public class BaseFragment extends Fragment {
     public void checkResOld(JSONObject res) {
         try {
             if (res.getInt(Configurations.STATUSCODE) == 401 || res.getInt(Configurations.STATUSCODE) == 403) {
-                if(!res.get(Configurations.STATUSMSG).equals("非法信息")){
-                    goLogin();
-                }
 
+                goLogin();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -121,20 +115,6 @@ public class BaseFragment extends Fragment {
     public void showNetError() {
         ToastUtil.showShort(getActivity(), getActivity().getString(R.string.network_error_info));
     }
-    public boolean buyEnable(List<NewGood> goods) {
-        for (NewGood good : goods) {
-            if (!good.getItem()
-                    .isBuy_enable()) {
-                showSomeAppItemIsClose();
-                return false;
-            }
-        }
-        return true;
 
-    }
-
-    private void showSomeAppItemIsClose() {
-        HintDialog.newInstance("提示", "所含饮品已下架", "确定").show(getActivity().getSupportFragmentManager(), "personInfoHint");
-    }
 
 }
