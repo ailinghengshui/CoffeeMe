@@ -1,0 +1,124 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="9dp"
+    android:background="@color/normal_white"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <ImageView
+            android:id="@+id/imgbtnOrderPackageDel"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right|center_vertical"
+            android:padding="5dp"
+            android:scaleType="fitEnd"
+            android:src="@drawable/icon_del" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey" />
+
+    <ImageView
+        android:id="@+id/iv_order_package"
+        android:src="@drawable/package_empty"
+        android:layout_width="match_parent"
+        android:layout_height="187.5dp"
+        android:scaleType="fitXY" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <TextView
+            android:id="@+id/tvOrderpackageDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3月5号 15:08"
+            android:textColor="@color/standard_black"
+            android:textSize="11dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tvOrderPackageSum"
+            android:text="实付："
+            android:textColor="@color/standard_black"
+            android:textSize="15dp"></TextView>
+
+        <TextView
+            android:id="@+id/tvOrderPackageSum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tvOrderitemdetailSumUnit"
+            android:text="10"
+            android:textColor="@color/light_red"
+            android:textSize="15dp"></TextView>
+
+        <TextView
+            android:id="@+id/tvOrderitemdetailSumUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="元"
+            android:textColor="@color/light_red"
+            android:textSize="15dp"></TextView>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <TextView
+            android:id="@+id/tvOrderitemdetailStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="待取"
+            android:textColor="@color/light_red"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/btnOrderPackage"
+            android:layout_width="100dp"
+            android:layout_height="27dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_circ_rec_coffee"
+            android:text="查看订单"
+            android:textColor="@color/normal_white" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey" />
+</LinearLayout>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#b47146</color>
+    <color name="colorPrimaryDark">#b47146</color>
+    <color name="colorAccent">#b47146</color>
+
+    <color name="coffee">#b47146</color>
+    <color name="light_coffee">#33b47146</color>
+    <color name="half_coffee">#ce9164</color>
+    <color name="dark_coffee">#b37145</color>
+    <color name="half_tansparent">#99ffffff</color>
+    <color name="tansparent">#00ffffff</color>
+    <color name="quater_tansparent">#55ffffff</color>
+
+    <color name="title_color">#5b9eca</color>
+    <color name="light_white">#fff2f2f2</color>
+    <color name="normal_white">#ffffff</color>
+    <color name="trans_white">#66ffffff</color>
+    <color name="line_color">@color/light_grey</color>
+
+    <color name="light_red">#fe504d</color>
+    <color name="normal_black">#000000</color>
+
+    <color name="heavy_grey">#9a9a9a</color>
+    <color name="small_grey">#cccccc</color>
+    <color name="light_grey">#e0e0e0</color>
+    <color name="dark_grey">#bfbfbf</color>
+    <color name="little_grey">#33232323</color>
+    <color name="grey_green">#66cc66</color>
+    <color name="light_black">#656565</color>
+    <color name="little_black">#343434</color>
+    <color name="simple_white">#fbfbfb</color>
+    <color name="dark_black">#231f1e</color>
+    <color name="bumb_orange">#BE6846</color>
+    <color name="text_black">#7f7f7f</color>
+    <color name="light_green">#66cc66</color>
+    <color name="little_white">#f2f2f2</color>
+    <color name="text_hint_color">#ccffffff</color>
+    <color name="cream">#ffe7dc</color>
+    <color name="orange">#f77721</color>
+    <color name="more_grey">#999999</color>
+    <color name="trans_black">#77000000</color>
+    <color name="normal_blue">#0078ff</color>
+    <color name="coffee_pressed">#a05a28</color>
+    <color name="normal_pink">#FEE6DC</color>
+    <color name="yellow_pipe">#fbb03b</color>
+    <color name="water_pipe">#99d2f7</color>
+    <color name="line_grey">#e6e6e6</color>
+    <color name="heavy_black">#323232</color>
+    <color name="normal_red">#ff3333</color>
+    <color name="bg_grey">#f5f5f5</color>
+    <color name="bg_white">#fdfdfd</color>
+    <color name="standard_white">#f9f8f8</color>
+    <color name="white">#fcfcfc</color>
+    <!--标准颜色-->
+    <color name="standard_black">#333333</color>
+    <color name="standard_grey">#999999</color>
+    <color name="normal_grey">#d8d8d8</color>
+    <!--调制盘颜色-->
+    <color name="coffee_parent">#f2b989</color>
+    <color name="coffee_child">#fdf3e7</color>
+    <color name="milk_parent">#ffe7ba</color>
+    <color name="milk_child">#fffaf1</color>
+    <color name="suar_parent">#fff8db</color>
+    <color name="suar_child">#fefff7</color>
+    <color name="chocolate_parent">#fec9b4</color>
+    <color name="chocolate_child">#fff4f0</color>
+    <!--系统调制页颜色-->
+    <color name="heavy_yellow">#fec565</color>
+    <!--coffee原料颜色-->
+    <color name="chocolate">#6d5826</color>
+    <color name="milk">#225a1f</color>
+    <color name="text_little_grey">#666666</color>
+    <drawable name="textview_selected">#666666</drawable>
+    <drawable name="textview_normal">#ffffff</drawable>
+
+    <drawable name="btn_normal">#88ffffff</drawable>
+    <drawable name="btn_click">#33ffffff</drawable>
+
+    <drawable name="item_selected">@color/light_coffee</drawable>
+    <drawable name="item_normal">@color/white</drawable>
+
+    <drawable name="btn_click_bg_white">#b47146</drawable>
+
+    <drawable name="default_color">#aaaaaa</drawable>
+    <!--液体颜色-->
+    <color name="coffee_bottom_water">#B37145</color>
+    <color name="coffee_top_water">#63380c</color>
+    <color name="sugar_bottom_water">#f2f2f2</color>
+    <color name="sugar_top_water">#fafafa</color>
+    <color name="milk_bottom_water">#EDD99A</color>
+    <color name="milk_top_water">#F7EED1</color>
+    <color name="chocolate_bottom_water">#B5815E</color>
+    <color name="chocolate_top_water">#774B2E</color>
+    <color name="bg_adjust">#d2d2d2</color>
+    <color name="trans_normal_white">#55ffffff</color>
+    <color name="black">#000000</color>
+    <color name="rect_grey">#aaaaaa</color>
+</resources>

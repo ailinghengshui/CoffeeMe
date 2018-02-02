@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/coorlayoutMycouponRoot"
+    >
+
+    <LinearLayout
+        android:id="@+id/llMycouponContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.hzjytech.coffeeme.me.MyCouponActivity">
+
+        <include layout="@layout/titlebar"/>
+
+        <RelativeLayout
+            android:id="@+id/rlScanForCoupon"
+            android:layout_width="match_parent"
+            android:layout_height="63dp"
+            android:background="@color/coffee"
+            android:gravity="center"
+            android:paddingLeft="22dp"
+            android:paddingRight="22dp">
+
+            <ImageView
+                android:id="@+id/ivMycouponScan"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_scan"
+                android:padding="4dp"
+                />
+
+            <TextView
+                android:id="@+id/btnMycouponAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="添加"
+                android:textColor="@color/normal_white"
+                android:textSize="14dp" />
+            <EditText
+                android:id="@+id/etMycouponPick"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_alignBottom="@id/ivMycouponScan"
+                android:layout_alignTop="@id/ivMycouponScan"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_toRightOf="@id/ivMycouponScan"
+                android:layout_toLeftOf="@+id/btnMycouponAdd"
+                android:background="@drawable/bg_circ_rec_white"
+                android:hint="请输入优惠码"
+                android:paddingLeft="10dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColorHint="@color/normal_grey"
+                android:textSize="15dp" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcyViewMycouponList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="22dp"
+            android:paddingRight="22dp"
+            android:background="@color/little_white"
+            ></android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnMycouponExchange"
+        android:layout_width="match_parent"
+        android:background="@color/coffee"
+        android:layout_alignParentBottom="true"
+        android:text="使用积分兑换"
+        android:textSize="15dp"
+        android:layout_height="48dp"
+        android:textColor="@color/normal_white"
+        />
+
+
+
+    <TextView
+        android:id="@+id/mycouponemptyview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+</RelativeLayout>

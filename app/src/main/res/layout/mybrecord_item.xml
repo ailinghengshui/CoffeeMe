@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/normal_white">
+    <TextView
+        android:id="@+id/mybrecord_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mybanlance_ritem_padh"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textColor="@color/standard_black"
+        android:textSize="14sp"
+        android:text="支付宝账户支付消费"/>
+    <TextView
+        android:id="@+id/mybrecord_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mybrecord_name"
+        android:layout_marginTop="@dimen/mybanlance_title_padh"
+        android:layout_marginBottom="@dimen/mybanlance_ritem_padh"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textSize="11sp"
+        android:textColor="@color/standard_grey"
+        android:text="2016-5-16"/>
+
+    <TextView
+        android:id="@+id/mybrecord_change"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/mybanlance_title_padh"
+        android:layout_marginBottom="@dimen/mybanlance_ritem_padh"
+        android:gravity="center_horizontal|right"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:text="10"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>

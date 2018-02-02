@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100.5dp"
+    android:orientation="vertical">
+    <View
+        android:layout_marginBottom="10dp"
+        android:background="@color/line_color"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+    <LinearLayout
+        android:id="@+id/ll_good"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_marginLeft="12dp"
+        android:background="@color/bg_grey"
+        android:gravity="center"
+        android:layout_width="80dp"
+        android:layout_height="80dp">
+        <ImageView
+            android:id="@+id/iv_good"
+            android:layout_width="60dp"
+            android:layout_height="45dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/cup" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="21dp"
+
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="top">
+
+            <TextView
+                android:id="@+id/tv_good_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="拿铁"
+                android:textColor="@color/standard_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_good_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:text="¥ 10"
+                android:textColor="@color/standard_black"
+                android:textSize="14sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_good_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/tv_good_old_price"
+                android:layout_marginRight="10dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text="水+咖啡，无糖、醇正、低热量我的"
+                android:textColor="@color/more_grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_good_old_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:text="¥ 10"
+                android:textColor="@color/more_grey"
+                android:textSize="12sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="bottom">
+
+            <TextView
+                android:id="@+id/tv_good_sugar"
+                android:layout_width="40dp"
+                android:layout_height="16dp"
+                android:gravity="center"
+                android:text="五分甜"
+                android:background="@drawable/rect_sugar"
+                android:textColor="@color/more_grey"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/good_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:text="x1"
+                android:textColor="@color/standard_black"
+                android:textSize="14sp" />
+        </RelativeLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

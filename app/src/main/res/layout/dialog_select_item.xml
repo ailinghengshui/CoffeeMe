@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@color/normal_white"
+    >
+
+    <ImageView
+        android:id="@+id/ivSltdlgitemLogo"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/img_jijiapay"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+
+        />
+    <TextView
+        android:id="@+id/tvSltdlgitemName"
+        android:layout_toRightOf="@id/ivSltdlgitemLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:text="@string/str_coffeemepocket"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        />
+    <TextView
+        android:id="@+id/tvSltdlgitemBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:textColor="@color/normal_grey"
+        android:text="余额：100.00元"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        />
+</RelativeLayout>

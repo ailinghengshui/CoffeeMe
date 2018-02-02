@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/light_grey"
+        />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_color"
+        />
+
+    <com.hzjytech.coffeeme.widgets.row.RowView
+        android:id="@+id/rvPaymentamountAmount"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/normal_white"
+        ></com.hzjytech.coffeeme.widgets.row.RowView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        />
+
+    <com.hzjytech.coffeeme.widgets.row.RowView
+        android:id="@+id/rvPaymentamountCoupon"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/normal_white"
+        ></com.hzjytech.coffeeme.widgets.row.RowView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        />
+    <LinearLayout
+        android:id="@+id/ll_ex_point"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/normal_white"
+        >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/little_black"
+            android:text="可用"
+            android:textSize="15dp"
+            android:layout_marginLeft="22dp"
+            />
+        <TextView
+            android:id="@+id/tvPaymentamountRatepoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/light_red"
+            android:text="0"
+            android:textSize="15dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/little_black"
+            android:text="积分抵用"
+            android:textSize="15dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/light_red"
+            android:text="￥"
+            android:textSize="15dp"
+            />
+        <TextView
+            android:id="@+id/tvPaymentamountRatepointMoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/light_red"
+            android:text="0"
+            android:textSize="15dp"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <com.hzjytech.coffeeme.widgets.switchbutton.SwitchButton
+            android:id="@+id/switchButtonPayamount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="22dp"
+            app:kswAnimationDuration="300"
+            app:kswBackDrawable="@drawable/ios_back_drawable"
+            app:kswBackMeasureRatio="1.4"
+            app:kswThumbDrawable="@drawable/thumb_switch_button"
+            />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_point_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="50dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical|right"
+
+      android:background="@color/normal_white"
+      >
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="12dp"
+          android:text="实付金额："
+          android:textColor="@color/heavy_grey"
+          />
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="17dp"
+          android:text="￥"
+          android:textColor="@color/light_red"
+          />
+
+      <TextView
+          android:id="@+id/tvPaymentamountRealpay"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="17dp"
+          android:text="10.00"
+          android:textColor="@color/light_red"
+          android:layout_marginRight="22dp"
+          />
+
+  </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_color"
+        />
+
+
+</LinearLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clipChildren="false"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/ll_body"
+        android:background="@drawable/bg_new_benefit"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="130dp">
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="100dp">
+            <LinearLayout
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="14dp"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/white"
+                    android:text="恭喜您"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_desc_new_benefit"
+                    android:textSize="8dp"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/white"
+                    android:text="获得一张新手8.0折优惠券"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/bt_my_coupons"
+                    android:background="@drawable/selector_bg_benefit"
+                    android:textSize="10dp"
+                    android:textColor="@color/selector_new_benefit_button"
+                    android:text="查看我的优惠券"
+                    android:layout_marginTop="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="22dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/bt_close"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ll_body"
+        android:clickable="true"
+        android:src="@drawable/icon_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

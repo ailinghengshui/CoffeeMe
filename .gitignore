@@ -1,0 +1,11 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+app-coffeeme-release.apk
+coffeeme_v1.1.0_test.apk
+coffeeme_v1.3.0_test.apk

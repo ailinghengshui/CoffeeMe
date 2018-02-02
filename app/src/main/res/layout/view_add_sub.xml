@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/btnAddSubSub"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:text="-"
+        android:textColor="@color/light_red"
+        android:background="@drawable/bg_addsub_left"
+        android:layout_marginRight="2dp"
+        />
+    <TextView
+        android:id="@+id/tvAddSubShow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:textColor="@color/light_red"
+        android:background="@drawable/bg_addsub_mid"
+        android:layout_marginRight="2dp"
+        />
+    <Button
+        android:id="@+id/btnAddSubAdd"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:text="+"
+        android:textColor="@color/light_red"
+        android:background="@drawable/bg_addsub_right"
+        />
+
+</LinearLayout>

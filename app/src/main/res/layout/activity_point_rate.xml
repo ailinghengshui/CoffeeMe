@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_white"
+    android:orientation="vertical"
+    tools:context="com.hzjytech.coffeeme.me.PointRateActivity">
+
+    <include layout="@layout/titlebar"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/userrate"
+            android:textColor="@color/little_black"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="aboutPoint"
+            android:text="@string/aboutpoint"
+            android:textColor="@color/little_black"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_circ_rec_coffee_big"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <TextView
+            android:id="@+id/tvPointrateName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="V0"
+            android:textColor="@color/normal_white" />
+
+        <ImageView
+            android:id="@+id/ivPointrateImage"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="2dp"
+            android:src="@drawable/icon_default_pointrate"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp">
+
+        <TextView
+            android:id="@+id/tvPointrateMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignBottom="@+id/ropeProBar"
+            android:paddingTop="2dp"
+            android:textColor="@color/orange"
+            android:textSize="19dp" />
+
+        <com.hzjytech.coffeeme.widgets.ropeprogressbar.RopeProgressBar
+            android:id="@+id/ropeProBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tvPointrateMax"
+            android:layout_toRightOf="@+id/tvPointrateMin" />
+
+        <TextView
+            android:id="@+id/tvPointMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/ropeProBar"
+            android:layout_below="@id/ropeProBar"
+            android:text="0"
+            android:textColor="@color/more_grey" />
+
+        <TextView
+            android:id="@+id/tvPointMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/ropeProBar"
+            android:layout_below="@id/ropeProBar"
+            android:text="0"
+            android:textColor="@color/more_grey" />
+
+        <TextView
+            android:id="@+id/tvPointrateMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/ropeProBar"
+            android:layout_alignParentRight="true"
+            android:paddingTop="2dp"
+            android:textColor="@color/orange"
+            android:textSize="19dp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:layout_marginTop="29dp"
+        android:background="@color/line_color" />
+
+    <LinearLayout
+        android:id="@+id/llPointrateAvailablepoint"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/normal_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_availablepoints"
+            android:textColor="@color/little_black"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvPointratePoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12000"
+            android:textColor="@color/light_red" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_right" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color" />
+
+    <LinearLayout
+        android:id="@+id/llPointratePointExchange"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/normal_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/point_shop"
+            android:textColor="@color/little_black"
+            android:textSize="15dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_right" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color" />
+
+</LinearLayout>

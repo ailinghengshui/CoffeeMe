@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/little_white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.SuccessOrderActivity">
+    <include layout="@layout/titlebar"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <View
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_color"/>
+    <LinearLayout
+        android:background="@color/normal_white"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="64dp">
+        <ImageView
+            android:src="@drawable/icon_success_order"
+            android:layout_marginLeft="22dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="44dp"
+            android:layout_height="44dp" />
+        <LinearLayout
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="@color/standard_black"
+                android:gravity="center_vertical"
+                android:textSize="14dp"
+                android:text="支付成功"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp" />
+            <TextView
+                android:gravity="center_vertical"
+                android:textColor="@color/standard_black"
+                android:textSize="10dp"
+                android:text="凭取货码或扫一扫在支持COFFEE ME的咖啡机取货"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:background="@color/normal_white"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="73dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/success_progress"
+                android:src="@drawable/success_progress"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_below="@id/success_progress"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/standard_black"
+                    android:textSize="14dp"
+                    android:gravity="center"
+                    android:text="选择饮品"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textColor="@color/standard_black"
+                    android:textSize="14dp"
+                    android:gravity="center"
+                    android:text="支付成功"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textColor="@color/standard_black"
+                    android:textSize="14dp"
+                    android:text="取货"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+        
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line_color"/>
+
+  <include layout="@layout/item_abletake_order"/>
+    <LinearLayout
+        android:id="@+id/tvCustomDialogDescContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="取货成功后将获得"
+            android:textSize="10dp" />
+
+        <TextView
+            android:id="@+id/tv_point_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="100"
+            android:textColor="@color/light_red"
+            android:textSize="10dp" />
+        <TextView
+            android:textSize="10dp"
+            android:text="积分"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:id="@+id/tv_go_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="关于积分？"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+</LinearLayout>
+    </ScrollView>
+</LinearLayout>

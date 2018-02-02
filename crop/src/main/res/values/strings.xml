@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Crop</string>
+    <string name="pick_image_intent_chooser_title">选择图片</string>
+    <string name="crop_image_menu_crop">截取</string>
+    <string name="crop_image_menu_rotate_right">旋转</string>
+    <string name="crop_image_menu_rotate_left">顺时针</string>
+    <string name="crop_image_activity_title">区域选取</string>
+</resources>

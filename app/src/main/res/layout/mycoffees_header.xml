@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/light_grey"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/normal_grey"
+        />
+    <TextView
+        android:id="@+id/tvMycoffeesitemHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:textSize="15dp"
+        android:layout_marginLeft="28dp"
+        android:text="5月1日"
+        android:gravity="center_vertical"
+        android:textColor="@color/standard_black"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/normal_black"
+        android:layout_marginLeft="23dp"
+        android:layout_marginRight="20dp"
+        />
+
+
+
+</LinearLayout>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="77dp"
+    android:orientation="horizontal"
+    android:layout_marginTop="12dp"
+    android:background="@drawable/selector_item_selected"
+    >
+
+    <TextView
+        android:id="@+id/tvPointexchangeitemCheck"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector_img_select"
+        />
+
+    <RelativeLayout
+        android:layout_width="85dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        >
+        <TextView
+            android:id="@+id/tvPointexchangeitemCoupon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500"
+            android:textColor="@color/light_red"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tvPointexchangeitemUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tvPointexchangeitemCoupon"
+            android:layout_toRightOf="@id/tvPointexchangeitemCoupon"
+            android:text="￥"
+            android:textColor="@color/light_red"
+            android:textSize="13dp" />
+        <TextView
+            android:id="@+id/tvPointexchangeitemExchangecondition"
+            android:layout_below="@+id/tvPointexchangeitemCoupon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11dp"
+            android:text="(500积分)"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_virtual_line"
+        />
+    <LinearLayout
+        android:paddingLeft="15dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/tvPointexchangeitemTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="普通优惠券"
+            android:textSize="14dp"
+            />
+        <TextView
+            android:id="@+id/tvPointexchangeitemCondition"
+            android:paddingTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="满十元可用"
+            android:textSize="11dp"
+            android:textColor="@color/normal_grey"
+            />
+        <TextView
+            android:id="@+id/tvPointexchangeitemEnddate"
+            android:paddingTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2016年4月1日前使用"
+            android:textSize="11dp"
+            android:textColor="@color/normal_grey"
+            />
+    </LinearLayout>
+
+</LinearLayout>

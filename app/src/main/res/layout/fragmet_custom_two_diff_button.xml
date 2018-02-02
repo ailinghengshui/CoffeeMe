@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
+    android:background="@drawable/bg_circ_rec_white">
+
+    <TextView
+        android:id="@+id/tvCustomDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/coffee"
+        android:gravity="center"
+        android:text="@string/string_paysuccess"
+        android:textColor="@color/normal_white"
+        android:textSize="17dp" />
+
+    <ImageView
+        android:id="@+id/ivCustomDialogIcon"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_below="@+id/tvCustomDialogTitle"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_green_right" />
+    <RelativeLayout
+        android:id="@+id/rl_container"
+        android:layout_below="@+id/ivCustomDialogIcon"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_real_desc"
+            android:layout_centerInParent="true"
+            android:text="支付失败，请至充值中心充值"
+            android:textSize="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/tvCustomDialogDescContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="取货成功将获得"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/tvCustomDialogDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="100"
+                android:textColor="@color/light_red"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="积分"
+                android:textSize="15dp" />
+
+            <ImageView
+                android:id="@+id/ivCustomDialogOpleft"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_question" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnCustomDialogOpright"
+        android:layout_width="100dp"
+        android:layout_height="24dp"
+        android:layout_below="@+id/rl_container"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_circ_rec_coffee"
+        android:text="确认"
+        android:textColor="@color/normal_white" />
+
+</RelativeLayout>

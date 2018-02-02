@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_plate_container"
+    android:background="@color/white"
+    android:paddingBottom="21.5dp"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <View
+        android:background="@color/bg_grey"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12.5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:background="@color/coffee"
+            android:layout_width="2dp"
+            android:layout_height="16dp"/>
+        <TextView
+            android:id="@+id/culture_plate_title"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:layout_marginLeft="5dp"
+            android:text="极伽志趣"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/tv_plate_check_more"
+            android:textColor="@color/standard_grey"
+            android:textSize="14sp"
+            android:text="@string/check_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_container_first"
+        android:orientation="vertical"
+        android:layout_marginTop="32dp"
+        android:paddingRight="12.5dp"
+        android:paddingLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="80dp">
+           <ImageView
+               android:src="@drawable/cup"
+               android:id="@+id/iv_content_img_first"
+               android:layout_width="80dp"
+               android:layout_height="80dp" />
+           <TextView
+               android:id="@+id/tv_content_title_first"
+               android:text="殊不知，极伽与 CHARLIE’S 还有如此一段 不为人知的故事"
+               android:textColor="@color/standard_black"
+               android:textSize="14sp"
+               android:layout_marginLeft="10dp"
+               android:maxLines="2"
+               android:layout_alignParentTop="true"
+               android:layout_toRightOf="@id/iv_content_img_first"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content" />
+           <TextView
+               android:id="@+id/tv_content_detail_first"
+               android:maxLines="2"
+               android:ellipsize="end"
+               android:text="那时候的“极伽时光”还叫“极伽咖啡”，一切都如襁 褓中的婴儿，只有一个蓬勃生机跟向上的激情..."
+               android:layout_marginLeft="10dp"
+               android:layout_toRightOf="@id/iv_content_img_first"
+               android:layout_alignParentBottom="true"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content" />
+       </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_content_time_first"
+            android:textSize="9sp"
+            android:textColor="@color/standard_grey"
+            android:layout_marginTop="5dp"
+            android:text="2017年11月15日"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_container_second"
+        android:orientation="vertical"
+        android:layout_marginTop="26.5dp"
+        android:paddingRight="12.5dp"
+        android:paddingLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="80dp">
+           <ImageView
+               android:src="@drawable/cup"
+               android:id="@+id/iv_content_img_second"
+               android:layout_width="80dp"
+               android:layout_height="80dp" />
+           <TextView
+               android:id="@+id/tv_content_title_second"
+               android:text="殊不知，极伽与 CHARLIE’S 还有如此一段 不为人知的故事"
+               android:textColor="@color/standard_black"
+               android:textSize="14sp"
+               android:layout_marginLeft="10dp"
+               android:maxLines="2"
+               android:layout_alignParentTop="true"
+               android:layout_toRightOf="@id/iv_content_img_second"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content" />
+           <TextView
+               android:id="@+id/tv_content_detail_second"
+               android:maxLines="2"
+               android:ellipsize="end"
+               android:text="那时候的“极伽时光”还叫“极伽咖啡”，一切都如襁 褓中的婴儿，只有一个蓬勃生机跟向上的激情..."
+               android:layout_marginLeft="10dp"
+               android:layout_toRightOf="@id/iv_content_img_second"
+               android:layout_alignParentBottom="true"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content" />
+       </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_content_time_second"
+            android:textSize="9sp"
+            android:textColor="@color/standard_grey"
+            android:layout_marginTop="5dp"
+            android:text="2017年11月15日"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="切换支付方式"
+        android:textColor="@color/normal_white"
+        android:textSize="16dp"
+        android:background="@color/coffee"
+        android:gravity="center"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcyViewSelectdialogLst"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/normal_white"
+        ></android.support.v7.widget.RecyclerView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        />
+    <TextView
+        android:id="@+id/tvSelectdialogCancel"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="取消"
+        android:textSize="16dp"
+        android:textColor="@color/light_red"
+        android:background="@color/normal_white"
+        android:gravity="center"
+        />
+
+</LinearLayout>

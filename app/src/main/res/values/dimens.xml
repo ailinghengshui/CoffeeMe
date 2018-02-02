@@ -1,0 +1,50 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="mycouponitemdecoration">10dp</dimen>
+
+
+    <dimen name="textandiconmargin">10dp</dimen>
+
+    <dimen name="mybanlance_title_h">40dp</dimen>
+    <dimen name="mybanlance_title_padh">10dp</dimen>
+    <dimen name="mybanlance_ritem_padh">15dp</dimen>
+    <dimen name="mybanlance_ritem_rmargin">36dp</dimen>
+    <dimen name="mybanlance_item_padh">22dp</dimen>
+    <dimen name="mybanlance_header_h">48dp</dimen>
+    <dimen name="mybanlance_headericon_padh">20dp</dimen>
+    <dimen name="mybanlance_btnh">24dp</dimen>
+    <dimen name="mybanlance_btnw">80dp</dimen>
+    <dimen name="mybanlance_rectitleh">31dp</dimen>
+    <dimen name="recharge_titlepadl">27dp</dimen>
+    <dimen name="recharge_titleh">44dp</dimen>
+    <dimen name="recharge_uph">54dp</dimen>
+    <dimen name="recharge_upw">100dp</dimen>
+    <dimen name="grid_column_width">96dp</dimen>
+
+    <dimen name="pay_selh">52dp</dimen>
+    <dimen name="pay_selw">235dp</dimen>
+    <dimen name="line_height">0.7dp</dimen>
+    <dimen name="map_height">250dp</dimen>
+    <dimen name="seekbar_popt">5dp</dimen>
+    <dimen name="seekbar_popl">5dp</dimen>
+    <dimen name="seekbar_bgh">35dp</dimen>
+    <dimen name="seekbar_bgt">10dp</dimen>
+    <dimen name="seekbar_bghmin">20dp</dimen>
+    <dimen name="title_top">20dp</dimen>
+    <dimen name="text_size">16dp</dimen>
+    <dimen name="popup_width">220dp</dimen>
+    <dimen name="popup_height">186dp</dimen>
+    <dimen name="default_radius">10dp</dimen>
+    <dimen name="home_title_bar_height">44dp</dimen>
+    <dimen name="title_bar_height">40dp</dimen>
+    <dimen name="mid_radius">20dp</dimen>
+    <dimen name="waterHeight">210dp</dimen>
+    <dimen name="receipe_item_margin">5dp</dimen>
+    <!-- Adjust Dimens -->
+
+
+
+</resources>

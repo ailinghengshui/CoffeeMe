@@ -1,0 +1,114 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:gravity="center"
+        android:id="@+id/llRegContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="53dp"
+        android:layout_marginRight="53dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:background="@drawable/bg_circ_rec_top"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            >
+
+            <EditText
+                android:id="@+id/etRegPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:hint="@string/str_hint_phone"
+                android:textSize="@dimen/text_size"
+                android:maxLength="11"
+                android:textColorHint="@color/text_hint_color"
+                android:textColor="@color/normal_white"
+                android:background="@null"
+                android:inputType="phone"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="20dp"
+
+                />
+
+            <ImageView
+                android:id="@+id/ivOldpsdfrgClear1"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="15dp"
+                android:padding="5dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_grey_clear"
+                android:visibility="gone"
+                />
+
+        </FrameLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+        <LinearLayout
+            android:background="@drawable/bg_circ_rec_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/etRegSmscode"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:hint="请输入验证码"
+                android:textSize="@dimen/text_size"
+                android:maxLength="6"
+                android:textColorHint="@color/text_hint_color"
+                android:textColor="@color/normal_white"
+                android:background="@null"
+                android:inputType="phone"
+                android:layout_marginLeft="28dp"
+                />
+            <Button
+                android:id="@+id/btnRegSmscode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_circ_rec_white_border"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
+                android:layout_marginRight="7dp"
+                android:textSize="@dimen/text_size"
+                android:text="获取验证码"
+                android:textColor="@color/normal_white"
+                />
+        </LinearLayout>
+        <Button
+            android:layout_marginTop="21dp"
+            android:id="@+id/btnRegNext"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_btn_click_bg_white"
+            android:textColor="@color/normal_white"
+            android:text="@string/str_text_next"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/reg_agree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/str_text_agree"
+            android:textColor="@color/normal_white"
+            android:layout_marginTop="5dp"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

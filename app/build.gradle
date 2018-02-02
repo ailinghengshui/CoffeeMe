@@ -1,0 +1,154 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'packer'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '25.0.0'
+
+    defaultConfig {
+        applicationId "com.hzjytech.coffeeme"
+        minSdkVersion 15
+        targetSdkVersion 21
+
+        multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [APP_CHANNEL_VALUE: "官方"]
+    }
+    signingConfigs {
+        release {
+            storeFile file('coffeeme.jks')
+            storePassword '2016coffeeme'
+            keyAlias 'coffeeme'
+            keyPassword '2016coffeeme'
+            v2SigningEnabled true
+        }
+    }
+
+    packer {
+        archiveNameFormat = '${projectName}-${versionName}-${channel}-${buildType}'
+        archiveOutput = new File(project.rootProject.buildDir, "apks")
+        channelFile = new File(project.rootDir, "markets.txt")
+
+    }
+    lintOptions {
+        abortOnError false
+    }
+
+    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
+        destinationDir file("$projectDir/libs")
+        baseName "Native_Libs2"
+        extension "jar"
+        from fileTree(dir: "libs", include: "**/*.so")
+        into "lib"
+    }
+
+    packagingOptions {
+        exclude 'proguard-project.txt'
+        exclude 'project.properties'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+    //加速dex构建时间
+    dexOptions {
+        maxProcessCount 4 // this is the default value
+        javaMaxHeapSize "2g"
+    }
+    buildTypes {
+
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+    lintOptions {
+        disable 'MissingTranslation'
+        checkReleaseBuilds false
+    }
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+    }
+
+
+}
+
+dependencies {
+    compile 'in.srain.cube:ultra-ptr:1.0.11'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile files('libs/libammsdk.jar')
+    compile project(':qiniutoken')
+    compile project(':banner')
+    compile project(':scan')
+    compile project(':weibosdk')
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:design:23.2.1'
+    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.android.support:cardview-v7:23.2.1'
+    compile 'com.qiniu:qiniu-android-sdk:7.1.2'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'org.xutils:xutils:3.3.36'
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.alibaba:fastjson:1.2.11'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    //添加multidex 解决超过64k问题
+    compile 'com.android.support:multidex:1.0.1'
+    //retrofit+rxjava
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    // Retrofit的rx解析库
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.2'
+    compile files('libs/alipaySdk-20160427.jar')
+    compile files('libs/universal-image-loader-1.9.5.jar')
+    //jodate
+    compile 'joda-time:joda-time:2.9.9'
+    compile 'org.jsoup:jsoup:1.10.1'
+    //快速打包工具
+    compile 'com.mcxiaoke.packer-ng:helper:2.0.0'
+
+    compile project(':crop')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2') {
+        // Necessary if your app targets Marshmallow (since Espresso
+        // hasn't moved to Marshmallow yet)
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile('com.android.support.test:runner:0.3') {
+        // Necessary if your app targets Marshmallow (since the test runner
+        // hasn't moved to Marshmallow yet)
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2') {
+        // Necessary to avoid version conflicts
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+    }
+    compile files('libs/BaiduLBS_Android.jar')
+    compile 'com.plattysoft.leonids:LeonidsLib:1.3.1'
+    compile('ru.noties:scrollable:1.3.0') {
+        exclude module: 'appcompat-v7'
+        exclude group: 'com.android.support'
+    }
+    apt 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile('com.jakewharton:butterknife:8.8.1') {
+        exclude module: 'appcompat-v7'
+        exclude group: 'com.android.support'
+    }
+}

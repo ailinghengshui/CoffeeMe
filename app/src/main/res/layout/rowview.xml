@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="23dp"
+    android:paddingRight="23dp"
+    >
+
+    <TextView
+        android:id="@+id/rowviewName"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:textSize="15dp"
+        android:text="价格:"
+        android:gravity="center_vertical"
+        android:textColor="@color/little_black"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        />
+    <TextView
+        android:layout_marginRight="10dp"
+        android:id="@+id/rowviewDesc_old"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="￥10.00"
+        android:textSize="10dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/heavy_grey"
+        />
+    <TextView
+        android:id="@+id/rowviewDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="￥10.00"
+        android:textSize="15dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/heavy_grey"
+        />
+    <ImageView
+        android:id="@+id/rowviewIcon"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:src="@drawable/icon_right"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:scaleType="centerInside"
+        />
+
+</LinearLayout>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="77dp"
+    android:orientation="horizontal"
+    android:layout_marginTop="12dp"
+    android:background="@drawable/selector_item_selected"
+    >
+
+    <TextView
+        android:id="@+id/tvMycouponitemCheck"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector_img_select"
+        />
+
+    <RelativeLayout
+        android:layout_width="65dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        >
+        <TextView
+            android:id="@+id/tvMycouponitemCoupon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500"
+            android:textColor="@color/light_red"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tvMycouponitemUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tvMycouponitemCoupon"
+            android:layout_toRightOf="@id/tvMycouponitemCoupon"
+            android:text="￥"
+            android:textColor="@color/light_red"
+            android:textSize="13dp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_virtual_line"
+        />
+    <LinearLayout
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/tvMycouponitemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="普通优惠券"
+            android:textColor="@color/standard_black"
+            android:textSize="12dp"
+            />
+        <TextView
+            android:id="@+id/tvMycouponitemCondition"
+            android:paddingTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="满十元可用"
+            android:textSize="9dp"
+            android:textColor="@color/standard_grey"
+            />
+      <TextView
+          android:id="@+id/tv_use_count"
+          android:paddingTop="2dp"
+          android:textSize="9dp"
+          android:text="可使用次数1/5"
+          android:textColor="@color/standard_grey"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvMycouponitemEnddate"
+            android:paddingTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="有效期： 2017.12.02-2099.12.31"
+            android:textSize="9dp"
+            android:textColor="@color/standard_grey"
+            />
+    </LinearLayout>
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_useable_mark"
+        android:src="@drawable/icon_unstart"
+        android:layout_gravity="center_vertical"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
+
+</LinearLayout>

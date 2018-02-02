@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/light_white"
+    tools:context="com.hzjytech.coffeeme.home.FindVendingMachineActivity">
+
+    <include layout="@layout/titlebar"/>
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bMapView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/map_height"></com.baidu.mapapi.map.MapView>
+    <!--<com.amap.api.maps.MapView-->
+        <!--android:id="@+id/find_map"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/map_height" />-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textSize="17dp"
+        android:text="附近的咖啡机"
+        android:gravity="center_vertical"
+        android:layout_margin="5dp"
+        android:textColor="@color/normal_black"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcyViewFindLocations"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

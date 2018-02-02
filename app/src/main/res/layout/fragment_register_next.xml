@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="53dp"
+        android:layout_marginRight="53dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circ_rec_top"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etRegPsd"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:gravity="center"
+                android:hint="@string/str_hint_password_lw"
+                android:inputType="textPassword"
+                android:paddingLeft="16dp"
+                android:textColorHint="@color/text_hint_color" />
+
+            <ImageView
+                android:id="@+id/ivOldpsdfrgClear1"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="15dp"
+                android:padding="5dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_grey_clear"
+                android:visibility="gone"
+                />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circ_rec_bottom"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etRegReferralcode"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:paddingLeft="16dp"
+                android:gravity="center"
+                android:hint="@string/str_hint_referralcode"
+                android:inputType="number"
+                android:textColorHint="@color/text_hint_color" />
+
+            <ImageView
+                android:id="@+id/ivOldpsdfrgClear2"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="15dp"
+                android:padding="5dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_grey_clear"
+                android:visibility="gone"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnRegReg"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/selector_btn_click_bg_white"
+                android:text="@string/str_register"
+                android:textColor="@color/normal_white"
+                android:textSize="19sp" />
+
+            <TextView
+                android:visibility="invisible"
+                android:clickable="false"
+                android:layout_below="@+id/btnRegReg"
+                android:id="@+id/regnext_agree"
+                android:layout_width="wrap_content"
+                android:layout_alignLeft="@+id/btnRegReg"
+                android:layout_alignRight="@+id/btnRegReg"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/str_text_agree"
+                android:textColor="@color/normal_white"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

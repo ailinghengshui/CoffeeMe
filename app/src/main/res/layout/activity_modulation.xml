@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/normal_white"
+    tools:context="com.hzjytech.coffeeme.home.ModulationActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@drawable/modulation_bg">
+
+        <ImageView
+            android:id="@+id/ivModulationBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="29dp"
+            android:padding="18dp"
+            android:scaleType="center"
+            android:src="@drawable/icon_left2" />
+
+        <ImageView
+            android:id="@+id/ivModulationCart"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="29dp"
+            android:padding="18dp"
+            android:scaleType="center"
+            android:src="@drawable/icon_buy_chart" />
+
+        <ImageView
+            android:id="@+id/iv_cup"
+            android:layout_width="150dp"
+            android:layout_height="112.5dp"
+            android:scaleType="fitXY"
+            android:layout_centerInParent="true"
+            android:src="@drawable/cup" />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_drink_name"
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12.5dp"
+        android:gravity="center_vertical"
+        android:text="拿铁    Latte"
+        android:textColor="@color/standard_black"
+        android:textSize="17sp" />
+    <TextView
+        android:id="@+id/tv_drink_info"
+        android:layout_marginLeft="12.5dp"
+        android:layout_marginTop="11dp"
+        android:paddingRight="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:text="牛奶的温润调和，让一切变得柔滑、浓郁阿斯蒂芬看见了卡见识到了考几分拉升级法撒娇"
+        android:textColor="@color/more_grey"
+        android:textSize="14sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/line_color" />
+
+    <TextView
+        android:id="@+id/tv_choose_sugar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="12.5dp"
+        android:gravity="center_vertical"
+        android:text="选择甜度"
+        android:textColor="@color/standard_black"
+        android:textSize="14sp" />
+     <LinearLayout
+         android:id="@+id/ll_choose_sugar"
+         android:gravity="center_vertical"
+         android:orientation="horizontal"
+         android:layout_width="match_parent"
+         android:layout_height="50dp">
+         <android.support.design.widget.TabLayout
+             android:id="@+id/tabSugar"
+             android:layout_marginLeft="7dp"
+             android:layout_marginRight="7dp"
+             android:layout_width="wrap_content"
+             android:layout_height="30dp"
+             android:layout_gravity="center_horizontal"
+             app:tabMode="fixed"
+             app:tabIndicatorColor="@null"
+             app:tabPaddingStart="5dp"
+             app:tabPaddingEnd="5dp" />
+     </LinearLayout>
+
+
+    <View
+        android:id="@+id/v_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="12dp"
+        android:background="@color/line_color" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12.5dp"
+            android:text="选择数量"
+            android:textColor="@color/standard_black"
+            android:textSize="14sp" />
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+       <com.hzjytech.coffeeme.widgets.MyAddSubView
+           android:id="@+id/add_num_view"
+           app:action_backgroud="@color/sugar_top_water"
+           app:action_text_color="@color/more_grey"
+           app:number_text_color="@color/standard_black"
+           android:layout_marginRight="12dp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="12dp"
+        android:background="@color/line_color" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12.5dp"
+            android:text="单价"
+            android:textColor="@color/standard_black"
+            android:textSize="14sp" />
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+       <TextView
+           android:id="@+id/tv_old_price"
+           android:text="¥ 12.0"
+           android:textSize="12sp"
+           android:layout_marginRight="9dp"
+           android:textColor="@color/standard_black"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_current_price"
+           android:text="¥ 10.8"
+            android:layout_marginRight="11.5dp"
+           android:textSize="17sp"
+           android:textColor="@color/normal_red"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        android:background="@color/bg_grey"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <TextView
+            android:id="@+id/tv_add_chart"
+            android:text="加入购物车"
+            android:background="@color/normal_white"
+            android:textColor="@color/coffee"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_buy_now"
+            android:text="立即购买"
+            android:textColor="@color/normal_white"
+            android:background="@color/coffee"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

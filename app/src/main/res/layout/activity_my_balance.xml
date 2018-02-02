@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mybalance_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/titlebar"/>
+
+    <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/mybanlance_header_h"
+          android:layout_marginTop="@dimen/mybanlance_title_padh"
+          android:background="@color/normal_white"
+          android:gravity="center">
+
+          <ImageView
+              android:id="@+id/mybalance_img"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="@dimen/mybanlance_title_h"
+              android:layout_marginRight="@dimen/mybanlance_title_padh"
+              android:scaleType="center"
+              android:adjustViewBounds="true"
+              android:contentDescription="@null"
+              android:src="@drawable/balancebg" />
+          <TextView
+              android:id="@+id/mybalance_balancetitle"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_toRightOf="@id/mybalance_img"
+              android:lines="1"
+              android:ellipsize="end"
+              android:textSize="16sp"
+              android:textColor="@color/standard_black"
+              android:text="@string/title_balance"/>
+          <TextView
+              android:id="@+id/mybalance_balance"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_toRightOf="@id/mybalance_img"
+              android:layout_below="@+id/mybalance_balancetitle"
+              android:lines="1"
+              android:ellipsize="end"
+              android:textColor="@color/standard_grey"
+              android:textSize="14sp"
+              android:text="￥42.00"/>
+          <Button
+              android:id="@+id/mybalance_recharge"
+              android:layout_marginTop="7dp"
+              android:layout_width="@dimen/mybanlance_btnw"
+              android:layout_height="@dimen/mybanlance_btnh"
+              android:layout_alignParentRight="true"
+              android:layout_marginRight="@dimen/mybanlance_item_padh"
+              android:background="@drawable/rechargebg"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/mybalance_rectitle"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/mybanlance_rectitleh"
+        android:layout_marginLeft="@dimen/mybanlance_item_padh"
+        android:gravity="center"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textColor="@color/standard_black"
+        android:textSize="14sp"
+        android:text="@string/title_rec"/>
+    <com.hzjytech.coffeeme.widgets.SuperSwipeRefreshLayout
+        android:id="@+id/superSwipeBalanceRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+   <android.support.v7.widget.RecyclerView
+        android:id="@+id/mybalance_reclist"
+        android:layout_width="match_parent"
+        android:background="@color/normal_white"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/mybanlance_item_padh"
+        android:paddingRight="@dimen/mybanlance_item_padh">
+   </android.support.v7.widget.RecyclerView>
+    </com.hzjytech.coffeeme.widgets.SuperSwipeRefreshLayout>
+</LinearLayout>

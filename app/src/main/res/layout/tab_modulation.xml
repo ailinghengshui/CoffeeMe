@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvModulationTabName"
+        android:layout_width="62dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:background="@drawable/selector_modulation_tab_bg"
+        android:gravity="center"
+        android:text="巧克力粉"
+        android:textColor="@drawable/selector_modulation_tab_textcolor"
+        android:textSize="11dp" />
+
+    <TextView
+        android:id="@+id/tvModulationTabWeight"
+        android:layout_width="62dp"
+        android:layout_height="23dp"
+        android:layout_gravity="center"
+        android:background="@drawable/modulation_bottom_unselected"
+        android:gravity="center"
+        android:text="200%"
+        android:textColor="@color/coffee"
+        android:textSize="11dp"
+        android:paddingBottom="3dp"
+        />
+</LinearLayout>

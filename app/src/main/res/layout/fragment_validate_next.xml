@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="53dp"
+    android:paddingRight="53dp">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_circ_rec_top">
+
+        <EditText
+            android:id="@+id/etFgpsdNewpsd"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:hint="@string/str_hint_newpassword_lw"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColor="@color/normal_white"
+            android:textColorHint="@color/normal_white"
+            android:textSize="@dimen/text_size" />
+
+        <ImageView
+            android:id="@+id/ivOldpsdfrgClear1"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="15dp"
+            android:padding="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_grey_clear"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_circ_rec_bottom">
+
+        <EditText
+            android:id="@+id/etFgpsdRenewpsd"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:hint="@string/str_hint_repassword"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColor="@color/normal_white"
+            android:textColorHint="@color/normal_white"
+            android:textSize="@dimen/text_size" />
+
+        <ImageView
+            android:id="@+id/ivOldpsdfrgClear2"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="15dp"
+            android:padding="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_grey_clear"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnFgpsdComplete"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/selector_btn_click_bg_white"
+        android:text="@string/str_complete"
+        android:textColor="@color/normal_white"
+        android:textSize="16sp" />
+
+</LinearLayout>

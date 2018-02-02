@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="64dp"
+    >
+    <LinearLayout
+        android:layout_width="54dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        >
+
+        <TextView
+            android:id="@+id/tvMachineItemDist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:gravity="bottom|center_horizontal"
+            android:text="0.1"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="9dp"
+            android:gravity="top|center_horizontal"
+            android:text="km"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/light_grey"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        >
+
+        <TextView
+            android:id="@+id/tvMachineItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="科技孵化器2号楼17层大厅"
+            />
+        <TextView
+            android:id="@+id/tvMachineItemPlace"
+            android:textSize="9dp"
+            android:textColor="@color/normal_grey"
+            android:ellipsize="end"
+            android:layout_marginTop="9dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="浙江省杭州市江干区下沙经济开发区6号大街"
+            />
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/light_grey"
+        />
+    <Button
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginBottom="21dp"
+        android:id="@+id/btnMachineItemNavig"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:background="@drawable/icon_navig"
+        />
+
+</LinearLayout>

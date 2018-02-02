@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="17dp"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="10dp"
+    android:background="@color/normal_white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_location"
+        android:scaleType="centerInside"
+        />
+    <LinearLayout
+        android:paddingLeft="10dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:textSize="17dp"
+            android:text="离我最近的咖啡机"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textColor="@color/standard_black"
+            android:layout_weight="3"/>
+        <TextView
+            android:id="@+id/tvLocationnearbyName"
+            android:textSize="12dp"
+            android:text="正在定位中..."
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/standard_grey"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvLocationnearbyDist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/standard_black"
+        android:text="0.9"
+        />
+    <TextView
+        android:id="@+id/tvLocationnearbyDistUnit"
+        android:textSize="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/standard_black"
+        android:text="km"
+        />
+</LinearLayout>

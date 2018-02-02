@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:focusable="true"
+    android:background="@drawable/bg_slidebar"
+    android:layout_marginTop="8dp">
+
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tv_material_name"
+            android:layout_marginLeft="20dp"
+            android:textSize="12dp"
+            android:text="糖"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/normal_white"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvModulationMin"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="0"
+            android:textSize="12dp"
+            android:textColor="@color/normal_white" />
+
+        <com.hzjytech.coffeeme.widgets.NumberSeekBar
+            android:layout_gravity="center_vertical"
+            android:duplicateParentState="true"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:progressDrawable="@null"
+            android:layout_toRightOf="@+id/tvModulationMin"
+            android:gravity="center"
+            android:background="@drawable/img_slidebar"
+            android:id="@+id/real_numSkbarodulation"
+            android:layout_height="@dimen/seekbar_bgh"
+            android:thumb="@drawable/img_slideblock"/>
+        <TextView
+            android:id="@+id/tvModulationMax"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:minWidth="25dp"
+            android:gravity="center"
+            android:text="10"
+            android:textSize="12dp"
+            android:textColor="@color/normal_white" />
+
+        <TextView
+            android:id="@+id/tvModulationUnit"
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="g"
+            android:gravity="center"
+            android:textColor="@color/normal_white"
+            android:layout_marginRight="20dp"
+            android:textSize="12dp"
+
+            />
+
+
+    </LinearLayout>

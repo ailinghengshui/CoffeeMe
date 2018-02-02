@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/recharge_pay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mybanlance_title_h"
+        android:layout_marginRight="@dimen/mybanlance_headericon_padh"
+        android:layout_marginLeft="@dimen/mybanlance_headericon_padh"
+        android:layout_marginTop="@dimen/mybanlance_item_padh"
+        android:background="@drawable/paybg"/>
+    <TextView
+        android:id="@+id/recharge_payinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recharge_pay"
+        android:layout_marginTop="@dimen/mybanlance_title_padh"
+        android:textColor="@color/coffee"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:gravity="center"/>
+</RelativeLayout>

@@ -1,0 +1,97 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/light_white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".abandon.OldHomeFragment">
+
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
+        android:id="@+id/store_house_ptr_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/light_white"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcyViewHomeAppitems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/mybanlance_ritem_padh"
+            />
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
+
+
+
+    <com.hzjytech.coffeeme.widgets.TransparentToolBar
+        android:id="@+id/tbHomefrgTitle"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        >
+        <RelativeLayout
+            android:id="@+id/rl_title_coffee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+            android:id="@+id/ibScan"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/tansparent"
+            android:layout_marginLeft="20dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/icon_scan"
+            android:scaleType="fitXY"
+            />
+            <TextView
+                android:id="@+id/tvHomefrgTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="首页"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/ivHomefrgCart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:paddingRight="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_white_cart" />
+        </RelativeLayout>
+
+    </com.hzjytech.coffeeme.widgets.TransparentToolBar>
+
+
+
+<RelativeLayout
+    android:clickable="true"
+    android:visibility="visible"
+    android:id="@+id/rl_guide"
+    android:background="@color/trans_black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+   <ImageView
+       android:layout_centerInParent="true"
+       android:src="@drawable/guide_home"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_guide"
+        android:clickable="true"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentRight="true"
+        android:text="我知道了"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/bg_guide_text"
+        android:layout_width="80dp"
+        android:layout_height="40dp" />
+
+</RelativeLayout>
+
+</FrameLayout>

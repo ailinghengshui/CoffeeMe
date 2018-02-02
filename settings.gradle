@@ -1,0 +1,1 @@
+include ':app', ':banner', ':qiniutoken', ':scan', ':moduleuse', ':weibosdk', ':crop', ':homefragmentdemo'

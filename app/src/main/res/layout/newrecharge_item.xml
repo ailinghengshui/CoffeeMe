@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/mybanlance_title_padh"
+
+    >
+    <RelativeLayout
+        android:id="@+id/reupleft"
+        android:layout_width="@dimen/recharge_upw"
+        android:layout_height="@dimen/recharge_uph"
+        android:background="@drawable/moneybg"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/reupleft_sum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="50元"
+            android:textColor="@color/coffee"/>
+        <TextView
+            android:id="@+id/reupleft_bonus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reupleft_sum"
+            android:lines="1"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:text="赠送5元"
+            android:textColor="@color/coffee"/>
+    </RelativeLayout>
+</RelativeLayout>

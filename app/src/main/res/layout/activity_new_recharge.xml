@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recharge_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/titlebar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/recharge_titleh"
+        android:layout_marginBottom="@dimen/mybanlance_title_padh"
+        android:layout_marginTop="@dimen/mybanlance_title_padh"
+        android:background="@color/normal_white"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tvRechargerMoneytitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/recharge_titlepadl"
+            android:layout_marginTop="@dimen/mybanlance_title_padh"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/title_money"
+            android:textColor="@color/standard_black"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/etRechargerMoney"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mybanlance_title_padh"
+            android:layout_toRightOf="@id/tvRechargerMoneytitle"
+            android:background="@null"
+            android:ellipsize="end"
+            android:hint="@string/title_moneyhint"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:textColorHint="@color/standard_grey"
+            android:lines="1"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcyViewRechargerList"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/normal_grey" />
+
+    <RelativeLayout
+        android:id="@+id/rlRechargeAlipay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/normal_white">
+
+        <ImageView
+            android:id="@+id/ivRechargeAlipay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/recharge_titlepadl"
+            android:layout_marginRight="@dimen/mybanlance_title_padh"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:adjustViewBounds="true"
+            android:background="@drawable/alipaybg"
+            android:contentDescription="@null"
+            android:scaleType="center" />
+
+        <TextView
+            android:id="@+id/tvRechargeAlipayTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mybanlance_title_padh"
+            android:layout_toRightOf="@id/ivRechargeAlipay"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/standard_black"
+            android:text="支付宝支付"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvRechargeAlipaySectitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvRechargeAlipayTitle"
+            android:layout_marginBottom="@dimen/mybanlance_title_padh"
+            android:layout_toRightOf="@id/ivRechargeAlipay"
+            android:textColor="@color/standard_grey"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="推荐有支付宝账号的用户使用"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/ivRechargeAlipaySelimg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/mybanlance_title_padh"
+            android:layout_marginTop="@dimen/mybanlance_headericon_padh"
+            android:adjustViewBounds="true"
+            android:background="@drawable/iconselbg"
+            android:contentDescription="@null"
+            android:scaleType="center" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/normal_grey" />
+
+    <RelativeLayout
+        android:id="@+id/rlRechargeWechatpay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/normal_white">
+
+        <ImageView
+            android:id="@+id/ivRechargeWechatPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/recharge_titlepadl"
+            android:layout_marginRight="@dimen/mybanlance_title_padh"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:adjustViewBounds="true"
+            android:background="@drawable/wchatbg"
+            android:contentDescription="@null"
+            android:scaleType="center" />
+
+        <TextView
+            android:id="@+id/tvRechargeWechatPayTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mybanlance_title_padh"
+            android:layout_toRightOf="@id/ivRechargeWechatPay"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/title_wchat"
+            android:textColor="@color/standard_black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvRechargeWechatPaySectitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvRechargeWechatPayTitle"
+            android:layout_marginBottom="@dimen/mybanlance_title_padh"
+            android:layout_toRightOf="@id/ivRechargeWechatPay"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/sectitle_wchat"
+            android:textColor="@color/standard_grey"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/ivRechargeWechatPaySelimg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/mybanlance_title_padh"
+            android:layout_marginTop="@dimen/mybanlance_headericon_padh"
+            android:adjustViewBounds="true"
+            android:background="@drawable/iconselbg"
+            android:contentDescription="@null"
+            android:scaleType="center" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/normal_grey" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/recharge_pay"
+            android:textColor="@color/normal_white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/mybanlance_title_h"
+            android:layout_marginLeft="@dimen/mybanlance_headericon_padh"
+            android:layout_marginRight="@dimen/mybanlance_headericon_padh"
+            android:layout_marginTop="@dimen/mybanlance_item_padh"
+            android:background="@drawable/paybg" />
+
+        <TextView
+            android:enabled="false"
+            android:id="@+id/recharge_payinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recharge_pay"
+            android:layout_marginTop="@dimen/mybanlance_title_padh"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:textColor="@color/coffee"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</LinearLayout>

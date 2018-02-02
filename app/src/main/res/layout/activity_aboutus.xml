@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context="com.hzjytech.coffeeme.me.AboutusActivity">
+
+    <include layout="@layout/titlebar"/>
+    <ImageView
+        android:id="@+id/ivAboutusIcon"
+        android:layout_marginTop="82dp"
+        android:layout_width="62dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="62dp"
+        android:src="@mipmap/icon_launcher"
+        />
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tvAboutusIntro"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/ivAboutusIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/coffee"
+        android:text="@string/version"
+        />
+    <LinearLayout
+        android:id="@+id/intro"
+        android:layout_below="@+id/tvAboutusIntro"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:background="@drawable/bg_circ_rec_grey"
+        >
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Intro1"
+            />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Intro2"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/copyright"
+            android:textSize="15dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/normal_grey"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/normal_grey"
+            android:text="@string/company_name"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

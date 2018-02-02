@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="-10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="更多饮品准备中，敬请期待！"
+        android:gravity="center"
+        android:textSize="14dp"
+        android:padding="10dp"
+        android:textColor="@color/standard_grey"
+        />
+
+</LinearLayout>

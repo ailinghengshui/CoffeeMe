@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
+    android:background="@drawable/bg_circ_rec_white">
+    <!--android:background="@drawable/bg_circ_rec_top_coffee"-->
+    <TextView
+        android:id="@+id/tvCustomDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/coffee"
+        android:gravity="center"
+        android:text="@string/string_exchangesuccess"
+        android:textColor="@color/normal_white"
+        android:textSize="17dp" />
+
+    <ImageView
+        android:id="@+id/ivCustomDialogIcon"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_below="@+id/tvCustomDialogTitle"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_green_right" />
+
+    <LinearLayout
+        android:id="@+id/tvCustomDialogDescContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/ivCustomDialogIcon"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="您当前剩余"
+            android:textSize="15dp" />
+        <TextView
+            android:id="@+id/tvCustomDialogDesc"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/light_red"
+            android:text="12000"
+            android:textSize="15dp" />
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="积分"
+            android:textSize="15dp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/tvCustomDialogDescContainer"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <Button
+            android:id="@+id/btnCustomDialogOpleft"
+            android:layout_width="90dp"
+            android:layout_height="24dp"
+            android:background="@drawable/bg_circ_rec_cream"
+            android:text="@string/string_mycoupons"
+            android:textColor="@color/coffee"
+            android:layout_marginRight="10dp"
+            />
+
+        <Button
+            android:id="@+id/btnCustomDialogOpright"
+            android:layout_width="90dp"
+            android:layout_height="24dp"
+            android:background="@drawable/bg_circ_rec_coffee"
+            android:text="@string/string_contiexchange"
+            android:textColor="@color/normal_white" />
+    </LinearLayout>
+
+</RelativeLayout>

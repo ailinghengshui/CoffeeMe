@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/banner/banner.iml" filepath="$PROJECT_DIR$/banner/banner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crop/crop.iml" filepath="$PROJECT_DIR$/crop/crop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/homefragmentdemo/homefragmentdemo.iml" filepath="$PROJECT_DIR$/homefragmentdemo/homefragmentdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jijia_app_android.iml" filepath="$PROJECT_DIR$/jijia_app_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/moduleuse/moduleuse.iml" filepath="$PROJECT_DIR$/moduleuse/moduleuse.iml" />
+      <module fileurl="file://$PROJECT_DIR$/qiniutoken/qiniutoken.iml" filepath="$PROJECT_DIR$/qiniutoken/qiniutoken.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scan/scan.iml" filepath="$PROJECT_DIR$/scan/scan.iml" />
+      <module fileurl="file://$PROJECT_DIR$/weibosdk/weibosdk.iml" filepath="$PROJECT_DIR$/weibosdk/weibosdk.iml" />
+    </modules>
+  </component>
+</project>

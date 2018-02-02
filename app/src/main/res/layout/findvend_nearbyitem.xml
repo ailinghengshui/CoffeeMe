@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nearby_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/mybanlance_header_h"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/machinebg"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        />
+    <RelativeLayout
+        android:id="@+id/rlnearby_distance"
+        android:layout_width="52dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingRight="10dp"
+        >
+
+        <TextView
+            android:id="@+id/nearby_distance"
+            android:layout_width="@dimen/pay_selh"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textColor="@color/standard_black"
+            android:lines="1"
+            android:textSize="16sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nearby_distance"
+            android:text="km"
+            android:textSize="13dp"
+            android:textColor="@color/standard_grey"
+            android:layout_alignRight="@id/nearby_distance"
+
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/nearby_lline"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@id/rlnearby_distance"
+        android:background="@color/line_color" />
+
+    <RelativeLayout
+        android:layout_toLeftOf="@+id/nearby_rline"
+        android:layout_toRightOf="@id/nearby_lline"
+        android:layout_width="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/nearby_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:textColor="@color/standard_black"
+        android:lines="1"
+        android:singleLine="true"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/nearby_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/standard_grey"
+        android:layout_below="@+id/nearby_name"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:singleLine="true"
+        android:textSize="14sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/nearby_navimg"
+        android:layout_width="@dimen/pay_selh"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/navbg" />
+
+    <TextView
+        android:id="@+id/nearby_rline"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_toLeftOf="@id/nearby_navimg"
+        android:background="@color/line_color" />
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>

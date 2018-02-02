@@ -1,0 +1,104 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/light_white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.HomeFragment">
+
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
+        android:id="@+id/store_house_ptr_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_white"
+        >
+        <ru.noties.scrollable.ScrollableLayout
+            android:id="@+id/scrollable_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:scrollable_defaultCloseUp="false">
+
+          <include layout="@layout/layout_home_headview"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_home_drink_tab"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:background="@color/bg_grey">
+
+                <LinearLayout
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_home_dark_grey_border"
+                    android:orientation="vertical"
+                    android:layout_marginTop="9dp"
+                    android:padding="1dp">
+
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tblayoutHomefrgTab"
+                        style="@style/OrderTabLayout"
+                        android:layout_width="270dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_horizontal"
+                        app:tabMode="fixed"
+                        app:tabTextColor="@color/coffee"
+                        />
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <android.support.v4.view.ViewPager
+                android:layout_marginTop="53dp"
+                android:id="@+id/vPgHomefrgShow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </ru.noties.scrollable.ScrollableLayout>
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
+
+
+
+    <com.hzjytech.coffeeme.widgets.TransparentToolBar
+        android:id="@+id/tbHomefrgTitle"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        >
+        <RelativeLayout
+            android:id="@+id/rl_title_coffee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+            android:id="@+id/ibScan"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/tansparent"
+            android:layout_marginLeft="20dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/icon_scan"
+            android:scaleType="fitXY"
+            />
+            <TextView
+                android:id="@+id/tvHomefrgTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="首页"
+                android:textColor="#fff"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/ivHomefrgCart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:paddingRight="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_white_cart" />
+        </RelativeLayout>
+
+    </com.hzjytech.coffeeme.widgets.TransparentToolBar>
+
+</FrameLayout>

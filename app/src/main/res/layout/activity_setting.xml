@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="com.hzjytech.coffeeme.me.SettingFragment">
+
+    <include layout="@layout/titlebar"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#f2f2f2"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="@color/line_color" />
+
+        <RelativeLayout
+            android:id="@+id/llSettingClearCache"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:background="@drawable/selector_setting_btn_click">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:text="清空缓存"
+                android:textColor="@color/standard_black"
+                />
+
+            <TextView
+                android:id="@+id/tvSettiongCachesize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="30dp"
+                android:text="44kb"
+                android:textColor="@color/standard_grey" />
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_right"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="@color/line_color" />
+
+        <Button
+            android:id="@+id/btnSettingFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:background="@drawable/selector_setting_btn_click"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="20dp"
+            android:drawableRight="@drawable/icon_right"
+            android:textColor="@color/standard_black"
+            android:paddingRight="20dp"
+            android:text="建议反馈" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="@color/line_color" />
+        <Button
+            android:id="@+id/btnSettingUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:background="@drawable/selector_setting_btn_click"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="20dp"
+            android:text="检查更新"
+            android:textColor="@color/standard_black"
+            android:drawableRight="@drawable/icon_right"
+            android:paddingRight="20dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="@color/line_color" />
+
+        <Button
+            android:id="@+id/btnSettingSupport"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:layout_below="@id/btnSettingFeedback"
+            android:background="@drawable/selector_setting_btn_click"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="20dp"
+            android:text="@string/supportus"
+            android:textColor="@color/standard_black"
+            android:drawableRight="@drawable/icon_right"
+            android:paddingRight="20dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="@color/line_color" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_marginTop="9dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color" />
+
+    <Button
+        android:id="@+id/btnSettingAboutus"
+        android:layout_width="match_parent"
+        android:layout_height="41dp"
+        android:background="@drawable/selector_setting_btn_click"
+        android:gravity="start|center_vertical"
+        android:paddingLeft="20dp"
+        android:text="@string/aboutus"
+        android:drawableRight="@drawable/icon_right"
+        android:paddingRight="20dp"
+        android:textColor="@color/standard_black"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color" />
+
+
+</LinearLayout>
+

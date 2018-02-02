@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/machine_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/mybanlance_header_h"
+    android:background="@color/normal_white"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:background="@color/normal_grey" />
+
+    <RelativeLayout
+        android:id="@+id/rlmachine_distance"
+        android:layout_width="52dp"
+        android:layout_height="match_parent"
+        android:paddingRight="10dp"
+        android:gravity="center_vertical"
+        >
+
+        <TextView
+            android:id="@+id/machine_distance"
+            android:layout_width="@dimen/pay_selh"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:textColor="@color/standard_black"
+            android:lines="1"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/machine_distance"
+            android:text="km"
+            android:textSize="13dp"
+            android:textColor="@color/standard_grey"
+            android:layout_alignParentRight="true"
+
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/machine_lline"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@id/rlmachine_distance"
+        android:background="@color/line_color" />
+
+    <RelativeLayout
+        android:layout_toLeftOf="@+id/machine_rline"
+        android:layout_toRightOf="@id/machine_lline"
+        android:layout_width="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/machine_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:singleLine="true"
+            android:textColor="@color/standard_black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/machine_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/machine_name"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:textColor="@color/standard_grey"
+            android:lines="1"
+            android:singleLine="true"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/machine_navimg"
+        android:layout_width="@dimen/pay_selh"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/navbg" />
+
+    <TextView
+        android:id="@+id/machine_rline"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_toLeftOf="@id/machine_navimg"
+        android:background="@color/line_color" />
+</RelativeLayout>
+

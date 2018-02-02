@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/little_white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.SuccessOrderActivity">
+    <include layout="@layout/titlebar"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <View
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_color"/>
+            <LinearLayout
+                android:background="@color/normal_white"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
+                <ImageView
+                    android:src="@drawable/icon_success_order"
+                    android:layout_marginLeft="22dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp" />
+                <LinearLayout
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:textColor="@color/standard_black"
+                        android:gravity="center_vertical"
+                        android:textSize="14dp"
+                        android:text="支付成功"
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp" />
+                    <TextView
+                        android:gravity="center_vertical"
+                        android:textColor="@color/standard_black"
+                        android:textSize="10dp"
+                        android:text="请到“我的兑换券”中查看获得的咖啡兑换券"
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout
+                android:background="@color/normal_white"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="73dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/success_progress"
+                        android:src="@drawable/success_progress"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:layout_below="@id/success_progress"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:textColor="@color/standard_black"
+                            android:textSize="14dp"
+                            android:gravity="center"
+                            android:text="选择套餐"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:textColor="@color/standard_black"
+                            android:textSize="14dp"
+                            android:gravity="center"
+                            android:text="支付成功"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:textColor="@color/standard_black"
+                            android:textSize="14dp"
+                            android:text="使用兑换券"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_color"/>
+           <LinearLayout
+               android:background="@color/normal_white"
+               android:orientation="vertical"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+           <ImageView
+               android:id="@+id/iv_success_package"
+               android:scaleType="fitXY"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_marginTop="17dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12.5dp"
+                android:paddingRight="12.5dp">
+                <TextView
+                    android:id="@+id/tv_package_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="@color/more_grey"
+                    android:text="2017年11月11日"/>
+                <View
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:textColor="@color/standard_black"
+                    android:textSize="14sp"
+                    android:text="实付："
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_package_cost"
+                    android:textSize="17sp"
+                    android:text="50元"
+                    android:textColor="@color/normal_red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+               <View
+                   android:layout_marginTop="17.5dp"
+                   android:background="@color/line_color"
+                   android:layout_width="match_parent"
+                   android:layout_height="1dp"/>
+               <Button
+                   android:id="@+id/btn_package_to_check"
+                   android:layout_width="100dp"
+                   android:layout_height="27dp"
+                   android:layout_gravity="right"
+                   android:text="查看套餐"
+                   android:layout_marginTop="18.5dp"
+                   android:layout_marginBottom="18.5dp"
+                   android:layout_marginRight="12dp"
+                   android:background="@drawable/bg_circ_rec_coffee"
+                   android:textColor="@color/normal_white"
+                   />
+           </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tvCustomDialogDescContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="支付成功获得"
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/tv_package_point_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="100"
+                    android:textColor="@color/light_red"
+                    android:textSize="10dp" />
+                <TextView
+                    android:textSize="10dp"
+                    android:text="积分"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/tv_go_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="关于积分？"
+                    android:textSize="10dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

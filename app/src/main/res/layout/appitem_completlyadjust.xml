@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp"
+    android:layout_margin="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@drawable/bg_item_rect"
+    android:id="@+id/rl_toPersonaliaty"
+      >
+
+    <TextView
+        android:clickable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="对菜单不满意？试试个性自调..."
+        android:textSize="14dp"
+        android:padding="10dp"
+        android:layout_centerVertical="true"
+        android:textColor="@color/standard_black"
+        />
+    <ImageView
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_right"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+
+</RelativeLayout>

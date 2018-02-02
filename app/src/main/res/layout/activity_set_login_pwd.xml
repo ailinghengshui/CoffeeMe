@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_white"
+    android:gravity="center_horizontal"
+    >
+    <include layout="@layout/titlebar"/>
+    <TextView
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/line_height"
+    android:layout_marginTop="10dp"
+    android:background="@color/line_color" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/normal_white">
+
+        <EditText
+            android:id="@+id/etNewPsdPsd"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="23dp"
+            android:background="@null"
+            android:lines="1"
+            android:hint="请输入密码"
+            android:textColorHint="@color/normal_grey"
+            android:inputType="textPassword"
+            android:textSize="16dp" />
+        <ImageView
+            android:id="@+id/ivNewpsdfrgClear"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="7dp"
+            android:padding="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_grey_clear"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/light_grey"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/normal_white">
+
+        <EditText
+            android:id="@+id/etNewPsdRePsd"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="23dp"
+            android:background="@null"
+            android:lines="1"
+            android:hint="请再次输入密码"
+            android:textColorHint="@color/normal_grey"
+            android:inputType="textPassword"
+            android:textSize="16dp" />
+        <ImageView
+            android:id="@+id/ivNewpsdfrgReclear"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="7dp"
+            android:padding="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_grey_clear"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/tvNewpsgErr"
+        android:gravity="center"
+        android:text="@string/bind_pwd_profit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_grey"
+        android:textSize="9dp"
+        />
+    <Button
+        android:layout_marginTop="20dp"
+        android:id="@+id/btnNewPsdOK"
+        android:layout_width="220dp"
+        android:layout_height="35dp"
+        android:textSize="14dp"
+        android:textColor="@color/normal_white"
+        android:background="@drawable/bg_circ_rec_green"
+        android:text="完成"
+        />
+
+</LinearLayout>
